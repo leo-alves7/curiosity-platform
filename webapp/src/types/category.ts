@@ -10,3 +10,10 @@ export interface CategoryResponse {
   updated_at: string
   stores?: StoreResponse[]
 }
+
+export interface PaginatedCategories {
+  items: CategoryResponse[]
+  total: number
+  page: number
+  page_size: number
+}

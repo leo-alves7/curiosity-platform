@@ -40,7 +40,7 @@ describe('fetchCategories', () => {
   it('returns categories on success', async () => {
     server.use(
       http.get('http://localhost:8081/api/v1/categories', () => {
-        return HttpResponse.json(mockCategories)
+        return HttpResponse.json({ items: mockCategories, total: 1, page: 1, page_size: 20 })
       }),
     )
     const result = await fetchCategories()
