@@ -1,3 +1,5 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -9,8 +11,9 @@ from curiosity.web.main import app
 
 @pytest.fixture
 async def api_client():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-        yield client
+    with patch("curiosity.web.services.keycloak.keycloak_service.initialize", new_callable=AsyncMock):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            yield client
 
 
 @pytest.fixture
