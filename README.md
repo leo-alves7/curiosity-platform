@@ -1,78 +1,197 @@
 # Curiosity Platform
 
-Curiosity Platform is a multi-layer application that combines a map-based store explorer with a platform interface similar to food delivery apps. It is built with a **React + Ionic frontend** and a **Python FastAPI backend**, structured in a monorepo format.
+Curiosity Platform is a map-based store explorer — a platform where users can discover, browse, and interact with stores and points of interest on an interactive map. Think of it as a foundation for location-aware commerce experiences.
 
-### Project Structure
+The project is being rebuilt from scratch with a production-grade stack inspired by [PredictAP Platform](https://github.com/predictap/platform), adopting its patterns for backend architecture, database management, authentication, and frontend tooling.
+
+---
+
+## Project Structure
 
 ```
 curiosity-platform/
-├── backend/ # FastAPI backend
-├── webapp/ # Ionic React frontend
+├── backend/                   # FastAPI backend
+│   ├── curiosity/
+│   │   ├── web/               # Routers, dependencies, request/response models
+│   │   │   ├── routers/       # Feature-based API routers
+│   │   │   ├── managers/      # Business logic
+│   │   │   ├── model/         # SQLAlchemy ORM models
+│   │   │   └── dependencies/  # FastAPI dependency injection
+│   │   └── common/            # Shared utilities, base models, config
+│   │       └── alembic/       # Database migrations
+│   ├── pyproject.toml
+│   └── Dockerfile
+├── webapp/                    # React + TypeScript frontend
+│   ├── src/
+│   │   ├── api/               # Axios client and API hooks
+│   │   ├── components/        # Reusable UI components
+│   │   ├── features/          # Feature-scoped logic
+│   │   ├── pages/             # Page-level components
+│   │   ├── slices/            # Redux state slices
+│   │   └── auth/              # Keycloak auth integration
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yaml        # Local development services
 └── README.md
 ```
 
-### Features
+---
 
-- Map interface using **MapLibre GL JS** for store locations.
-- Popups on the map to show store information.
-- React + Ionic frontend for cross-platform mobile and web support.
-- FastAPI backend providing a simple REST API for stores.
-- Separate frontend and backend while maintaining a single repository.
-- Ready to integrate with Capacitor for mobile deployment.
+## Tech Stack
+
+### Backend
+| Concern | Technology |
+|---|---|
+| Framework | FastAPI (async) |
+| Language | Python 3.12+ |
+| Package Manager | uv |
+| Database | PostgreSQL 15+ |
+| ORM | SQLAlchemy 2.x (async) with asyncpg |
+| Migrations | Alembic |
+| Caching / Broker | Redis |
+| Background Tasks | Celery + Celery Beat |
+| Auth | Keycloak (OpenID Connect / JWT RS256) |
+| Config | pydantic-settings |
+| Linting / Formatting | Ruff + mypy |
+| Testing | pytest + pytest-asyncio |
+
+### Frontend
+| Concern | Technology |
+|---|---|
+| Framework | React 18 + TypeScript |
+| Build Tool | Vite + SWC |
+| State Management | Redux Toolkit + Redux Persist |
+| HTTP Client | Axios |
+| UI Components / Icons | Ionic React + ionicons (mobile-first) |
+| Map | MapLibre GL JS |
+| Auth | Keycloak JS adapter |
+| Testing | Vitest + React Testing Library |
+
+### Infrastructure (local dev via Docker Compose)
+| Service | Purpose |
+|---|---|
+| PostgreSQL | Primary database |
+| Redis | Cache and Celery broker |
+| Keycloak | Authentication server (port 8180) |
+| MinIO | S3-compatible object storage |
+| Maildev | Email testing UI (port 1080) |
+
+---
+
+## Features (Planned)
+
+- Interactive map with **MapLibre GL JS** showing store locations
+- Store detail popups and sidepanels
+- User authentication via **Keycloak** (login, roles, JWT)
+- Store management API (CRUD) backed by PostgreSQL
+- Categories, tags, and filtering for stores
+- Background sync tasks via **Celery** (e.g. indexing, notifications)
+- Object storage for store images via **MinIO / S3**
+- Multi-environment configuration (local, staging, production)
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js** (LTS version recommended)
-- **npm**
-- **Python 3.10+**
-- **Git**
+- Docker + Docker Compose
+- Node.js (LTS)
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv)
 
-### Frontend Setup
+### 1. Start local services
+
+```bash
+docker compose up -d
+```
+
+This starts PostgreSQL, Redis, Keycloak, MinIO, and Maildev.
+
+### 2. Backend setup
+
+```bash
+cd backend
+cp .env.example .env   # edit values as needed
+uv sync                # creates .venv and installs all dependencies
+uv run alembic upgrade head
+uv run uvicorn curiosity.web.main:app --reload --port 8081
+```
+
+### 3. Frontend setup
 
 ```bash
 cd webapp
+cp .env.example .env.local   # edit values as needed
 npm install
-ionic integrations enable capacitor
-npm install maplibre-gl
-ionic serve
+npm run dev
 ```
 
-### Backend Setup
-
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install fastapi uvicorn
-uvicorn main:app --reload
-
-Running the App
-
-1- Start the backend API:
+### 4. Pre-commit hooks (backend)
 
 ```bash
 cd backend
-uvicorn main:app --reload
+uv sync --extra dev        # installs pre-commit along with other dev deps
+uv run pre-commit install  # registers hooks in .git/hooks/
 ```
 
-2- Start the frontend:
+Open [http://localhost:5173](http://localhost:5173) to view the app.
+Backend API available at [http://localhost:8081](http://localhost:8081).
+Keycloak admin at [http://localhost:8180](http://localhost:8180).
+
+---
+
+## API Design
+
+RESTful endpoints following the same modular router pattern as PredictAP Platform:
+
+```
+GET  /health              # Health check — returns {"status": "ok"}
+
+GET  /stores              # List stores (with filters) [planned]
+POST /stores              # Create a store [planned]
+GET  /stores/{id}         # Get store details [planned]
+PUT  /stores/{id}         # Update a store [planned]
+DELETE /stores/{id}       # Delete a store [planned]
+GET  /categories          # List categories [planned]
+```
+
+---
+
+## Development Notes
+
+- Pre-commit hooks via `ruff` (lint + format) and `mypy` — run `pre-commit install` once after cloning
+- Async throughout: `asyncpg` driver, async SQLAlchemy sessions, async FastAPI handlers
+- Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete)
+- Auth token injected into all API requests via Keycloak JS adapter on the frontend
+- Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
+- Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
+
+---
+
+## Deployment
+
+The frontend is deployed to **Cloudflare Workers** (static assets via Wrangler). The config lives at `wrangler.jsonc` in the repo root.
+
+### Frontend — deploy to Cloudflare
 
 ```bash
-cd webapp
-ionic serve
+cd webapp && npm run build   # outputs to webapp/dist
+cd .. && npx wrangler deploy # deploys webapp/dist to Cloudflare Workers
 ```
 
-3- Open your browser at http://localhost:8100 to view the app.
+> First-time setup: run `npx wrangler login` to authenticate.
 
-### API Endpoints
+**Cloudflare dashboard build settings** (Workers > project-curiosity > Settings > Builds):
+- Build command: `cd webapp && npm run build`
+- Deploy command: `npx wrangler deploy`
 
-GET /stores – Returns a list of stores with id, name, lat, and lng.
+### Backend — deployment TBD
 
-### Contributing
+Backend deployment target is not yet defined. Likely a containerised service (Docker + cloud run or VPS). Update this section once the deployment target is confirmed.
 
-Feel free to open issues or submit pull requests. Make sure the app runs locally before making changes.
+---
 
-### License
+## License
 
 MIT License
