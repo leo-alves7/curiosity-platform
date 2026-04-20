@@ -27,7 +27,8 @@ async def get_current_user(
             detail="Invalid or malformed token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return UserContext(uid=decoded["uid"], email=decoded.get("email"))
+    is_admin = decoded.get("role") == "admin"
+    return UserContext(uid=decoded["uid"], email=decoded.get("email"), is_admin=is_admin)
 
 
 CurrentUser = Annotated[UserContext, Depends(get_current_user)]

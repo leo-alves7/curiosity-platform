@@ -6,3 +6,4 @@ class UserContext(BaseModel):
 
     uid: str
     email: str | None = None
+    is_admin: bool = False
