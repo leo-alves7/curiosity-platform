@@ -175,16 +175,18 @@ The PR body must follow this structure:
 ## How
 <bullet points on the technical approach — architecture decisions, patterns used, why>
 
-## Commits
-<list the commits with their descriptions>
-
 ## Testing
 <how to test this manually and what automated tests were added>
 ```
 
+## Phase 9 — Cleanup
+
+1. Shut down the coder teammate by sending a `shutdown_request` message and waiting for confirmation.
+2. Call `TeamDelete` to remove the team and its task list.
+
 ---
 
-## Phase 9 — Session Summary
+## Phase 10 — Session Summary
 
 This is the final output you return to the user in the main session. Write it as a senior engineer handing off to a colleague. Output the following — each section in its own markdown block so the user can copy-paste.
 
@@ -206,8 +208,3 @@ Think as a senior engineer reviewing the PR. Cover:
 - Dependencies or blockers for downstream tickets
 
 ---
-
-## Phase 10 — Cleanup
-
-1. Shut down the coder teammate by sending a `shutdown_request` message and waiting for confirmation.
-2. Call `TeamDelete` to remove the team and its task list.

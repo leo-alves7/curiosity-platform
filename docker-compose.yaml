@@ -39,7 +39,9 @@ services:
       KC_DB_PASSWORD: curiosity
     ports:
       - "8180:8080"
-    command: start-dev
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
+    command: start-dev --import-realm
     depends_on:
       db:
         condition: service_healthy
