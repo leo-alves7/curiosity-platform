@@ -11,6 +11,20 @@ export interface CategoryResponse {
   stores?: StoreResponse[]
 }
 
+export interface CategoryCreate {
+  name: string
+  slug: string
+  icon?: string | null
+  color?: string | null
+}
+
+export interface CategoryUpdate {
+  name?: string | null
+  slug?: string | null
+  icon?: string | null
+  color?: string | null
+}
+
 export interface PaginatedCategories {
   items: CategoryResponse[]
   total: number
