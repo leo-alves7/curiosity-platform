@@ -16,7 +16,7 @@
   "dependencies": {
     "@capacitor-firebase/authentication": "^7.0.0",
     "@capacitor/core": "^7.0.0",
-    "@capacitor/share": "^8.0.1",
+    "@capacitor/share": "^7.0.4",
     "@ionic/core": "^8.5.0",
     "@ionic/react": "^8.5.0",
     "@reduxjs/toolkit": "^2.3.0",
