@@ -40,7 +40,7 @@ Review the above changes and produce a structured code review. For each issue fo
 - [ ] Tests prefer `getByRole` / `getByLabelText` queries over test IDs
 - [ ] Tests use `describe` blocks and `beforeEach`/`afterEach` for setup/teardown
 - [ ] Tests use `userEvent` for simulating user interactions
-- [ ] MUI components used for UI — no custom CSS frameworks mixed in
+- [ ] Ionic React components used for UI — do not introduce MUI or other component libraries
 
 ## Output Format
 

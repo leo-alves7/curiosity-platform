@@ -9,7 +9,7 @@ Curiosity Platform is a map-based store explorer — a location-aware platform w
 ### Components
 - **Backend**: Python FastAPI application in `backend/` directory
 - **Frontend**: React/TypeScript webapp in `webapp/` directory
-- **Tech Stack**: FastAPI, SQLAlchemy (async), PostgreSQL, Redis, Celery, React, Material UI, MapLibre GL JS
+- **Tech Stack**: FastAPI, SQLAlchemy (async), PostgreSQL, Redis, Celery, Ionic React, MapLibre GL JS
 
 ### Project Structure
 ```
@@ -72,12 +72,22 @@ uv run mypy curiosity/
 cd webapp/
 npm install         # Install dependencies
 npm run dev         # Development server (port 5173)
-npm run build       # Production build
+npm run build       # Production build (outputs to webapp/dist)
 npm run test        # Run tests (watch mode)
 npm run test:run    # Run tests once
 npm run typecheck   # TypeScript type checking
 npm run lint        # ESLint
 ```
+
+### Frontend — Cloudflare deployment
+```bash
+cd webapp/
+npx wrangler login    # authenticate (first time only)
+npm run build
+npx wrangler deploy   # deploys webapp/dist to Cloudflare Workers
+```
+
+Config: `webapp/wrangler.jsonc` — worker name is `curiosity-platform`, assets directory is `./dist`.
 
 ### Local Services (Docker)
 ```bash
@@ -102,7 +112,7 @@ docker compose logs -f db   # Follow database logs
 - **API client**: Singleton Axios instance in `src/api/client.ts`
 - **State management**: Redux Toolkit slices in `src/slices/`
 - **Auth**: Keycloak JS adapter — token injected automatically into all requests
-- **UI**: Material UI (MUI v6) + Emotion for all components and icons
+- **UI**: Ionic React — mobile-first components and icons. This is the primary UI framework. Do NOT use MUI.
 - **Map**: MapLibre GL JS for the interactive store map
 - **Testing**: Vitest + React Testing Library; use `msw` for API mocking
 
