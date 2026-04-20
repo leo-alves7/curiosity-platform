@@ -175,9 +175,6 @@ The PR body must follow this structure:
 ## How
 <bullet points on the technical approach — architecture decisions, patterns used, why>
 
-## Commits
-<list the commits with their descriptions>
-
 ## Testing
 <how to test this manually and what automated tests were added>
 ```
