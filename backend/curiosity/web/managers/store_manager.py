@@ -1,7 +1,9 @@
 import uuid
 from datetime import UTC, datetime
 
+from fastapi import HTTPException, status
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from curiosity.common.configuration import settings
@@ -55,7 +57,13 @@ class StoreManager:
     async def create_store(self, session: AsyncSession, data: StoreCreate) -> Store:
         store = Store(**data.model_dump())
         session.add(store)
-        await session.flush()
+        try:
+            await session.flush()
+        except IntegrityError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid category_id: referenced category does not exist.",
+            ) from exc
         await session.refresh(store)
         return store
 
@@ -65,7 +73,13 @@ class StoreManager:
             return None
         for key, value in data.model_dump(exclude_unset=True).items():
             setattr(store, key, value)
-        await session.flush()
+        try:
+            await session.flush()
+        except IntegrityError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid category_id: referenced category does not exist.",
+            ) from exc
         await session.refresh(store)
         return store
 
