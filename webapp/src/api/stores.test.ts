@@ -57,16 +57,16 @@ describe('fetchStores', () => {
   })
 
   it('passes page and page_size params', async () => {
-    let capturedUrl: URL | null = null
+    const captured = { url: null as URL | null }
     server.use(
       http.get('http://localhost:8081/api/v1/stores', ({ request }) => {
-        capturedUrl = new URL(request.url)
+        captured.url = new URL(request.url)
         return HttpResponse.json(mockPaginatedStores)
       }),
     )
     await fetchStores(2, 50)
-    expect(capturedUrl?.searchParams.get('page')).toBe('2')
-    expect(capturedUrl?.searchParams.get('page_size')).toBe('50')
+    expect(captured.url?.searchParams.get('page')).toBe('2')
+    expect(captured.url?.searchParams.get('page_size')).toBe('50')
   })
 
   it('throws on server error', async () => {

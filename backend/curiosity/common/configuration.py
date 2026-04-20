@@ -10,6 +10,7 @@ class CuriositySettings(BaseSettings):
     debug: bool = False
     app_title: str = "Curiosity Platform"
     app_version: str = "0.1.0"
+    cors_origins: list[str] = ["*"]
 
 
 settings = CuriositySettings()
