@@ -20,11 +20,19 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     op.execute(
         """
-        ALTER TABLE store
-            ADD CONSTRAINT fk_store_category_id
-            FOREIGN KEY (category_id)
-            REFERENCES category(id)
-            ON DELETE SET NULL;
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint WHERE conname = 'fk_store_category_id'
+            ) THEN
+                ALTER TABLE store
+                    ADD CONSTRAINT fk_store_category_id
+                    FOREIGN KEY (category_id)
+                    REFERENCES category(id)
+                    ON DELETE SET NULL;
+            END IF;
+        END
+        $$;
         """
     )
 
