@@ -48,3 +48,9 @@ backend/.ruff_cache/
 # Frontend
 webapp/.env.local
 webapp/dist/
+
+# Wrangler
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
