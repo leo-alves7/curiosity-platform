@@ -69,7 +69,8 @@ curiosity-platform/
 | HTTP Client | Axios |
 | UI Components / Icons | Ionic React + ionicons (mobile-first) |
 | Map | MapLibre GL JS |
-| Auth | Keycloak JS adapter |
+| Routing | React Router v6 |
+| Auth | Firebase Auth + @capacitor-firebase/authentication |
 | Testing | Vitest + React Testing Library |
 
 ### Infrastructure (local dev via Docker Compose)
@@ -87,7 +88,7 @@ curiosity-platform/
 
 - Interactive map with **MapLibre GL JS** showing store locations
 - Store detail popups and sidepanels
-- User authentication via **Keycloak** (login, roles, JWT)
+- User authentication via **Firebase Auth** (Google, Apple, email/password)
 - Store management API (CRUD) backed by PostgreSQL
 - Categories, tags, and filtering for stores
 - Background sync tasks via **Celery** (e.g. indexing, notifications)
@@ -172,12 +173,12 @@ GET  /categories          # List categories [planned]
 - Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete); soft-deleted records are automatically excluded from all ORM queries via a `do_orm_execute` event listener — no manual filtering required
 - Inject the database session into route handlers using `DbSession` from `curiosity.web.dependencies`: `async def handle_foo(session: DbSession) -> ...`
 - The `db_session` async fixture is available in all tests via `tests/conftest.py`; tests that use it must add `pytestmark = pytest.mark.xdist_group("db")` to prevent parallel-create race conditions
-- Auth token injected into all API requests via Keycloak JS adapter on the frontend
-- Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
-- Keycloak realm `curiosity` is auto-imported on container startup from `keycloak/realms/development-realm.json`; a test user (`testuser` / `testuser`) is pre-configured with the `user` role
+- Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves.
+- `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
+- Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
+- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL` — see `webapp/.env.example`
 - Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`
-- Backend Keycloak config is driven by three env vars: `KEYCLOAK_URL` (default `http://localhost:8180`), `KEYCLOAK_REALM` (default `curiosity`), `KEYCLOAK_CLIENT_ID` (default `curiosity-backend`)
-- Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
+- Backend vars are in `backend/.env.example`
 
 ---
 
