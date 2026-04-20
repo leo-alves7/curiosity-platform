@@ -16,6 +16,8 @@ curiosity-platform/
 │   │   │   ├── routers/       # Feature-based API routers
 │   │   │   ├── managers/      # Business logic
 │   │   │   ├── model/         # SQLAlchemy ORM models
+│   │   │   ├── schemas/       # Pydantic request/response schemas
+│   │   │   ├── services/      # Infrastructure services (e.g. Keycloak)
 │   │   │   └── dependencies/  # FastAPI dependency injection
 │   │   └── common/            # Shared utilities, base models, config
 │   │       └── alembic/       # Database migrations
@@ -31,6 +33,9 @@ curiosity-platform/
 │   │   └── auth/              # Keycloak auth integration
 │   ├── package.json
 │   └── vite.config.ts
+├── keycloak/
+│   └── realms/
+│       └── development-realm.json  # Auto-imported realm with testuser
 ├── docker-compose.yaml        # Local development services
 └── README.md
 ```
@@ -146,7 +151,9 @@ Keycloak admin at [http://localhost:8180](http://localhost:8180).
 RESTful endpoints following the same modular router pattern as PredictAP Platform:
 
 ```
-GET  /health              # Health check — returns {"status": "ok"}
+GET  /health              # Health check — returns {"status": "ok"} (public)
+
+GET  /me                  # Returns authenticated user's claims (requires Bearer JWT)
 
 GET  /stores              # List stores (with filters) [planned]
 POST /stores              # Create a store [planned]
@@ -167,6 +174,9 @@ GET  /categories          # List categories [planned]
 - The `db_session` async fixture is available in all tests via `tests/conftest.py`; tests that use it must add `pytestmark = pytest.mark.xdist_group("db")` to prevent parallel-create race conditions
 - Auth token injected into all API requests via Keycloak JS adapter on the frontend
 - Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
+- Keycloak realm `curiosity` is auto-imported on container startup from `keycloak/realms/development-realm.json`; a test user (`testuser` / `testuser`) is pre-configured with the `user` role
+- Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`
+- Backend Keycloak config is driven by three env vars: `KEYCLOAK_URL` (default `http://localhost:8180`), `KEYCLOAK_REALM` (default `curiosity`), `KEYCLOAK_CLIENT_ID` (default `curiosity-backend`)
 - Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
 
 ---
