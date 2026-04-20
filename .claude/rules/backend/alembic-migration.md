@@ -7,7 +7,14 @@ paths:
 
 ## Create new version
 
-run `alembic revision -m "<revision name>"`
+**ALWAYS** generate migration files using Alembic — never write them by hand:
+
+```bash
+cd backend
+uv run alembic revision -m "<revision name>"
+```
+
+This produces a file with a real revision ID and correct `down_revision` chain. **Never hardcode a fake revision ID** (e.g. `a1b2c3d4e5f6`) — a fake ID breaks `alembic upgrade head`, `alembic history`, and autogenerate for all future migrations.
 
 ## Record IDs
 
