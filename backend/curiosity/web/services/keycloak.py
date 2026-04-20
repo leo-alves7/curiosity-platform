@@ -1,8 +1,8 @@
 import asyncio
 import logging
 
-from jwcrypto import jwk
-from keycloak import KeycloakOpenID  # type: ignore[attr-defined]
+from jwcrypto import jwk  # type: ignore[import-untyped]
+from keycloak import KeycloakOpenID  # type: ignore[import-untyped,attr-defined]
 
 from curiosity.common.configuration import settings
 

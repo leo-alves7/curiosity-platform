@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -21,7 +21,7 @@ async def get_current_user(
         )
     token = credentials.credentials
     try:
-        payload: dict = keycloak_service.keycloak_openid.decode_token(
+        payload: dict[str, Any] = keycloak_service.keycloak_openid.decode_token(
             token,
             key=keycloak_service.cached_key,
         )
