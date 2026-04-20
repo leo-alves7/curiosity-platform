@@ -87,7 +87,7 @@ npm run build
 npx wrangler deploy   # deploys webapp/dist to Cloudflare Workers
 ```
 
-Config: `webapp/wrangler.jsonc` — worker name is `curiosity-platform`, assets directory is `./dist`.
+Config: `wrangler.jsonc` at repo root — worker name is `project-curiosity`, assets directory is `./webapp/dist`.
 
 ### Local Services (Docker)
 ```bash

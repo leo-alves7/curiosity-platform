@@ -171,17 +171,20 @@ GET  /categories          # List categories [planned]
 
 ## Deployment
 
-The frontend is deployed to **Cloudflare Workers** (static assets via Wrangler). The config lives at `webapp/wrangler.jsonc`.
+The frontend is deployed to **Cloudflare Workers** (static assets via Wrangler). The config lives at `wrangler.jsonc` in the repo root.
 
 ### Frontend — deploy to Cloudflare
 
 ```bash
-cd webapp
-npm run build           # outputs to webapp/dist
-npx wrangler deploy     # deploys dist/ to Cloudflare Workers
+cd webapp && npm run build   # outputs to webapp/dist
+cd .. && npx wrangler deploy # deploys webapp/dist to Cloudflare Workers
 ```
 
-> First-time setup: run `npx wrangler login` to authenticate, then ensure the `name` field in `webapp/wrangler.jsonc` matches your Cloudflare worker name.
+> First-time setup: run `npx wrangler login` to authenticate.
+
+**Cloudflare dashboard build settings** (Workers > project-curiosity > Settings > Builds):
+- Build command: `cd webapp && npm run build`
+- Deploy command: `npx wrangler deploy`
 
 ### Backend — deployment TBD
 
