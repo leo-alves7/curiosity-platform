@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Box } from '@mui/material'
+import { IonContent, IonPage } from '@ionic/react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -17,7 +17,13 @@ function MapPage() {
     return () => map.remove()
   }, [])
 
-  return <Box ref={mapContainer} sx={{ width: '100%', height: '100vh' }} />
+  return (
+    <IonPage>
+      <IonContent>
+        <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
+      </IonContent>
+    </IonPage>
+  )
 }
 
 export default MapPage

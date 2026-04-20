@@ -1,14 +1,14 @@
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
+import { setupIonicReact, IonApp } from '@ionic/react'
+import '@ionic/core/css/core.css'
 import MapPage from './pages/MapPage'
 
-const theme = createTheme()
+setupIonicReact()
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <IonApp>
       <MapPage />
-    </ThemeProvider>
+    </IonApp>
   )
 }
 

@@ -62,7 +62,7 @@ curiosity-platform/
 | Build Tool | Vite + SWC |
 | State Management | Redux Toolkit + Redux Persist |
 | HTTP Client | Axios |
-| UI Components / Icons | Material UI (MUI v6) + Emotion |
+| UI Components / Icons | Ionic React + ionicons (mobile-first) |
 | Map | MapLibre GL JS |
 | Auth | Keycloak JS adapter |
 | Testing | Vitest + React Testing Library |
@@ -166,6 +166,26 @@ GET  /categories          # List categories [planned]
 - Auth token injected into all API requests via Keycloak JS adapter on the frontend
 - Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
 - Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
+
+---
+
+## Deployment
+
+The frontend is deployed to **Cloudflare Workers** (static assets via Wrangler). The config lives at `webapp/wrangler.jsonc`.
+
+### Frontend — deploy to Cloudflare
+
+```bash
+cd webapp
+npm run build           # outputs to webapp/dist
+npx wrangler deploy     # deploys dist/ to Cloudflare Workers
+```
+
+> First-time setup: run `npx wrangler login` to authenticate, then ensure the `name` field in `webapp/wrangler.jsonc` matches your Cloudflare worker name.
+
+### Backend — deployment TBD
+
+Backend deployment target is not yet defined. Likely a containerised service (Docker + cloud run or VPS). Update this section once the deployment target is confirmed.
 
 ---
 

@@ -14,6 +14,11 @@ vi.mock('./auth/keycloak', () => ({
   default: { token: null },
 }))
 
+vi.mock('@ionic/react', async () => {
+  const actual = await vi.importActual('@ionic/react')
+  return { ...actual, setupIonicReact: vi.fn() }
+})
+
 describe('App', () => {
   it('renders without crashing', () => {
     const { container } = render(
