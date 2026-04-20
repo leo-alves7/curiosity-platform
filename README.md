@@ -112,7 +112,8 @@ This starts PostgreSQL, Redis, Keycloak, MinIO, and Maildev.
 
 ```bash
 cd backend
-uv sync
+cp .env.example .env   # edit values as needed
+uv sync                # creates .venv and installs all dependencies
 uv run alembic upgrade head
 uv run uvicorn curiosity.web.main:app --reload --port 8081
 ```
@@ -121,8 +122,17 @@ uv run uvicorn curiosity.web.main:app --reload --port 8081
 
 ```bash
 cd webapp
+cp .env.example .env.local   # edit values as needed
 npm install
 npm run dev
+```
+
+### 4. Pre-commit hooks (backend)
+
+```bash
+cd backend
+uv sync --extra dev        # installs pre-commit along with other dev deps
+uv run pre-commit install  # registers hooks in .git/hooks/
 ```
 
 Open [http://localhost:5173](http://localhost:5173) to view the app.
@@ -136,22 +146,26 @@ Keycloak admin at [http://localhost:8180](http://localhost:8180).
 RESTful endpoints following the same modular router pattern as PredictAP Platform:
 
 ```
-GET  /stores              # List stores (with filters)
-POST /stores              # Create a store
-GET  /stores/{id}         # Get store details
-PUT  /stores/{id}         # Update a store
-DELETE /stores/{id}       # Delete a store
-GET  /categories          # List categories
+GET  /health              # Health check — returns {"status": "ok"}
+
+GET  /stores              # List stores (with filters) [planned]
+POST /stores              # Create a store [planned]
+GET  /stores/{id}         # Get store details [planned]
+PUT  /stores/{id}         # Update a store [planned]
+DELETE /stores/{id}       # Delete a store [planned]
+GET  /categories          # List categories [planned]
 ```
 
 ---
 
 ## Development Notes
 
-- Pre-commit hooks via `ruff` for formatting and linting
+- Pre-commit hooks via `ruff` (lint + format) and `mypy` — run `pre-commit install` once after cloning
 - Async throughout: `asyncpg` driver, async SQLAlchemy sessions, async FastAPI handlers
 - Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete)
 - Auth token injected into all API requests via Keycloak JS adapter on the frontend
+- Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
+- Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
 
 ---
 

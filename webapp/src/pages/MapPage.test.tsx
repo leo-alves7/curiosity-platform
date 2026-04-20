@@ -1,8 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
-import { Provider } from 'react-redux'
-import { store } from './store'
-import App from './App'
+import MapPage from './MapPage'
 
 vi.mock('maplibre-gl', () => ({
   default: {
@@ -10,17 +8,9 @@ vi.mock('maplibre-gl', () => ({
   },
 }))
 
-vi.mock('./auth/keycloak', () => ({
-  default: { token: null },
-}))
-
-describe('App', () => {
+describe('MapPage', () => {
   it('renders without crashing', () => {
-    const { container } = render(
-      <Provider store={store}>
-        <App />
-      </Provider>,
-    )
+    const { container } = render(<MapPage />)
     expect(container).toBeDefined()
   })
 })

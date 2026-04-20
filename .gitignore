@@ -39,3 +39,12 @@ __pycache__
 .mypy_cache
 backend/.mypy_cache
 backend/__pycache__
+
+# Backend
+backend/.env
+backend/.venv/
+backend/.ruff_cache/
+
+# Frontend
+webapp/.env.local
+webapp/dist/
