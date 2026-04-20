@@ -28,24 +28,6 @@ services:
       timeout: 5s
       retries: 5
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
-      KC_DB_USERNAME: curiosity
-      KC_DB_PASSWORD: curiosity
-    ports:
-      - "8180:8080"
-    volumes:
-      - ./keycloak/realms:/opt/keycloak/data/import
-    command: start-dev --import-realm
-    depends_on:
-      db:
-        condition: service_healthy
-
   minio:
     image: minio/minio:latest
     environment:
