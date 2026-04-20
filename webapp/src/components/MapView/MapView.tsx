@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { IonSpinner, IonText } from '@ionic/react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { useMapMarkers } from './useMapMarkers'
+import { useMapMarkers, type MarkerActions } from './useMapMarkers'
 import {
   fetchStoresAndCategories,
   selectStores,
@@ -17,7 +17,12 @@ import type { AppDispatch } from '@/store'
 const MAP_STYLE =
   import.meta.env.VITE_MAPLIBRE_STYLE_URL ?? 'https://demotiles.maplibre.org/style.json'
 
-function MapView() {
+interface MapViewProps {
+  onMarkerActionsReady?: (actions: MarkerActions) => void
+  onViewDetails?: (storeId: string) => void
+}
+
+function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -62,9 +67,20 @@ function MapView() {
     }
   }, [])
 
-  const handleViewDetails = useCallback((_storeId: string) => {}, [])
+  const handleViewDetails = useCallback(
+    (storeId: string) => {
+      onViewDetails?.(storeId)
+    },
+    [onViewDetails],
+  )
 
-  useMapMarkers(map, stores, categoryMap, handleViewDetails)
+  const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
+
+  useEffect(() => {
+    if (onMarkerActionsReady) {
+      onMarkerActionsReady(markerActions)
+    }
+  }, [onMarkerActionsReady, markerActions])
 
   if (status === 'failed') {
     return (
