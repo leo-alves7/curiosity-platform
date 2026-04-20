@@ -89,6 +89,8 @@ curiosity-platform/
 - **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
 - **Store list sidebar** — scrollable panel alongside the map with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card opens the store detail view — fully implemented
 - **Store detail view** — slide-in panel showing cover image, name, category chip, address, and description; accessible from map popup "View details" button or store card click; native share via Capacitor Share plugin; IonSkeletonText loading state and error/retry state; also available as a direct URL at `/stores/:id` — fully implemented
+- **Admin management UI** — protected section at `/admin` (requires `role: admin` Firebase custom claim); store management with inline activate/deactivate toggle, edit modal (StoreForm), and soft-delete confirmation; category management with add/edit/delete — fully implemented
+- **Store image upload** — admins can upload images per store via `POST /api/v1/stores/{id}/image`; images are stored in MinIO and the URL is persisted on the store record — fully implemented
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`
 - User authentication via **Firebase Auth** (Google, Apple, email/password)
@@ -167,6 +169,11 @@ POST   /api/v1/categories           # Create a category (auth required) — retu
 GET    /api/v1/categories/{id}      # Get category by id (includes stores) — 404 if not found or soft-deleted
 PUT    /api/v1/categories/{id}      # Update a category (auth required) — partial update supported
 DELETE /api/v1/categories/{id}      # Soft-delete a category (auth required) — returns 204; stores retain FK as NULL
+
+# Admin endpoints (require Firebase custom claim role: 'admin')
+POST /api/v1/stores/{id}/image              # Upload store image (multipart/form-data) — stores in MinIO, returns updated store
+GET  /api/v1/admin/stores                   # List all stores including inactive — query params: search, page, page_size
+POST /api/v1/admin/stores/{id}/toggle-active  # Toggle is_active flag on a store
 ```
 
 ---
@@ -182,7 +189,11 @@ DELETE /api/v1/categories/{id}      # Soft-delete a category (auth required) —
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
 - Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL` (optional — defaults to `https://demotiles.maplibre.org/style.json`), `VITE_APP_URL` (optional — base URL used when building share links in the store detail view, e.g. `https://your-app.example.com`; defaults to `window.location.origin`) — see `webapp/.env.example`
-- Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid` and `email` from the verified Firebase ID token
+- Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid`, `email`, and `is_admin` from the verified Firebase ID token
+- Admin-only routes use `AdminUser = Annotated[UserContext, Depends(require_admin)]`; `require_admin` raises 403 if the token's `role` custom claim is not `"admin"`
+- To grant admin access to a user, set the Firebase custom claim `role: "admin"` on their account (use Firebase Admin SDK or the Firebase console)
+- MinIO env vars (set in `backend/.env`): `MINIO_ENDPOINT` (default `localhost:9000`), `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET` (default `curiosity`), `MINIO_URL_BASE` (default `http://localhost:9000/curiosity`)
+- Create the MinIO bucket (`curiosity` by default) in the MinIO console at [http://localhost:9001](http://localhost:9001) (credentials: `minioadmin` / `minioadmin`) before uploading images
 - Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
 
 ---
