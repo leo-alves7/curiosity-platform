@@ -7,6 +7,7 @@ class CuriositySettings(BaseSettings):
     database_url: str = "postgresql+asyncpg://curiosity:curiosity@localhost:5432/curiosity"
     redis_url: str = "redis://localhost:6379/0"
     firebase_project_id: str = "curiosity-platform"
+    firebase_credentials_path: str | None = None
     debug: bool = False
     app_title: str = "Curiosity Platform"
     app_version: str = "0.1.0"
