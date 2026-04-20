@@ -17,7 +17,7 @@ curiosity-platform/
 │   │   │   ├── managers/      # Business logic
 │   │   │   ├── model/         # SQLAlchemy ORM models
 │   │   │   ├── schemas/       # Pydantic request/response schemas
-│   │   │   ├── services/      # Infrastructure services (e.g. Keycloak)
+│   │   │   ├── services/      # Infrastructure services (e.g. Firebase)
 │   │   │   └── dependencies/  # FastAPI dependency injection
 │   │   └── common/            # Shared utilities, base models, config
 │   │       └── alembic/       # Database migrations
@@ -30,12 +30,9 @@ curiosity-platform/
 │   │   ├── features/          # Feature-scoped logic
 │   │   ├── pages/             # Page-level components
 │   │   ├── slices/            # Redux state slices
-│   │   └── auth/              # Keycloak auth integration
+│   │   └── auth/              # Firebase auth integration
 │   ├── package.json
 │   └── vite.config.ts
-├── keycloak/
-│   └── realms/
-│       └── development-realm.json  # Auto-imported realm with testuser
 ├── docker-compose.yaml        # Local development services
 └── README.md
 ```

@@ -34,7 +34,7 @@ curiosity-platform/
 │   │   ├── features/           # Feature-scoped logic
 │   │   ├── pages/              # Page-level components
 │   │   ├── slices/             # Redux state slices
-│   │   └── auth/               # Keycloak auth integration
+│   │   └── auth/               # Firebase auth integration
 │   ├── package.json
 │   └── vite.config.ts
 ├── docker-compose.yaml
@@ -91,7 +91,7 @@ Config: `wrangler.jsonc` at repo root — worker name is `project-curiosity`, as
 
 ### Local Services (Docker)
 ```bash
-docker compose up -d        # Start all services (PostgreSQL, Redis, Keycloak, MinIO, Maildev)
+docker compose up -d        # Start all services (PostgreSQL, Redis, MinIO, Maildev)
 docker compose down         # Stop all services
 docker compose logs -f db   # Follow database logs
 ```
@@ -111,7 +111,7 @@ docker compose logs -f db   # Follow database logs
 ### Frontend Patterns
 - **API client**: Singleton Axios instance in `src/api/client.ts`
 - **State management**: Redux Toolkit slices in `src/slices/`
-- **Auth**: Keycloak JS adapter — token injected automatically into all requests
+- **Auth**: Firebase Auth — `onAuthStateChanged` drives Redux state; token injected automatically into all requests via Axios interceptor
 - **UI**: Ionic React — mobile-first components and icons. This is the primary UI framework. Do NOT use MUI.
 - **Map**: MapLibre GL JS for the interactive store map
 - **Testing**: Vitest + React Testing Library; use `msw` for API mocking
@@ -123,18 +123,17 @@ docker compose logs -f db   # Follow database logs
 - Soft deletes via `deleted_at` column (auto-filtered by Base)
 
 ### Authentication
-- Keycloak (OIDC / JWT RS256) for all user auth
-- Backend: JWT token verified via python-keycloak, injected as FastAPI dependency
-- Frontend: `keycloak-js` adapter handles login redirect and token refresh
+- Firebase Auth (Google, Apple, email/password) for all user auth
+- Backend: Firebase ID token verified via `firebase-admin` SDK (`firebase_admin.auth.verify_id_token`), injected as FastAPI dependency; `UserContext` carries `uid` and `email`
+- Frontend: `@capacitor-firebase/authentication` + Firebase JS SDK; `useAuth` hook subscribes to `onAuthStateChanged`, dispatches to Redux
 
 ## Development Workflow
 
 1. Start services: `docker compose up -d`
 2. Run backend: `uv run uvicorn curiosity.web.main:app --reload --port 8081`
 3. Run frontend: `cd webapp && npm run dev`
-4. Keycloak admin at http://localhost:8180 (admin/admin)
-5. MinIO console at http://localhost:9001
-6. Maildev at http://localhost:1080
+4. MinIO console at http://localhost:9001
+5. Maildev at http://localhost:1080
 
 ## Jira Project
 
