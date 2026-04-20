@@ -55,7 +55,7 @@ curiosity-platform/
 | Migrations | Alembic |
 | Caching / Broker | Redis |
 | Background Tasks | Celery + Celery Beat |
-| Auth | Keycloak (OpenID Connect / JWT RS256) |
+| Auth | Firebase Admin SDK (JWT RS256 verification) |
 | Config | pydantic-settings |
 | Linting / Formatting | Ruff + mypy |
 | Testing | pytest + pytest-asyncio |
@@ -78,7 +78,7 @@ curiosity-platform/
 |---|---|
 | PostgreSQL | Primary database |
 | Redis | Cache and Celery broker |
-| Keycloak | Authentication server (port 8180) |
+| Firebase | Authentication (Google, Apple, email/password) |
 | MinIO | S3-compatible object storage |
 | Maildev | Email testing UI (port 1080) |
 
@@ -112,7 +112,7 @@ curiosity-platform/
 docker compose up -d
 ```
 
-This starts PostgreSQL, Redis, Keycloak, MinIO, and Maildev.
+This starts PostgreSQL, Redis, MinIO, and Maildev.
 
 ### 2. Backend setup
 
@@ -143,7 +143,6 @@ uv run pre-commit install  # registers hooks in .git/hooks/
 
 Open [http://localhost:5173](http://localhost:5173) to view the app.
 Backend API available at [http://localhost:8081](http://localhost:8081).
-Keycloak admin at [http://localhost:8180](http://localhost:8180).
 
 ---
 
@@ -177,8 +176,8 @@ GET  /categories          # List categories [planned]
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
 - Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL` — see `webapp/.env.example`
-- Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`
-- Backend vars are in `backend/.env.example`
+- Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid` and `email` from the verified Firebase ID token
+- Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
 
 ---
 
