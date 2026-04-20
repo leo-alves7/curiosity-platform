@@ -55,6 +55,7 @@ describe('useAuth', () => {
       uid: 'uid-1',
       email: 'alice@example.com',
       getIdToken: vi.fn().mockResolvedValue('tok'),
+      getIdTokenResult: vi.fn().mockResolvedValue({ token: 'tok', claims: {} }),
     }
     mockOnAuthStateChanged.mockImplementation((_auth: unknown, cb: (user: unknown) => void) => {
       cb(mockUser)

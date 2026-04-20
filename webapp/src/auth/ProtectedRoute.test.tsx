@@ -14,6 +14,7 @@ const renderWithAuth = (isAuthenticated: boolean) => {
         isAuthenticated,
         uid: isAuthenticated ? 'uid-1' : null,
         email: isAuthenticated ? 'alice@example.com' : null,
+        isAdmin: false,
       },
     },
   })
