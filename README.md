@@ -86,7 +86,7 @@ curiosity-platform/
 - Interactive map with **MapLibre GL JS** showing store locations
 - Store detail popups and sidepanels
 - User authentication via **Firebase Auth** (Google, Apple, email/password)
-- Store management API (CRUD) backed by PostgreSQL
+- **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - Categories, tags, and filtering for stores
 - Background sync tasks via **Celery** (e.g. indexing, notifications)
 - Object storage for store images via **MinIO / S3**
@@ -148,16 +148,17 @@ Backend API available at [http://localhost:8081](http://localhost:8081).
 RESTful endpoints following the same modular router pattern as PredictAP Platform:
 
 ```
-GET  /health              # Health check — returns {"status": "ok"} (public)
+GET  /health                    # Health check — returns {"status": "ok"} (public)
 
-GET  /me                  # Returns authenticated user's claims (requires Bearer JWT)
+GET  /me                        # Returns authenticated user's claims (requires Bearer JWT)
 
-GET  /stores              # List stores (with filters) [planned]
-POST /stores              # Create a store [planned]
-GET  /stores/{id}         # Get store details [planned]
-PUT  /stores/{id}         # Update a store [planned]
-DELETE /stores/{id}       # Delete a store [planned]
-GET  /categories          # List categories [planned]
+GET  /api/v1/stores             # List stores — query params: category_id, is_active, search, page, page_size
+POST /api/v1/stores             # Create a store (auth required) — returns 201
+GET  /api/v1/stores/{id}        # Get store by id — returns 404 if not found or soft-deleted
+PUT  /api/v1/stores/{id}        # Update a store (auth required) — partial update supported
+DELETE /api/v1/stores/{id}      # Soft-delete a store (auth required) — returns 204
+
+GET  /api/v1/categories         # List categories [planned]
 ```
 
 ---
