@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -11,7 +11,7 @@ from curiosity.web.main import app
 
 @pytest.fixture
 async def api_client():
-    with patch("curiosity.web.services.keycloak.keycloak_service.initialize", new_callable=AsyncMock):
+    with patch("curiosity.web.services.firebase.firebase_service.initialize"):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             yield client
 
