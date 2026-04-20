@@ -162,7 +162,9 @@ GET  /categories          # List categories [planned]
 
 - Pre-commit hooks via `ruff` (lint + format) and `mypy` — run `pre-commit install` once after cloning
 - Async throughout: `asyncpg` driver, async SQLAlchemy sessions, async FastAPI handlers
-- Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete)
+- Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete); soft-deleted records are automatically excluded from all ORM queries via a `do_orm_execute` event listener — no manual filtering required
+- Inject the database session into route handlers using `DbSession` from `curiosity.web.dependencies`: `async def handle_foo(session: DbSession) -> ...`
+- The `db_session` async fixture is available in all tests via `tests/conftest.py`; tests that use it must add `pytestmark = pytest.mark.xdist_group("db")` to prevent parallel-create race conditions
 - Auth token injected into all API requests via Keycloak JS adapter on the frontend
 - Keycloak uses the `keycloak` Postgres database provisioned automatically by `docker/postgres/init.sql`
 - Frontend env vars use the `VITE_` prefix (see `webapp/.env.example`); backend vars are in `backend/.env.example`
