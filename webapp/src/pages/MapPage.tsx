@@ -1,8 +1,9 @@
-import { useCallback, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { IonContent, IonPage } from '@ionic/react'
+import { IonContent, IonModal, IonPage } from '@ionic/react'
 import MapView from '@/components/MapView'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
+import { StoreDetailView } from '@/components/StoreDetail'
 import type { MarkerActions } from '@/components/MapView/useMapMarkers'
 import {
   selectCategories,
@@ -23,6 +24,7 @@ import type { AppDispatch } from '@/store'
 function MapPage() {
   const dispatch = useDispatch<AppDispatch>()
   const markerActionsRef = useRef<MarkerActions | null>(null)
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
 
   const filteredStores = useSelector(selectFilteredStores)
   const categories = useSelector(selectCategories)
@@ -41,9 +43,8 @@ function MapPage() {
     markerActionsRef.current = actions
   }, [])
 
-  const handleStoreClick = useCallback((storeId: string) => {
-    markerActionsRef.current?.panToMarker(storeId)
-    markerActionsRef.current?.openMarkerPopup(storeId)
+  const handleViewDetails = useCallback((storeId: string) => {
+    setSelectedStoreId(storeId)
   }, [])
 
   const handleSearchChange = useCallback(
@@ -94,16 +95,25 @@ function MapPage() {
               onSearchChange={handleSearchChange}
               onCategoryChange={handleCategoryChange}
               onLoadMore={handleLoadMore}
-              onStoreClick={handleStoreClick}
+              onStoreClick={handleViewDetails}
             />
           </div>
           <div style={{ height: '100%' }}>
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
-              onViewDetails={handleStoreClick}
+              onViewDetails={handleViewDetails}
             />
           </div>
         </div>
+        <IonModal isOpen={selectedStoreId !== null} onDidDismiss={() => setSelectedStoreId(null)}>
+          {selectedStoreId !== null && (
+            <StoreDetailView
+              storeId={selectedStoreId}
+              categoryMap={categoryMap}
+              onClose={() => setSelectedStoreId(null)}
+            />
+          )}
+        </IonModal>
       </IonContent>
     </IonPage>
   )
