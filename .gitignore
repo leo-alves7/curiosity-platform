@@ -54,3 +54,4 @@ webapp/dist/
 .dev.vars*
 !.dev.vars.example
 !.env.example
+backend/service-account*.json
