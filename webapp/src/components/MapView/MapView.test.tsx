@@ -56,9 +56,15 @@ function makeStore(storesOverrides = {}) {
     preloadedState: {
       stores: {
         items: [],
+        categories: [],
         categoryMap: {},
         status: 'idle' as const,
         error: null,
+        searchQuery: '',
+        selectedCategoryId: null,
+        page: 1,
+        pageSize: 20,
+        hasMore: false,
         ...storesOverrides,
       },
     },
