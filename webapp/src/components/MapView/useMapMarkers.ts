@@ -5,15 +5,31 @@ import maplibregl from 'maplibre-gl'
 import StorePopup from '@/components/StorePopup'
 import type { StoreResponse } from '@/types/store'
 
-type MarkerEntry = { marker: maplibregl.Marker; root: ReturnType<typeof createRoot> }
+type MarkerEntry = {
+  marker: maplibregl.Marker
+  root: ReturnType<typeof createRoot>
+  lngLat: [number, number]
+}
+
+export interface MarkerActions {
+  panToMarker: (storeId: string) => void
+  openMarkerPopup: (storeId: string) => void
+}
 
 export function useMapMarkers(
   map: maplibregl.Map | null,
   stores: StoreResponse[],
   categoryMap: Record<string, string>,
   onViewDetails: (storeId: string) => void,
-) {
+): MarkerActions {
   const markersRef = useRef<Map<string, MarkerEntry>>(new Map())
+  const mapRef = useRef<maplibregl.Map | null>(null)
+  const actionsRef = useRef<MarkerActions>({
+    panToMarker: () => {},
+    openMarkerPopup: () => {},
+  })
+
+  mapRef.current = map
 
   useEffect(() => {
     if (!map) return
@@ -49,7 +65,7 @@ export function useMapMarkers(
         .setPopup(popup)
         .addTo(map)
 
-      current.set(store.id, { marker, root })
+      current.set(store.id, { marker, root, lngLat: [store.lng, store.lat] })
     }
 
     return () => {
@@ -60,4 +76,20 @@ export function useMapMarkers(
       current.clear()
     }
   }, [map, stores, categoryMap, onViewDetails])
+
+  actionsRef.current = {
+    panToMarker: (storeId: string) => {
+      const entry = markersRef.current.get(storeId)
+      const activeMap = mapRef.current
+      if (!entry || !activeMap) return
+      activeMap.flyTo({ center: entry.lngLat, zoom: Math.max(activeMap.getZoom(), 14) })
+    },
+    openMarkerPopup: (storeId: string) => {
+      const entry = markersRef.current.get(storeId)
+      if (!entry) return
+      entry.marker.togglePopup()
+    },
+  }
+
+  return actionsRef.current
 }
