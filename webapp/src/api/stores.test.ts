@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { fetchStores } from './stores'
+import { fetchStores, fetchStore } from './stores'
 
 vi.mock('../auth/firebase', () => ({
   auth: {
@@ -76,5 +76,52 @@ describe('fetchStores', () => {
       }),
     )
     await expect(fetchStores()).rejects.toThrow()
+  })
+})
+
+const mockStore = {
+  id: 'store-1',
+  name: 'Test Store',
+  description: 'A great store',
+  address: '123 Main St',
+  lat: -23.55,
+  lng: -46.63,
+  category_id: 'cat-1',
+  image_url: null,
+  is_active: true,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
+}
+
+describe('fetchStore', () => {
+  it('returns a store by id on success', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/stores/store-1', () => {
+        return HttpResponse.json(mockStore)
+      }),
+    )
+    const result = await fetchStore('store-1')
+    expect(result).toEqual(mockStore)
+  })
+
+  it('encodes the id in the URL path', async () => {
+    const captured = { pathname: '' }
+    server.use(
+      http.get('http://localhost:8081/api/v1/stores/store-abc', ({ request }) => {
+        captured.pathname = new URL(request.url).pathname
+        return HttpResponse.json(mockStore)
+      }),
+    )
+    await fetchStore('store-abc')
+    expect(captured.pathname).toBe('/api/v1/stores/store-abc')
+  })
+
+  it('throws on 404', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/stores/missing', () => {
+        return HttpResponse.json({ detail: 'Not found' }, { status: 404 })
+      }),
+    )
+    await expect(fetchStore('missing')).rejects.toThrow()
   })
 })
