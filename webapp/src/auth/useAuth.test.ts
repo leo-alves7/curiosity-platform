@@ -32,7 +32,7 @@ vi.mock('@capacitor-firebase/authentication', () => ({
 const makeWrapper = () => {
   const store = configureStore({ reducer: { auth: authReducer } })
   const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(Provider, { store }, children)
+    React.createElement(Provider, { store, children })
   return { store, wrapper }
 }
 
