@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from curiosity.common.configuration import settings
+from curiosity.web.routers.categories import categories_router
 from curiosity.web.routers.health import health_router
 from curiosity.web.routers.me import me_router
 from curiosity.web.routers.stores import stores_router
@@ -26,6 +27,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(me_router)
     app.include_router(stores_router, prefix="/api/v1")
+    app.include_router(categories_router, prefix="/api/v1")
     return app
 
 
