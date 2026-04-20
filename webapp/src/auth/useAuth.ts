@@ -26,9 +26,10 @@ export function useAuth(): AuthHook {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
       if (user) {
-        const token = await user.getIdToken()
-        setIdToken(token)
-        dispatch(setAuth({ uid: user.uid, email: user.email ?? '' }))
+        const tokenResult = await user.getIdTokenResult()
+        setIdToken(tokenResult.token)
+        const isAdmin = tokenResult.claims['role'] === 'admin'
+        dispatch(setAuth({ uid: user.uid, email: user.email ?? '', isAdmin }))
       } else {
         setIdToken(null)
         dispatch(clearAuth())
