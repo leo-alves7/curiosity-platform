@@ -81,13 +81,13 @@ curiosity-platform/
 
 ---
 
-## Features (Planned)
+## Features
 
-- Interactive map with **MapLibre GL JS** showing store locations
-- Store detail popups and sidepanels
-- User authentication via **Firebase Auth** (Google, Apple, email/password)
+- **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`
+- User authentication via **Firebase Auth** (Google, Apple, email/password)
+- Store detail page / sidepanel (planned)
 - Background sync tasks via **Celery** (e.g. indexing, notifications)
 - Object storage for store images via **MinIO / S3**
 - Multi-environment configuration (local, staging, production)
@@ -177,7 +177,7 @@ DELETE /api/v1/categories/{id}      # Soft-delete a category (auth required) —
 - Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves.
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
-- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL` — see `webapp/.env.example`
+- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL` (optional — defaults to `https://demotiles.maplibre.org/style.json`) — see `webapp/.env.example`
 - Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid` and `email` from the verified Firebase ID token
 - Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
 
