@@ -6,12 +6,12 @@ from fastapi import FastAPI
 from curiosity.common.configuration import settings
 from curiosity.web.routers.health import health_router
 from curiosity.web.routers.me import me_router
-from curiosity.web.services.keycloak import keycloak_service
+from curiosity.web.services.firebase import firebase_service
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    await keycloak_service.initialize()
+    firebase_service.initialize()
     yield
 
 

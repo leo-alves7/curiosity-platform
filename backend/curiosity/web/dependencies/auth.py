@@ -2,10 +2,9 @@ from typing import Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from keycloak.exceptions import KeycloakAuthenticationError, KeycloakError
 
 from curiosity.web.schemas.auth import UserContext
-from curiosity.web.services.keycloak import keycloak_service
+from curiosity.web.services.firebase import firebase_service
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -21,24 +20,14 @@ async def get_current_user(
         )
     token = credentials.credentials
     try:
-        payload: dict[str, Any] = keycloak_service.keycloak_openid.decode_token(
-            token,
-            key=keycloak_service.cached_key,
-        )
-    except (KeycloakAuthenticationError, KeycloakError, Exception):
+        decoded: dict[str, Any] = firebase_service.verify_token(token)
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or malformed token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    realm_roles: list[str] = (payload.get("realm_access") or {}).get("roles", [])
-    return UserContext(
-        sub=payload["sub"],
-        email=payload.get("email"),
-        preferred_username=payload.get("preferred_username"),
-        roles=realm_roles,
-    )
+    return UserContext(uid=decoded["uid"], email=decoded.get("email"))
 
 
 CurrentUser = Annotated[UserContext, Depends(get_current_user)]

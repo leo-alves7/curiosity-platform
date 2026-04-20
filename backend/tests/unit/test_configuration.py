@@ -13,14 +13,12 @@ def test_settings_env_override(monkeypatch):
     assert s.app_title == "Test App"
 
 
-def test_keycloak_defaults():
+def test_firebase_project_id_default():
     s = CuriositySettings()
-    assert s.keycloak_url == "http://localhost:8180"
-    assert s.keycloak_realm == "curiosity"
-    assert s.keycloak_client_id == "curiosity-backend"
+    assert s.firebase_project_id == "curiosity-platform"
 
 
-def test_keycloak_url_env_override(monkeypatch):
-    monkeypatch.setenv("KEYCLOAK_URL", "http://kc:9090")
+def test_firebase_project_id_env_override(monkeypatch):
+    monkeypatch.setenv("FIREBASE_PROJECT_ID", "my-firebase-project")
     s = CuriositySettings()
-    assert s.keycloak_url == "http://kc:9090"
+    assert s.firebase_project_id == "my-firebase-project"

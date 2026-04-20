@@ -10,8 +10,22 @@ vi.mock('maplibre-gl', () => ({
   },
 }))
 
-vi.mock('./auth/keycloak', () => ({
-  default: { token: null },
+vi.mock('./auth/firebase', () => ({
+  auth: { currentUser: null },
+}))
+
+vi.mock('firebase/auth', () => ({
+  onAuthStateChanged: vi.fn().mockReturnValue(() => {}),
+  signOut: vi.fn(),
+}))
+
+vi.mock('@capacitor-firebase/authentication', () => ({
+  FirebaseAuthentication: {
+    signInWithGoogle: vi.fn(),
+    signInWithApple: vi.fn(),
+    signInWithEmailAndPassword: vi.fn(),
+    signOut: vi.fn(),
+  },
 }))
 
 vi.mock('@ionic/react', async () => {

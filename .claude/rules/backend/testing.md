@@ -29,4 +29,4 @@ File: `tests/unit/web/conftest.py`
 - Separate testing setup / data with `@pytest.fixture` to keep test logic clean.
 - Use `pytest-asyncio` for async test functions — annotate with `@pytest.mark.asyncio`.
 - Do not mock database sessions — use the `db_session` fixture which provides a real connection to the test DB.
-- Mock only external services (Keycloak, S3/MinIO, external HTTP APIs).
+- Mock only external services (Firebase, S3/MinIO, external HTTP APIs).

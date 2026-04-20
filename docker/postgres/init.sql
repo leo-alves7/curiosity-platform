@@ -1,1 +1,1 @@
-CREATE DATABASE keycloak;
+-- No additional databases needed
