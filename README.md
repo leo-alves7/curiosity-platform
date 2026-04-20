@@ -87,7 +87,7 @@ curiosity-platform/
 - Store detail popups and sidepanels
 - User authentication via **Firebase Auth** (Google, Apple, email/password)
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
-- Categories, tags, and filtering for stores
+- **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`
 - Background sync tasks via **Celery** (e.g. indexing, notifications)
 - Object storage for store images via **MinIO / S3**
 - Multi-environment configuration (local, staging, production)
@@ -158,7 +158,11 @@ GET  /api/v1/stores/{id}        # Get store by id — returns 404 if not found o
 PUT  /api/v1/stores/{id}        # Update a store (auth required) — partial update supported
 DELETE /api/v1/stores/{id}      # Soft-delete a store (auth required) — returns 204
 
-GET  /api/v1/categories         # List categories [planned]
+GET    /api/v1/categories           # List all active categories — query params: page, page_size (includes stores)
+POST   /api/v1/categories           # Create a category (auth required) — returns 201
+GET    /api/v1/categories/{id}      # Get category by id (includes stores) — 404 if not found or soft-deleted
+PUT    /api/v1/categories/{id}      # Update a category (auth required) — partial update supported
+DELETE /api/v1/categories/{id}      # Soft-delete a category (auth required) — returns 204; stores retain FK as NULL
 ```
 
 ---

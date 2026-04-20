@@ -4,8 +4,11 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from curiosity.web.managers.category_manager import category_manager as _category_manager
 from curiosity.web.managers.store_manager import store_manager
+from curiosity.web.model.category import Category  # noqa: F401
 from curiosity.web.model.store import Store  # noqa: F401 — registers Store in Base.metadata
+from curiosity.web.schemas.category import CategoryCreate
 from curiosity.web.schemas.store import StoreCreate, StoreUpdate
 
 pytestmark = pytest.mark.xdist_group("db")
@@ -13,23 +16,23 @@ pytestmark = pytest.mark.xdist_group("db")
 
 @pytest.fixture
 async def sample_stores(db_session: AsyncSession):
-    category_a = uuid.uuid4()
-    category_b = uuid.uuid4()
+    category_a = await _category_manager.create_category(db_session, CategoryCreate(name="Cat A", slug="cat-a"))
+    category_b = await _category_manager.create_category(db_session, CategoryCreate(name="Cat B", slug="cat-b"))
     stores = [
         await store_manager.create_store(
             db_session,
-            StoreCreate(name="Coffee House", is_active=True, category_id=category_a),
+            StoreCreate(name="Coffee House", is_active=True, category_id=category_a.id),
         ),
         await store_manager.create_store(
             db_session,
-            StoreCreate(name="Tea Garden", is_active=True, category_id=category_b),
+            StoreCreate(name="Tea Garden", is_active=True, category_id=category_b.id),
         ),
         await store_manager.create_store(
             db_session,
-            StoreCreate(name="Old Bakery", is_active=False, category_id=category_a),
+            StoreCreate(name="Old Bakery", is_active=False, category_id=category_a.id),
         ),
     ]
-    return stores, category_a, category_b
+    return stores, category_a.id, category_b.id
 
 
 class TestStoreManagerList:
@@ -98,7 +101,7 @@ class TestStoreManagerGet:
 
 class TestStoreManagerCreate:
     async def test_create_store_persists_fields(self, db_session: AsyncSession):
-        cat_id = uuid.uuid4()
+        category = await _category_manager.create_category(db_session, CategoryCreate(name="Test Cat", slug="test-cat"))
         store = await store_manager.create_store(
             db_session,
             StoreCreate(
@@ -107,7 +110,7 @@ class TestStoreManagerCreate:
                 address="456 Side St",
                 lat=40.7128,
                 lng=-74.0060,
-                category_id=cat_id,
+                category_id=category.id,
                 image_url="https://example.com/img.png",
                 is_active=True,
             ),
@@ -117,7 +120,7 @@ class TestStoreManagerCreate:
         assert store.address == "456 Side St"
         assert float(store.lat) == pytest.approx(40.7128, rel=1e-5)
         assert float(store.lng) == pytest.approx(-74.0060, rel=1e-5)
-        assert store.category_id == cat_id
+        assert store.category_id == category.id
         assert store.image_url == "https://example.com/img.png"
         assert store.is_active is True
 

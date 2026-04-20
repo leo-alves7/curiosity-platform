@@ -1,10 +1,16 @@
-import uuid
+from __future__ import annotations
 
-from sqlalchemy import Boolean, Numeric, String, Text
+import uuid
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, ForeignKey, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from curiosity.common.model.base import BaseModel
+
+if TYPE_CHECKING:
+    from curiosity.web.model.category import Category
 
 
 class Store(BaseModel):
@@ -15,6 +21,10 @@ class Store(BaseModel):
     address: Mapped[str | None] = mapped_column(String(500), nullable=True)
     lat: Mapped[float | None] = mapped_column(Numeric(10, 7), nullable=True)
     lng: Mapped[float | None] = mapped_column(Numeric(10, 7), nullable=True)
-    category_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    category_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("category.id", ondelete="SET NULL"), nullable=True
+    )
     image_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
+
+    category: Mapped[Category | None] = relationship("Category", back_populates="stores", lazy="raise")
