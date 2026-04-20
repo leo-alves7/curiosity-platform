@@ -8,7 +8,7 @@ from curiosity.common.configuration import settings
 from curiosity.web.routers.categories import categories_router
 from curiosity.web.routers.health import health_router
 from curiosity.web.routers.me import me_router
-from curiosity.web.routers.stores import stores_router
+from curiosity.web.routers.stores import admin_stores_router, stores_router
 from curiosity.web.services.firebase import firebase_service
 
 
@@ -34,6 +34,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(me_router)
     app.include_router(stores_router, prefix="/api/v1")
+    app.include_router(admin_stores_router, prefix="/api/v1")
     app.include_router(categories_router, prefix="/api/v1")
     return app
 

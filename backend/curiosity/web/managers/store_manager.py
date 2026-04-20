@@ -4,8 +4,10 @@ from datetime import UTC, datetime
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from curiosity.common.configuration import settings
 from curiosity.web.model.store import Store
 from curiosity.web.schemas.store import StoreCreate, StoreListResponse, StoreResponse, StoreUpdate
+from curiosity.web.services.minio_service import minio_service
 
 
 class StoreManager:
@@ -74,6 +76,20 @@ class StoreManager:
         store.deleted_at = datetime.now(UTC)
         await session.flush()
         return True
+
+    async def toggle_active(self, session: AsyncSession, store_id: uuid.UUID) -> Store | None:
+        store = await self.get_store(session, store_id)
+        if store is None:
+            return None
+        store.is_active = not store.is_active
+        await session.flush()
+        await session.refresh(store)
+        return store
+
+    async def upload_store_image(self, file_content: bytes, store_id: uuid.UUID, filename: str) -> str:
+        timestamp = int(datetime.now(UTC).timestamp())
+        object_name = f"stores/{store_id}/{timestamp}_{filename}"
+        return await minio_service.upload_file(file_content, settings.minio_bucket, object_name)
 
 
 store_manager = StoreManager()
