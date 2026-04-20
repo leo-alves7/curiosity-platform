@@ -31,13 +31,10 @@ vi.mock('maplibre-gl', () => ({
   },
 }))
 
-const panToMarker = vi.fn()
-const openMarkerPopup = vi.fn()
-
 vi.mock('@/components/MapView/useMapMarkers', () => ({
   useMapMarkers: vi.fn(() => ({
-    panToMarker,
-    openMarkerPopup,
+    panToMarker: vi.fn(),
+    openMarkerPopup: vi.fn(),
   })),
 }))
 
@@ -118,13 +115,13 @@ describe('MapPage', () => {
     expect(container.querySelectorAll('div').length).toBeGreaterThan(0)
   })
 
-  it('triggers map marker actions when a store card is clicked', async () => {
+  it('opens the store detail view when a store card is clicked', async () => {
     setup({
       items: [makeStore({ id: 'abc', name: 'Clickable' })],
     })
     const user = userEvent.setup()
     await user.click(screen.getByText('Clickable'))
-    expect(panToMarker).toHaveBeenCalledWith('abc')
-    expect(openMarkerPopup).toHaveBeenCalledWith('abc')
+    const modal = document.body.querySelector('ion-modal')
+    expect(modal).not.toBeNull()
   })
 })

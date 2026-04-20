@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
 import MapPage from './pages/MapPage'
+import StoreDetailPage from './pages/StoreDetailPage'
 import { useAuth } from './auth/useAuth'
 
 setupIonicReact()
@@ -27,6 +28,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<MapPage />} />
+              <Route path="/stores/:id" element={<StoreDetailPage />} />
             </Route>
           </Routes>
         </IonRouterOutlet>

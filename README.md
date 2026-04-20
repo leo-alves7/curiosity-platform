@@ -42,49 +42,53 @@ curiosity-platform/
 ## Tech Stack
 
 ### Backend
-| Concern | Technology |
-|---|---|
-| Framework | FastAPI (async) |
-| Language | Python 3.12+ |
-| Package Manager | uv |
-| Database | PostgreSQL 15+ |
-| ORM | SQLAlchemy 2.x (async) with asyncpg |
-| Migrations | Alembic |
-| Caching / Broker | Redis |
-| Background Tasks | Celery + Celery Beat |
-| Auth | Firebase Admin SDK (JWT RS256 verification) |
-| Config | pydantic-settings |
-| Linting / Formatting | Ruff + mypy |
-| Testing | pytest + pytest-asyncio |
+
+| Concern              | Technology                                  |
+| -------------------- | ------------------------------------------- |
+| Framework            | FastAPI (async)                             |
+| Language             | Python 3.12+                                |
+| Package Manager      | uv                                          |
+| Database             | PostgreSQL 15+                              |
+| ORM                  | SQLAlchemy 2.x (async) with asyncpg         |
+| Migrations           | Alembic                                     |
+| Caching / Broker     | Redis                                       |
+| Background Tasks     | Celery + Celery Beat                        |
+| Auth                 | Firebase Admin SDK (JWT RS256 verification) |
+| Config               | pydantic-settings                           |
+| Linting / Formatting | Ruff + mypy                                 |
+| Testing              | pytest + pytest-asyncio                     |
 
 ### Frontend
-| Concern | Technology |
-|---|---|
-| Framework | React 18 + TypeScript |
-| Build Tool | Vite + SWC |
-| State Management | Redux Toolkit + Redux Persist |
-| HTTP Client | Axios |
-| UI Components / Icons | Ionic React + ionicons (mobile-first) |
-| Map | MapLibre GL JS |
-| Routing | React Router v6 |
-| Auth | Firebase Auth + @capacitor-firebase/authentication |
-| Testing | Vitest + React Testing Library |
+
+| Concern               | Technology                                         |
+| --------------------- | -------------------------------------------------- |
+| Framework             | React 18 + TypeScript                              |
+| Build Tool            | Vite + SWC                                         |
+| State Management      | Redux Toolkit + Redux Persist                      |
+| HTTP Client           | Axios                                              |
+| UI Components / Icons | Ionic React + ionicons (mobile-first)              |
+| Map                   | MapLibre GL JS                                     |
+| Routing               | React Router v6                                    |
+| Auth                  | Firebase Auth + @capacitor-firebase/authentication |
+| Testing               | Vitest + React Testing Library                     |
 
 ### Infrastructure (local dev via Docker Compose)
-| Service | Purpose |
-|---|---|
-| PostgreSQL | Primary database |
-| Redis | Cache and Celery broker |
-| Firebase | Authentication (Google, Apple, email/password) |
-| MinIO | S3-compatible object storage |
-| Maildev | Email testing UI (port 1080) |
+
+| Service    | Purpose                                        |
+| ---------- | ---------------------------------------------- |
+| PostgreSQL | Primary database                               |
+| Redis      | Cache and Celery broker                        |
+| Firebase   | Authentication (Google, Apple, email/password) |
+| MinIO      | S3-compatible object storage                   |
+| Maildev    | Email testing UI (port 1080)                   |
 
 ---
 
 ## Features
 
 - **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
-- **Store list sidebar** — scrollable panel alongside the map with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card pans the map and opens its popup — fully implemented
+- **Store list sidebar** — scrollable panel alongside the map with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card opens the store detail view — fully implemented
+- **Store detail view** — slide-in panel showing cover image, name, category chip, address, and description; accessible from map popup "View details" button or store card click; native share via Capacitor Share plugin; IonSkeletonText loading state and error/retry state; also available as a direct URL at `/stores/:id` — fully implemented
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`
 - User authentication via **Firebase Auth** (Google, Apple, email/password)
@@ -177,7 +181,7 @@ DELETE /api/v1/categories/{id}      # Soft-delete a category (auth required) —
 - Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves.
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
-- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL` (optional — defaults to `https://demotiles.maplibre.org/style.json`) — see `webapp/.env.example`
+- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL` (optional — defaults to `https://demotiles.maplibre.org/style.json`), `VITE_APP_URL` (optional — base URL used when building share links in the store detail view, e.g. `https://your-app.example.com`; defaults to `window.location.origin`) — see `webapp/.env.example`
 - Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid` and `email` from the verified Firebase ID token
 - Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
 
@@ -197,6 +201,7 @@ cd .. && npx wrangler deploy # deploys webapp/dist to Cloudflare Workers
 > First-time setup: run `npx wrangler login` to authenticate.
 
 **Cloudflare dashboard build settings** (Workers > project-curiosity > Settings > Builds):
+
 - Build command: `cd webapp && npm run build`
 - Deploy command: `npx wrangler deploy`
 

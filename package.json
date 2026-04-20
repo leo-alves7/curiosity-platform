@@ -1,0 +1,8 @@
+{
+  "name": "curiosity-platform",
+  "private": true,
+  "version": "0.1.0",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
