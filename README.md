@@ -84,10 +84,10 @@ curiosity-platform/
 ## Features
 
 - **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
+- **Store list sidebar** — scrollable panel alongside the map with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card pans the map and opens its popup — fully implemented
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`
 - User authentication via **Firebase Auth** (Google, Apple, email/password)
-- Store detail page / sidepanel (planned)
 - Background sync tasks via **Celery** (e.g. indexing, notifications)
 - Object storage for store images via **MinIO / S3**
 - Multi-environment configuration (local, staging, production)
