@@ -16,7 +16,12 @@ vi.mock('maplibre-gl', () => ({
       on: vi.fn(),
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
+      getBearing: vi.fn().mockReturnValue(0),
+      setBearing: vi.fn(),
+      panBy: vi.fn(),
       flyTo: vi.fn(),
+      dragPan: { enable: vi.fn(), disable: vi.fn() },
+      dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
     Marker: vi.fn().mockImplementation(() => ({
       setLngLat: vi.fn().mockReturnThis(),
