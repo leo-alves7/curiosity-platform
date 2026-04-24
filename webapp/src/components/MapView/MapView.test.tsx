@@ -14,6 +14,11 @@ vi.mock('maplibre-gl', () => ({
       on: vi.fn(),
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
+      getBearing: vi.fn().mockReturnValue(0),
+      setBearing: vi.fn(),
+      panBy: vi.fn(),
+      dragPan: { enable: vi.fn(), disable: vi.fn() },
+      dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
     Marker: vi.fn().mockImplementation(() => ({
       setLngLat: vi.fn().mockReturnThis(),
@@ -108,5 +113,79 @@ describe('MapView', () => {
   it('renders map container when succeeded', () => {
     const { container } = setup({ status: 'succeeded' })
     expect(container.querySelector('div')).toBeDefined()
+  })
+
+  it('initializes map with pitch 45 and bearing 0', async () => {
+    const maplibregl = await import('maplibre-gl')
+    setup()
+    const MapConstructor = vi.mocked(maplibregl.default.Map)
+    expect(MapConstructor).toHaveBeenCalledWith(expect.objectContaining({ pitch: 45, bearing: 0 }))
+  })
+
+  it('disables default drag handlers on initialization', async () => {
+    const maplibregl = await import('maplibre-gl')
+    setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    expect(mapInstance?.dragPan.disable).toHaveBeenCalled()
+    expect(mapInstance?.dragRotate.disable).toHaveBeenCalled()
+  })
+
+  it('rotates map on left pointer drag', async () => {
+    const maplibregl = await import('maplibre-gl')
+    const { container } = setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 0, clientX: 100, clientY: 100, bubbles: true }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        button: 0,
+        clientX: 150,
+        clientY: 100,
+        buttons: 1,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+
+    expect(mapInstance?.setBearing).toHaveBeenCalled()
+  })
+
+  it('pans map on right pointer drag', async () => {
+    const maplibregl = await import('maplibre-gl')
+    const { container } = setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 2, clientX: 100, clientY: 100, bubbles: true }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        button: 2,
+        clientX: 150,
+        clientY: 110,
+        buttons: 2,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+
+    expect(mapInstance?.panBy).toHaveBeenCalled()
+  })
+
+  it('uses VITE_MAPLIBRE_STYLE_URL_LIGHT env var for light mode style', async () => {
+    const maplibregl = await import('maplibre-gl')
+    vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://tiles.openfreemap.org/styles/liberty')
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+    setup()
+    const MapConstructor = vi.mocked(maplibregl.default.Map)
+    expect(MapConstructor).toHaveBeenCalledWith(
+      expect.objectContaining({ style: 'https://tiles.openfreemap.org/styles/liberty' }),
+    )
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
   })
 })
