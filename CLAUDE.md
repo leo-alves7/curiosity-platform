@@ -2,9 +2,21 @@
 
 This file provides guidance to Claude Code when working with code in this repository.
 
+## Project Vision
+
+Curiosity is a **mobile-first, real-time store discovery platform** — Google Maps + TripAdvisor + Waze, focused on helping people find and explore nearby stores. See `.claude/PROJECT_VISION.md` for the full product vision, two-tab architecture, user types, monetization plan, current implementation state, and active epic details. Read it at the start of any planning or implementation session.
+
 ## Architecture Overview
 
 Curiosity Platform is a map-based store explorer — a location-aware platform where users can discover and browse stores on an interactive map. Built as a monorepo with a FastAPI backend and a React/TypeScript frontend.
+
+### Two User Types
+- **Normal users** — browse map, filter stores, add new places they discover
+- **Enterprise owners** — claim store listings, add catalogues/photos/videos, manage sponsorship
+
+### Two Main Tabs (mobile-first layout)
+- **Tab 1 — Navigation Map** — real-time MapLibre map, store markers, GPS location, Waze-like navigation, gamified 3D view (pitch 45° default)
+- **Tab 2 — Store Explorer** — iFOOD-style scrollable list, search, category filters, store detail views
 
 ### Components
 - **Backend**: Python FastAPI application in `backend/` directory
@@ -141,6 +153,16 @@ docker compose logs -f db   # Follow database logs
 - Issue key prefix: `CSTY`
 - Use the `get-jira-issue` skill to fetch issue details
 - Use the `implementor` skill to implement a Jira issue end-to-end
+
+## Upcoming / Active Tech Decisions
+
+- **PostGIS** — must be added to PostgreSQL for geospatial proximity queries ("stores near me"). Not yet implemented.
+- **Map tiles** — replacing demotiles with **OpenFreeMap** (`https://tiles.openfreemap.org/styles/liberty`). Dark style URL configured separately.
+- **i18n** — `react-i18next` with `en` (default) and `pt-BR` locale files. All UI strings must be extracted; no hardcoded user-facing strings.
+- **Dark mode** — Ionic `ion-palette-dark` class + CSS variables. No hardcoded light-only colors in components.
+- **Routing/navigation** — MapLibre is the renderer; routing engine (OSRM or Mapbox Directions API) to be added in a future epic.
+- **Stripe** — payment/subscription processing, added when enterprise subscription epic begins.
+- **Cloudflare R2** — production replacement for MinIO (same S3 API, CDN egress).
 
 ## Important Rules
 
