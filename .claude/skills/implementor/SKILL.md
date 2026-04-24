@@ -15,12 +15,13 @@ Use TaskCreate immediately to track progress through the phases below (one task 
 
 ## Phase 1 — Gather Context
 
-1. Use the `get-jira-issue` skill to fetch the full Jira issue details for `$0`.
-2. Read the issue carefully: understand the acceptance criteria, scope, and any linked issues.
-3. If you are not sure what to do, ask for clarification — this is the only time you will ask the user; after that, make decisions independently.
-4. Use Glob and Grep to locate the files and modules most likely involved.
-5. Use the Read tool to read those files. Understand the existing patterns, naming conventions, and abstractions before forming any opinion on the solution.
-6. Write a one-paragraph summary of what needs to be built and which files are in scope.
+1. **Read `.claude/PROJECT_VISION.md`** first — understand the product vision, active epic, two-tab architecture, user types, and any tech decisions that apply to this ticket. This prevents planning in a vacuum.
+2. Use the `get-jira-issue` skill to fetch the full Jira issue details for `$0`.
+3. Read the issue carefully: understand the acceptance criteria, scope, and any linked issues.
+4. If you are not sure what to do, ask for clarification — this is the only time you will ask the user; after that, make decisions independently.
+5. Use Glob and Grep to locate the files and modules most likely involved.
+6. Use the Read tool to read those files. Understand the existing patterns, naming conventions, and abstractions before forming any opinion on the solution.
+7. Write a one-paragraph summary of what needs to be built and which files are in scope. Include how this ticket fits into the broader product vision.
 
 ---
 
