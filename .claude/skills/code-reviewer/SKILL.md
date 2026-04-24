@@ -41,6 +41,10 @@ Review the above changes and produce a structured code review. For each issue fo
 - [ ] Tests use `describe` blocks and `beforeEach`/`afterEach` for setup/teardown
 - [ ] Tests use `userEvent` for simulating user interactions
 - [ ] Ionic React components used for UI — do not introduce MUI or other component libraries
+- [ ] No hardcoded user-facing strings — all text must go through `react-i18next` `t()` function
+- [ ] No hardcoded colors that only work in light mode — use Ionic CSS variables (`--ion-color-*`, `--ion-background-color`, etc.) so dark mode works automatically
+- [ ] Mobile-first: components must render correctly on 375px width before considering desktop layout
+- [ ] Map interactions use MapLibre patterns established in `MapView.tsx` — do not introduce a second map instance or competing map library
 
 ## Output Format
 
