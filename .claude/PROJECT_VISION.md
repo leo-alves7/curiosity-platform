@@ -130,11 +130,21 @@ The app is community-powered: any user can add a store they found. Store owners 
 | Epic | Title | Status |
 |---|---|---|
 | CSTY-2 | Foundation & Infrastructure | ✅ Complete |
-| Next (UX Overhaul) | UX Overhaul & Real-time Map Foundation | 🔜 In planning |
+| CSTY-12 | UX Overhaul & Real-time Map Foundation | 🔜 To Do |
+
+Stories under CSTY-12:
+- CSTY-13 — Map Tile Style + 3D Defaults + Mouse Control Swap
+- CSTY-15 — GPS User Location Indicator
+- CSTY-16 — Collapsible Store Panel + Bottom Tab Navigation
+- CSTY-17 — User Header + Profile Menu + Logout
+- CSTY-18 — Add Store Quick-Action Flow
+- CSTY-19 — Dark Mode (Light Default)
+- CSTY-20 — Internationalization (EN + PT-BR)
+- CSTY-21 — Map Marker Clustering
 
 ---
 
-## Upcoming Epic — UX Overhaul & Real-time Map Foundation
+## Active Epic — UX Overhaul & Real-time Map Foundation (CSTY-12)
 
 **Goal:** Make the app feel like a real product on mobile. Fix all critical UX gaps on the navigation map, establish the dark/light theme and i18n systems that every future epic will depend on.
 
