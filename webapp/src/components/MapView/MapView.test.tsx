@@ -16,6 +16,8 @@ vi.mock('maplibre-gl', () => ({
       getZoom: vi.fn().mockReturnValue(12),
       getBearing: vi.fn().mockReturnValue(0),
       setBearing: vi.fn(),
+      getPitch: vi.fn().mockReturnValue(45),
+      setPitch: vi.fn(),
       panBy: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
@@ -174,6 +176,29 @@ describe('MapView', () => {
     mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
 
     expect(mapInstance?.panBy).toHaveBeenCalled()
+  })
+
+  it('adjusts pitch on middle mouse button drag', async () => {
+    const maplibregl = await import('maplibre-gl')
+    const { container } = setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 1, clientX: 100, clientY: 100, bubbles: true }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        button: 1,
+        clientX: 100,
+        clientY: 70,
+        buttons: 4,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+
+    expect(mapInstance?.setPitch).toHaveBeenCalled()
   })
 
   it('uses VITE_MAPLIBRE_STYLE_URL_LIGHT env var for light mode style', async () => {

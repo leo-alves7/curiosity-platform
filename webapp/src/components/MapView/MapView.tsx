@@ -78,27 +78,36 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
       activeButton = e.button
       lastX = e.clientX
       lastY = e.clientY
+      if (e.button === 0) {
+        container.requestPointerLock?.()
+      }
     }
 
     const onPointerMove = (e: PointerEvent) => {
       if (activeButton === null || !e.buttons) return
-      const dx = e.clientX - lastX
-      const dy = e.clientY - lastY
-      lastX = e.clientX
-      lastY = e.clientY
+
+      const isLocked = document.pointerLockElement === container
+      const dx = isLocked ? e.movementX : e.clientX - lastX
+      const dy = isLocked ? e.movementY : e.clientY - lastY
+      if (!isLocked) {
+        lastX = e.clientX
+        lastY = e.clientY
+      }
 
       if (activeButton === 0) {
         mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
+      } else if (activeButton === 1) {
+        const newPitch = Math.max(0, Math.min(85, mapInstance.getPitch() - dy * 0.3))
+        mapInstance.setPitch(newPitch)
       } else if (activeButton === 2) {
         mapInstance.panBy([-dx, -dy], { animate: false })
       }
     }
 
-    const onPointerUp = () => {
-      activeButton = null
-    }
-
-    const onPointerCancel = () => {
+    const releaseLock = () => {
+      if (document.pointerLockElement === container) {
+        document.exitPointerLock?.()
+      }
       activeButton = null
     }
 
@@ -109,8 +118,8 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
     const container = mapContainer.current
     container.addEventListener('pointerdown', onPointerDown)
     container.addEventListener('pointermove', onPointerMove)
-    container.addEventListener('pointerup', onPointerUp)
-    container.addEventListener('pointercancel', onPointerCancel)
+    container.addEventListener('pointerup', releaseLock)
+    container.addEventListener('pointercancel', releaseLock)
     container.addEventListener('contextmenu', onContextMenu)
 
     mapInstance.on('moveend', () => {
@@ -127,8 +136,11 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
     return () => {
       container.removeEventListener('pointerdown', onPointerDown)
       container.removeEventListener('pointermove', onPointerMove)
-      container.removeEventListener('pointerup', onPointerUp)
-      container.removeEventListener('pointercancel', onPointerCancel)
+      container.removeEventListener('pointerup', releaseLock)
+      container.removeEventListener('pointercancel', releaseLock)
+      if (document.pointerLockElement === container) {
+        document.exitPointerLock?.()
+      }
       container.removeEventListener('contextmenu', onContextMenu)
       setMap(null)
       mapInstance.remove()
