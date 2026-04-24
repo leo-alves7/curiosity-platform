@@ -14,8 +14,22 @@ import {
 import { setCenter, setZoom, selectMapCenter, selectMapZoom } from '@/slices/mapSlice'
 import type { AppDispatch } from '@/store'
 
-const MAP_STYLE =
-  import.meta.env.VITE_MAPLIBRE_STYLE_URL ?? 'https://demotiles.maplibre.org/style.json'
+const OPENFREEMAP_LIBERTY = 'https://tiles.openfreemap.org/styles/liberty'
+
+function resolveMapStyle(prefersDark: boolean): string {
+  if (prefersDark) {
+    return (
+      import.meta.env.VITE_MAPLIBRE_STYLE_URL_DARK ??
+      import.meta.env.VITE_MAPLIBRE_STYLE_URL ??
+      OPENFREEMAP_LIBERTY
+    )
+  }
+  return (
+    import.meta.env.VITE_MAPLIBRE_STYLE_URL_LIGHT ??
+    import.meta.env.VITE_MAPLIBRE_STYLE_URL ??
+    OPENFREEMAP_LIBERTY
+  )
+}
 
 interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
@@ -43,12 +57,70 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
   useEffect(() => {
     if (!mapContainer.current) return
 
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const mapInstance = new maplibregl.Map({
       container: mapContainer.current,
-      style: MAP_STYLE,
+      style: resolveMapStyle(prefersDark),
       center,
       zoom,
+      pitch: 45,
+      bearing: 0,
     })
+
+    mapInstance.dragPan.disable()
+    mapInstance.dragRotate.disable()
+
+    let activeButton: number | null = null
+    let lastX = 0
+    let lastY = 0
+
+    const onPointerDown = (e: PointerEvent) => {
+      activeButton = e.button
+      lastX = e.clientX
+      lastY = e.clientY
+      if (e.button === 0) {
+        container.requestPointerLock?.()
+      }
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (activeButton === null || !e.buttons) return
+
+      const isLocked = document.pointerLockElement === container
+      const dx = isLocked ? e.movementX : e.clientX - lastX
+      const dy = isLocked ? e.movementY : e.clientY - lastY
+      if (!isLocked) {
+        lastX = e.clientX
+        lastY = e.clientY
+      }
+
+      if (activeButton === 0) {
+        mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
+      } else if (activeButton === 1) {
+        const newPitch = Math.max(0, Math.min(85, mapInstance.getPitch() - dy * 0.3))
+        mapInstance.setPitch(newPitch)
+      } else if (activeButton === 2) {
+        mapInstance.panBy([-dx, -dy], { animate: false })
+      }
+    }
+
+    const releaseLock = () => {
+      if (document.pointerLockElement === container) {
+        document.exitPointerLock?.()
+      }
+      activeButton = null
+    }
+
+    const onContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+    }
+
+    const container = mapContainer.current
+    container.addEventListener('pointerdown', onPointerDown)
+    container.addEventListener('pointermove', onPointerMove)
+    container.addEventListener('pointerup', releaseLock)
+    container.addEventListener('pointercancel', releaseLock)
+    container.addEventListener('contextmenu', onContextMenu)
 
     mapInstance.on('moveend', () => {
       const c = mapInstance.getCenter()
@@ -62,6 +134,14 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
     setMap(mapInstance)
 
     return () => {
+      container.removeEventListener('pointerdown', onPointerDown)
+      container.removeEventListener('pointermove', onPointerMove)
+      container.removeEventListener('pointerup', releaseLock)
+      container.removeEventListener('pointercancel', releaseLock)
+      if (document.pointerLockElement === container) {
+        document.exitPointerLock?.()
+      }
+      container.removeEventListener('contextmenu', onContextMenu)
       setMap(null)
       mapInstance.remove()
     }
