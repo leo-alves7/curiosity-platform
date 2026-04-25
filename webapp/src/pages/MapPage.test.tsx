@@ -6,6 +6,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '@/slices/authSlice'
 import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
+import locationReducer from '@/slices/locationSlice'
 import MapPage from './MapPage'
 import type { StoreResponse } from '@/types/store'
 
@@ -43,6 +44,18 @@ vi.mock('@/components/MapView/useMapMarkers', () => ({
   })),
 }))
 
+vi.mock('@/hooks/useUserLocation', () => ({
+  useUserLocation: vi.fn(),
+}))
+
+vi.mock('@/components/MapView/UserLocationLayer', () => ({
+  default: vi.fn().mockReturnValue(null),
+}))
+
+vi.mock('@/components/MapView/LocateMeFab', () => ({
+  default: vi.fn().mockReturnValue(null),
+}))
+
 function makeStore(overrides: Partial<StoreResponse> = {}): StoreResponse {
   return {
     id: 'store-1',
@@ -72,6 +85,7 @@ function setup(opts: SetupOpts = {}) {
       auth: authReducer,
       stores: storesReducer,
       map: mapReducer,
+      location: locationReducer,
     },
     preloadedState: {
       stores: {
