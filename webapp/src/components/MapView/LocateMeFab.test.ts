@@ -62,10 +62,17 @@ describe('LocateMeFab', () => {
     })
   })
 
-  it('calls onToggleFollow when clicked with location available', async () => {
+  it('always calls onToggleFollow(true) when location is available, regardless of current follow state', async () => {
     const onToggleFollow = vi.fn()
     setup({ userLocation: { lat: 0, lng: 0, accuracy: 5 }, isFollowingUser: false, onToggleFollow })
     await userEvent.click(screen.getByTitle('Locate me'))
+    expect(onToggleFollow).toHaveBeenCalledWith(true)
+  })
+
+  it('re-centers when already following (does not toggle off)', async () => {
+    const onToggleFollow = vi.fn()
+    setup({ userLocation: { lat: 0, lng: 0, accuracy: 5 }, isFollowingUser: true, onToggleFollow })
+    await userEvent.click(screen.getByTitle('Following'))
     expect(onToggleFollow).toHaveBeenCalledWith(true)
   })
 })

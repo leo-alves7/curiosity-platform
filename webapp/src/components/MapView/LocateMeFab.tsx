@@ -29,7 +29,7 @@ function LocateMeFab({ userLocation, isFollowingUser, onToggleFollow }: LocateMe
       )
       return
     }
-    onToggleFollow(!isFollowingUser)
+    onToggleFollow(true)
   }
 
   return (
