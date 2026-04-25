@@ -1,5 +1,5 @@
-import { IonButton, IonChip, IonIcon, IonItem, IonLabel, IonList, IonText } from '@ionic/react'
-import { storefrontOutline, shareOutline, closeOutline } from 'ionicons/icons'
+import { IonButton, IonChip, IonItem, IonLabel, IonList, IonText } from '@ionic/react'
+import { Store, Share2, X } from 'lucide-react'
 import type { StoreResponse } from '@/types/store'
 
 interface StoreDetailContentProps {
@@ -30,11 +30,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
-          <IonIcon
-            icon={storefrontOutline}
-            style={{ fontSize: 64, color: 'var(--ion-color-medium, #92949c)' }}
-            aria-hidden="true"
-          />
+          <Store size={64} aria-hidden="true" color="var(--ion-color-medium, #92949c)" />
         )}
         <IonButton
           fill="clear"
@@ -42,7 +38,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
           onClick={onClose}
           style={{ position: 'absolute', top: 8, right: 8 }}
         >
-          <IonIcon icon={closeOutline} />
+          <X size={20} />
         </IonButton>
       </div>
 
@@ -75,7 +71,9 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
 
         <IonItem lines="none">
           <IonButton expand="block" onClick={onShare}>
-            <IonIcon slot="start" icon={shareOutline} />
+            <span slot="start" style={{ display: 'flex' }}>
+              <Share2 size={18} />
+            </span>
             Share
           </IonButton>
         </IonItem>

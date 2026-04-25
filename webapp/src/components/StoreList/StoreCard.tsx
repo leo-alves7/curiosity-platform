@@ -5,10 +5,9 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonChip,
-  IonIcon,
   IonLabel,
 } from '@ionic/react'
-import { storefrontOutline } from 'ionicons/icons'
+import { Store } from 'lucide-react'
 import type { StoreResponse } from '@/types/store'
 
 interface StoreCardProps {
@@ -50,11 +49,7 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
-          <IonIcon
-            icon={storefrontOutline}
-            aria-hidden="true"
-            style={{ fontSize: 48, color: 'var(--ion-color-medium, #92949c)' }}
-          />
+          <Store size={48} aria-hidden="true" color="var(--ion-color-medium, #92949c)" />
         )}
       </div>
       <IonCardHeader>

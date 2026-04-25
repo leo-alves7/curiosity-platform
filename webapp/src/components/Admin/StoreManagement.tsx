@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import {
   IonAlert,
   IonButton,
-  IonIcon,
   IonInput,
   IonItem,
   IonLabel,
@@ -11,7 +10,7 @@ import {
   IonSpinner,
   IonToggle,
 } from '@ionic/react'
-import { createOutline, trashOutline, addOutline } from 'ionicons/icons'
+import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../store'
 import {
@@ -72,7 +71,9 @@ function StoreManagement() {
           style={{ flex: 1 }}
         />
         <IonButton onClick={handleAddNew}>
-          <IonIcon slot="start" icon={addOutline} />
+          <span slot="start" style={{ display: 'flex' }}>
+            <Plus size={18} />
+          </span>
           Add Store
         </IonButton>
       </div>
@@ -92,7 +93,7 @@ function StoreManagement() {
               onIonChange={() => handleToggleActive(store.id)}
             />
             <IonButton fill="clear" slot="end" onClick={() => handleEdit(store)}>
-              <IonIcon icon={createOutline} />
+              <Pencil size={18} />
             </IonButton>
             <IonButton
               fill="clear"
@@ -100,7 +101,7 @@ function StoreManagement() {
               color="danger"
               onClick={() => setDeleteTargetId(store.id)}
             >
-              <IonIcon icon={trashOutline} />
+              <Trash2 size={18} />
             </IonButton>
           </IonItem>
         ))}
