@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { IonFab, IonFabButton, IonToast } from '@ionic/react'
-import { LocateFixed, LocateOff } from 'lucide-react'
+import { Locate, LocateOff } from 'lucide-react'
 
 interface UserLocation {
   lat: number
@@ -36,14 +36,14 @@ function LocateMeFab({ userLocation, isFollowingUser, onToggleFollow }: LocateMe
     <>
       <IonFab vertical="bottom" horizontal="end" slot="fixed">
         <IonFabButton
-          color={isFollowingUser ? 'primary' : 'medium'}
+          color={!hasLocation ? 'light' : isFollowingUser ? 'primary' : 'medium'}
           title={
             !hasLocation ? 'Allow location access' : isFollowingUser ? 'Following' : 'Locate me'
           }
           onClick={handleClick}
         >
           {hasLocation ? (
-            <LocateFixed size={22} />
+            <Locate size={22} />
           ) : (
             <LocateOff size={22} color="var(--ion-color-danger)" />
           )}
