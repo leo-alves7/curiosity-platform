@@ -6,6 +6,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '@/slices/authSlice'
 import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
+import locationReducer from '@/slices/locationSlice'
 import MapPage from './MapPage'
 import type { StoreResponse } from '@/types/store'
 
@@ -14,15 +15,20 @@ vi.mock('maplibre-gl', () => ({
     Map: vi.fn().mockImplementation(() => ({
       remove: vi.fn(),
       on: vi.fn(),
+      addControl: vi.fn(),
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
       getBearing: vi.fn().mockReturnValue(0),
       setBearing: vi.fn(),
+      getPitch: vi.fn().mockReturnValue(45),
+      setPitch: vi.fn(),
       panBy: vi.fn(),
       flyTo: vi.fn(),
+      easeTo: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
+    AttributionControl: vi.fn().mockImplementation(() => ({})),
     Marker: vi.fn().mockImplementation(() => ({
       setLngLat: vi.fn().mockReturnThis(),
       setPopup: vi.fn().mockReturnThis(),
@@ -41,6 +47,18 @@ vi.mock('@/components/MapView/useMapMarkers', () => ({
     panToMarker: vi.fn(),
     openMarkerPopup: vi.fn(),
   })),
+}))
+
+vi.mock('@/hooks/useUserLocation', () => ({
+  useUserLocation: vi.fn(),
+}))
+
+vi.mock('@/components/MapView/UserLocationLayer', () => ({
+  default: vi.fn().mockReturnValue(null),
+}))
+
+vi.mock('@/components/MapView/LocateMeFab', () => ({
+  default: vi.fn().mockReturnValue(null),
 }))
 
 function makeStore(overrides: Partial<StoreResponse> = {}): StoreResponse {
@@ -72,6 +90,7 @@ function setup(opts: SetupOpts = {}) {
       auth: authReducer,
       stores: storesReducer,
       map: mapReducer,
+      location: locationReducer,
     },
     preloadedState: {
       stores: {

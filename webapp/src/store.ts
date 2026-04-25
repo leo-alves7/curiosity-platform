@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice'
 import storesReducer from './slices/storesSlice'
 import mapReducer from './slices/mapSlice'
 import adminReducer from './slices/adminSlice'
+import locationReducer from './slices/locationSlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     stores: storesReducer,
     map: mapReducer,
     admin: adminReducer,
+    location: locationReducer,
   },
 })
 

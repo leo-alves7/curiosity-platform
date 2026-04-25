@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { IonSpinner, IonText } from '@ionic/react'
+import { IonSpinner, IonText, IonToast } from '@ionic/react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useMapMarkers, type MarkerActions } from './useMapMarkers'
@@ -12,6 +12,10 @@ import {
   selectStoresError,
 } from '@/slices/storesSlice'
 import { setCenter, setZoom, selectMapCenter, selectMapZoom } from '@/slices/mapSlice'
+import { setFollowingUser, selectUserLocation, selectFollowingUser } from '@/slices/locationSlice'
+import { useUserLocation } from '@/hooks/useUserLocation'
+import UserLocationLayer from './UserLocationLayer'
+import LocateMeFab from './LocateMeFab'
 import type { AppDispatch } from '@/store'
 
 const OPENFREEMAP_LIBERTY = 'https://tiles.openfreemap.org/styles/liberty'
@@ -40,6 +44,7 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
+  const [showPermissionToast, setShowPermissionToast] = useState(false)
 
   const center = useSelector(selectMapCenter)
   const zoom = useSelector(selectMapZoom)
@@ -47,6 +52,10 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
   const categoryMap = useSelector(selectCategoryMap)
   const status = useSelector(selectStoresStatus)
   const error = useSelector(selectStoresError)
+  const userLocation = useSelector(selectUserLocation)
+  const isFollowingUser = useSelector(selectFollowingUser)
+
+  useUserLocation()
 
   useEffect(() => {
     if (status === 'idle') {
@@ -65,7 +74,9 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
       zoom,
       pitch: 45,
       bearing: 0,
+      attributionControl: false,
     })
+    mapInstance.addControl(new maplibregl.AttributionControl(), 'bottom-left')
 
     mapInstance.dragPan.disable()
     mapInstance.dragRotate.disable()
@@ -80,6 +91,11 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
       lastY = e.clientY
       if (e.button === 0) {
         container.requestPointerLock?.()
+      }
+      // Any user-initiated pan (right-drag) cancels follow mode. dragPan is disabled
+      // so MapLibre's 'dragstart' event never fires — we handle it here instead.
+      if (e.button === 2) {
+        dispatch(setFollowingUser(false))
       }
     }
 
@@ -154,6 +170,16 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
     [onViewDetails],
   )
 
+  const handleToggleFollow = useCallback(
+    (active: boolean) => {
+      dispatch(setFollowingUser(active))
+      if (active && map && userLocation) {
+        map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
+      }
+    },
+    [dispatch, map, userLocation],
+  )
+
   const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
 
   useEffect(() => {
@@ -185,6 +211,18 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
           <IonSpinner />
         </div>
       )}
+      <UserLocationLayer map={map} userLocation={userLocation} />
+      <LocateMeFab
+        userLocation={userLocation}
+        isFollowingUser={isFollowingUser}
+        onToggleFollow={handleToggleFollow}
+      />
+      <IonToast
+        isOpen={showPermissionToast}
+        message="Location permission denied. Enable it in your browser settings."
+        duration={4000}
+        onDidDismiss={() => setShowPermissionToast(false)}
+      />
     </div>
   )
 }

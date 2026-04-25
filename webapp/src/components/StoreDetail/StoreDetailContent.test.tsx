@@ -70,7 +70,7 @@ describe('StoreDetailContent', () => {
 
   it('renders placeholder icon when image_url is null', () => {
     const { container } = setup({ image_url: null })
-    expect(container.querySelector('ion-icon')).not.toBeNull()
+    expect(container.querySelector('svg')).not.toBeNull()
     expect(screen.queryByAltText('Test Store')).toBeNull()
   })
 

@@ -5,13 +5,27 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '@/slices/authSlice'
 import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
+import locationReducer from '@/slices/locationSlice'
 import MapView from './MapView'
+
+vi.mock('@/hooks/useUserLocation', () => ({
+  useUserLocation: vi.fn(),
+}))
+
+vi.mock('./UserLocationLayer', () => ({
+  default: vi.fn().mockReturnValue(null),
+}))
+
+vi.mock('./LocateMeFab', () => ({
+  default: vi.fn().mockReturnValue(null),
+}))
 
 vi.mock('maplibre-gl', () => ({
   default: {
     Map: vi.fn().mockImplementation(() => ({
       remove: vi.fn(),
       on: vi.fn(),
+      addControl: vi.fn(),
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
       getBearing: vi.fn().mockReturnValue(0),
@@ -19,9 +33,11 @@ vi.mock('maplibre-gl', () => ({
       getPitch: vi.fn().mockReturnValue(45),
       setPitch: vi.fn(),
       panBy: vi.fn(),
+      easeTo: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
+    AttributionControl: vi.fn().mockImplementation(() => ({})),
     Marker: vi.fn().mockImplementation(() => ({
       setLngLat: vi.fn().mockReturnThis(),
       setPopup: vi.fn().mockReturnThis(),
@@ -59,6 +75,7 @@ function makeStore(storesOverrides = {}) {
       auth: authReducer,
       stores: storesReducer,
       map: mapReducer,
+      location: locationReducer,
     },
     preloadedState: {
       stores: {
@@ -212,5 +229,21 @@ describe('MapView', () => {
     )
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
+  })
+
+  it('dispatches setFollowingUser(false) when user right-clicks to pan', async () => {
+    const { container, store } = setup()
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    // Pre-set following to true so we can verify it gets cleared
+    const { setFollowingUser } = await import('@/slices/locationSlice')
+    store.dispatch(setFollowingUser(true))
+    expect(store.getState().location.isFollowingUser).toBe(true)
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 2, clientX: 100, clientY: 100, bubbles: true }),
+    )
+
+    expect(store.getState().location.isFollowingUser).toBe(false)
   })
 })

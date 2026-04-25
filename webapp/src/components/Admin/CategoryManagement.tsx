@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { IonAlert, IonButton, IonIcon, IonItem, IonLabel, IonList, IonNote } from '@ionic/react'
-import { createOutline, trashOutline, addOutline } from 'ionicons/icons'
+import { IonAlert, IonButton, IonItem, IonLabel, IonList, IonNote } from '@ionic/react'
+import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../store'
 import {
@@ -41,7 +41,9 @@ function CategoryManagement() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 16px' }}>
         <IonButton onClick={handleAddNew}>
-          <IonIcon slot="start" icon={addOutline} />
+          <span slot="start" style={{ display: 'flex' }}>
+            <Plus size={18} />
+          </span>
           Add Category
         </IonButton>
       </div>
@@ -58,7 +60,7 @@ function CategoryManagement() {
               </IonNote>
             </IonLabel>
             <IonButton fill="clear" slot="end" onClick={() => handleEdit(category)}>
-              <IonIcon icon={createOutline} />
+              <Pencil size={18} />
             </IonButton>
             <IonButton
               fill="clear"
@@ -66,7 +68,7 @@ function CategoryManagement() {
               color="danger"
               onClick={() => setDeleteTargetId(category.id)}
             >
-              <IonIcon icon={trashOutline} />
+              <Trash2 size={18} />
             </IonButton>
           </IonItem>
         ))}
