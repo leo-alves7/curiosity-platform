@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IonContent, IonModal, IonPage } from '@ionic/react'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
+import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
 import { StoreDetailView } from '@/components/StoreDetail'
 import {
   selectCategories,
@@ -60,7 +61,7 @@ function ExplorePage() {
 
   return (
     <IonPage>
-      <IonContent>
+      <IonContent style={{ '--padding-bottom': `${TAB_BAR_HEIGHT}px` }}>
         <StoreListPanel
           filteredStores={paginatedStores}
           categories={categories}

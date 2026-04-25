@@ -3,38 +3,46 @@ import { mapOutline, searchOutline } from 'ionicons/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from './useIsMobile'
 
+const TAB_BAR_HEIGHT = 56
+
 function AppTabs() {
   const isMobile = useIsMobile()
   const navigate = useNavigate()
   const location = useLocation()
 
-  if (!isMobile) {
-    return <Outlet />
-  }
-
   const activeTab = location.pathname.startsWith('/explore') ? 'explore' : 'map'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        <Outlet />
-      </div>
-      <IonTabBar slot="bottom">
-        <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
-          <IonIcon icon={mapOutline} />
-          <IonLabel>Map</IonLabel>
-        </IonTabButton>
-        <IonTabButton
-          tab="explore"
-          selected={activeTab === 'explore'}
-          onClick={() => navigate('/explore')}
+    <>
+      <Outlet />
+      {isMobile && (
+        <IonTabBar
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: TAB_BAR_HEIGHT,
+            zIndex: 10,
+          }}
         >
-          <IonIcon icon={searchOutline} />
-          <IonLabel>Explore</IonLabel>
-        </IonTabButton>
-      </IonTabBar>
-    </div>
+          <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
+            <IonIcon icon={mapOutline} />
+            <IonLabel>Map</IonLabel>
+          </IonTabButton>
+          <IonTabButton
+            tab="explore"
+            selected={activeTab === 'explore'}
+            onClick={() => navigate('/explore')}
+          >
+            <IonIcon icon={searchOutline} />
+            <IonLabel>Explore</IonLabel>
+          </IonTabButton>
+        </IonTabBar>
+      )}
+    </>
   )
 }
 
+export { TAB_BAR_HEIGHT }
 export default AppTabs

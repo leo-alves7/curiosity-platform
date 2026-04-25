@@ -22,6 +22,7 @@ import {
 } from '@/slices/storesSlice'
 import { selectIsPanelOpen, togglePanel, setPanelOpen } from '@/slices/uiSlice'
 import { useIsMobile } from '@/components/AppTabs/useIsMobile'
+import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
 import type { AppDispatch } from '@/store'
 
 function MapPage() {
@@ -81,14 +82,19 @@ function MapPage() {
   if (isMobile) {
     return (
       <IonPage>
-        <IonContent>
+        <IonContent scrollY={false} style={{ '--padding-bottom': `${TAB_BAR_HEIGHT}px` }}>
           <div style={{ width: '100%', height: '100%' }}>
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
               onViewDetails={handleViewDetails}
             />
           </div>
-          <IonFab vertical="bottom" horizontal="end" slot="fixed" data-testid="panel-fab">
+          <IonFab
+            vertical="bottom"
+            horizontal="end"
+            slot="fixed"
+            style={{ bottom: `${TAB_BAR_HEIGHT + 16}px` }}
+          >
             <IonFabButton onClick={handleTogglePanel} aria-label="Toggle store list">
               <IonIcon icon={listOutline} />
             </IonFabButton>
