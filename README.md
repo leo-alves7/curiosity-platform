@@ -28,6 +28,7 @@ curiosity-platform/
 │   │   ├── api/               # Axios client and API hooks
 │   │   ├── components/        # Reusable UI components
 │   │   ├── features/          # Feature-scoped logic
+│   │   ├── hooks/             # Shared React hooks (e.g. useUserLocation)
 │   │   ├── pages/             # Page-level components
 │   │   ├── slices/            # Redux state slices
 │   │   └── auth/              # Firebase auth integration
@@ -86,6 +87,7 @@ curiosity-platform/
 
 ## Features
 
+- **GPS user location** — "Locate me" FAB (bottom-right of map canvas) centers the map on the user's real-time GPS position with a pulsing dot and semi-transparent accuracy circle rendered via MapLibre GeoJSON layers; follow mode re-centers automatically as the user moves and deactivates (button changes state) when the map is panned manually; uses `navigator.geolocation.watchPosition` with `enableHighAccuracy: true`; location state and follow flag live in Redux `locationSlice`; `useUserLocation` hook in `src/hooks/` handles GPS subscription and cleanup — fully implemented
 - **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
 - **Store list sidebar** — scrollable panel alongside the map with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card opens the store detail view — fully implemented
 - **Store detail view** — slide-in panel showing cover image, name, category chip, address, and description; accessible from map popup "View details" button or store card click; native share via Capacitor Share plugin; IonSkeletonText loading state and error/retry state; also available as a direct URL at `/stores/:id` — fully implemented
@@ -188,6 +190,7 @@ POST /api/v1/admin/stores/{id}/toggle-active  # Toggle is_active flag on a store
 - Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves.
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
+- GPS location is powered by `useUserLocation` (`src/hooks/useUserLocation.ts`), which wraps `navigator.geolocation.watchPosition`. It dispatches `setUserLocation` and the Redux `locationSlice` tracks `{ userLocation: { lat, lng, accuracy } | null, isFollowingUser: boolean }`. `UserLocationLayer` renders the dot and accuracy circle as MapLibre GeoJSON layers (source: `user-location`). `LocateMeFab` shows the button state (primary when following, medium when off-center). Follow mode is cancelled in `MapView`'s `onPointerDown` handler on right-click (button 2) since `dragPan` is disabled and MapLibre's `dragstart` event never fires.
 - Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL_LIGHT` (optional — light map style, defaults to OpenFreeMap liberty: `https://tiles.openfreemap.org/styles/liberty`), `VITE_MAPLIBRE_STYLE_URL_DARK` (optional — dark map style, defaults to the same OpenFreeMap liberty URL until a dedicated dark style is configured), `VITE_APP_URL` (optional — base URL used when building share links in the store detail view, e.g. `https://your-app.example.com`; defaults to `window.location.origin`) — see `webapp/.env.example`
 - Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid`, `email`, and `is_admin` from the verified Firebase ID token
 - Admin-only routes use `AdminUser = Annotated[UserContext, Depends(require_admin)]`; `require_admin` raises 403 if the token's `role` custom claim is not `"admin"`
