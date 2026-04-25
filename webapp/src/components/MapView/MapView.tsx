@@ -74,7 +74,9 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
       zoom,
       pitch: 45,
       bearing: 0,
+      attributionControl: false,
     })
+    mapInstance.addControl(new maplibregl.AttributionControl(), 'bottom-left')
 
     mapInstance.dragPan.disable()
     mapInstance.dragRotate.disable()
