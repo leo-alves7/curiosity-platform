@@ -1,5 +1,5 @@
 import { IonFab, IonFabButton, IonIcon } from '@ionic/react'
-import { location, locationOutline } from 'ionicons/icons'
+import { locate, locateOutline } from 'ionicons/icons'
 
 interface UserLocation {
   lat: number
@@ -14,17 +14,28 @@ interface LocateMeFabProps {
 }
 
 function LocateMeFab({ userLocation, isFollowingUser, onToggleFollow }: LocateMeFabProps) {
-  const isDisabled = userLocation === null
+  const hasLocation = userLocation !== null
+
+  const handleClick = () => {
+    if (!hasLocation) {
+      // Trigger the native browser permission prompt
+      navigator.geolocation.getCurrentPosition(
+        () => {},
+        () => {},
+      )
+      return
+    }
+    onToggleFollow(!isFollowingUser)
+  }
 
   return (
     <IonFab vertical="bottom" horizontal="end" slot="fixed">
       <IonFabButton
-        disabled={isDisabled}
-        color={isFollowingUser ? 'primary' : 'medium'}
-        title={isDisabled ? 'Location unavailable' : isFollowingUser ? 'Following' : 'Locate me'}
-        onClick={() => onToggleFollow(!isFollowingUser)}
+        color={!hasLocation ? 'danger' : isFollowingUser ? 'primary' : 'medium'}
+        title={!hasLocation ? 'Allow location access' : isFollowingUser ? 'Following' : 'Locate me'}
+        onClick={handleClick}
       >
-        <IonIcon icon={isFollowingUser ? location : locationOutline} />
+        <IonIcon icon={hasLocation ? locate : locateOutline} />
       </IonFabButton>
     </IonFab>
   )
