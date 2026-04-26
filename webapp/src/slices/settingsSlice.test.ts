@@ -1,11 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { configureStore } from '@reduxjs/toolkit'
-import settingsReducer, { setTheme, selectTheme, type ThemePreference } from './settingsSlice'
+import settingsReducer, {
+  setTheme,
+  setLanguage,
+  selectTheme,
+  selectLanguage,
+  type ThemePreference,
+} from './settingsSlice'
 
 function makeStore(theme?: ThemePreference) {
   return configureStore({
     reducer: { settings: settingsReducer },
-    preloadedState: theme !== undefined ? { settings: { theme } } : undefined,
+    preloadedState: theme !== undefined ? { settings: { theme, language: null } } : undefined,
   })
 }
 
@@ -50,5 +56,34 @@ describe('settingsSlice', () => {
     store.dispatch(setTheme('system'))
     const theme = selectTheme(store.getState() as Parameters<typeof selectTheme>[0])
     expect(['light', 'dark', 'system']).toContain(theme)
+  })
+})
+
+describe('language field', () => {
+  it('defaults to null when localStorage is empty', () => {
+    const store = makeStore()
+    expect(selectLanguage(store.getState() as Parameters<typeof selectLanguage>[0])).toBeNull()
+  })
+
+  it('setLanguage("en") updates state and persists to localStorage', () => {
+    const store = makeStore()
+    store.dispatch(setLanguage('en'))
+    expect(selectLanguage(store.getState() as Parameters<typeof selectLanguage>[0])).toBe('en')
+    expect(localStorage.getItem('settings.language')).toBe('en')
+  })
+
+  it('setLanguage("pt-BR") updates state and persists to localStorage', () => {
+    const store = makeStore()
+    store.dispatch(setLanguage('pt-BR'))
+    expect(selectLanguage(store.getState() as Parameters<typeof selectLanguage>[0])).toBe('pt-BR')
+    expect(localStorage.getItem('settings.language')).toBe('pt-BR')
+  })
+
+  it('setLanguage(null) updates state and removes key from localStorage', () => {
+    const store = makeStore()
+    store.dispatch(setLanguage('en'))
+    store.dispatch(setLanguage(null))
+    expect(selectLanguage(store.getState() as Parameters<typeof selectLanguage>[0])).toBeNull()
+    expect(localStorage.getItem('settings.language')).toBeNull()
   })
 })

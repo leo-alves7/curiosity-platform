@@ -1,3 +1,4 @@
+import '@/i18n/index'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -131,7 +132,7 @@ function setup(opts: SetupOpts = {}) {
         isAddingStore: opts.isAddingStore ?? false,
         pinLocation: opts.pinLocation ?? null,
       },
-      settings: { theme: 'system' as const },
+      settings: { theme: 'system' as const, language: null as null },
     },
   })
   const result = render(

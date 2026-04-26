@@ -1,3 +1,4 @@
+import '@/i18n/index'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -51,9 +52,11 @@ describe('LocateMeFab', () => {
   })
 
   it('shows settings toast when permission is denied', async () => {
-    getCurrentPositionMock.mockImplementation((_success: unknown, error: (e: GeolocationPositionError) => void) => {
-      error({ code: 1 } as GeolocationPositionError)
-    })
+    getCurrentPositionMock.mockImplementation(
+      (_success: unknown, error: (e: GeolocationPositionError) => void) => {
+        error({ code: 1 } as GeolocationPositionError)
+      },
+    )
     setup({ userLocation: null })
     await userEvent.click(screen.getByTitle('Allow location access'))
     await waitFor(() => {

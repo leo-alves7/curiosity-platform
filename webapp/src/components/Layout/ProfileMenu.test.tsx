@@ -1,3 +1,4 @@
+import '@/i18n/index'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
@@ -17,7 +18,7 @@ vi.mock('@ionic/react', async (importOriginal) => {
 function makeStore(theme: 'light' | 'dark' | 'system' = 'system') {
   return configureStore({
     reducer: { settings: settingsReducer },
-    preloadedState: { settings: { theme } },
+    preloadedState: { settings: { theme, language: null } },
   })
 }
 

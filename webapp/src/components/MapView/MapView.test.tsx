@@ -1,3 +1,4 @@
+import '@/i18n/index'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Provider } from 'react-redux'
@@ -96,7 +97,7 @@ function makeStore(storesOverrides = {}, theme: ThemePreference = 'system') {
         hasMore: false,
         ...storesOverrides,
       },
-      settings: { theme },
+      settings: { theme, language: null as null },
     },
   })
 }
@@ -229,13 +230,11 @@ describe('MapView', () => {
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://tiles.openfreemap.org/styles/liberty')
     vi.stubGlobal(
       'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: false,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     )
     setup()
     const MapConstructor = vi.mocked(maplibregl.default.Map)
@@ -265,11 +264,14 @@ describe('MapView', () => {
   it('calls setStyle when effectiveTheme changes after mount', async () => {
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_DARK', 'https://example.com/dark')
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://example.com/light')
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }))
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    )
     const maplibregl = await import('maplibre-gl')
     const { store } = setup({ theme: 'light' })
     const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
@@ -278,7 +280,9 @@ describe('MapView', () => {
     // Dispatch a theme change — the reactive effect should now call setStyle
     const { setTheme } = await import('@/slices/settingsSlice')
     await import('@testing-library/react').then(({ act }) =>
-      act(() => { store.dispatch(setTheme('dark')) }),
+      act(() => {
+        store.dispatch(setTheme('dark'))
+      }),
     )
     expect(mapInstance?.setStyle).toHaveBeenCalledWith('https://example.com/dark')
     vi.unstubAllEnvs()
