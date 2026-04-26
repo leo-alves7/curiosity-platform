@@ -87,13 +87,14 @@ function MapPage() {
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
               onViewDetails={handleViewDetails}
+              bottomOffset={TAB_BAR_HEIGHT}
             />
           </div>
           <IonFab
             vertical="bottom"
             horizontal="end"
             slot="fixed"
-            style={{ bottom: `${TAB_BAR_HEIGHT + 16}px` }}
+            style={{ bottom: `${TAB_BAR_HEIGHT + 16 + 56 + 8}px` }}
           >
             <IonFabButton onClick={handleTogglePanel} aria-label="Toggle store list">
               <IonIcon icon={listOutline} />

@@ -38,9 +38,10 @@ function resolveMapStyle(prefersDark: boolean): string {
 interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
   onViewDetails?: (storeId: string) => void
+  bottomOffset?: number
 }
 
-function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
+function MapView({ onMarkerActionsReady, onViewDetails, bottomOffset = 0 }: MapViewProps = {}) {
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -215,6 +216,7 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
         userLocation={userLocation}
         isFollowingUser={isFollowingUser}
         onToggleFollow={handleToggleFollow}
+        bottomOffset={bottomOffset}
       />
       <IonToast
         isOpen={showPermissionToast}

@@ -12,9 +12,15 @@ interface LocateMeFabProps {
   userLocation: UserLocation | null
   isFollowingUser: boolean
   onToggleFollow: (active: boolean) => void
+  bottomOffset?: number
 }
 
-function LocateMeFab({ userLocation, isFollowingUser, onToggleFollow }: LocateMeFabProps) {
+function LocateMeFab({
+  userLocation,
+  isFollowingUser,
+  onToggleFollow,
+  bottomOffset = 0,
+}: LocateMeFabProps) {
   const hasLocation = userLocation !== null
   const [showSettingsToast, setShowSettingsToast] = useState(false)
 
@@ -34,7 +40,12 @@ function LocateMeFab({ userLocation, isFollowingUser, onToggleFollow }: LocateMe
 
   return (
     <>
-      <IonFab vertical="bottom" horizontal="end" slot="fixed">
+      <IonFab
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+        style={{ bottom: `${bottomOffset + 16}px` }}
+      >
         <IonFabButton
           color={!hasLocation ? 'light' : isFollowingUser ? 'primary' : 'medium'}
           title={
