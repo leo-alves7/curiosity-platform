@@ -10,6 +10,7 @@ import {
   IonModal,
   IonSelect,
   IonSelectOption,
+  IonText,
   IonTextarea,
   IonTitle,
   IonToggle,
@@ -109,7 +110,11 @@ function StoreForm() {
             onIonChange={(e) => setName(e.detail.value ?? '')}
             placeholder="Store name"
           />
-          {nameError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{nameError}</p>}
+          {nameError && (
+            <IonText color="danger">
+              <p style={{ fontSize: '0.8rem' }}>{nameError}</p>
+            </IonText>
+          )}
         </IonItem>
         <IonItem>
           <IonLabel position="stacked">Description</IonLabel>

@@ -16,7 +16,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
         style={{
           position: 'relative',
           height: 220,
-          background: 'var(--ion-color-light, #f4f5f8)',
+          background: 'var(--ion-color-light)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -30,7 +30,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
-          <Store size={64} aria-hidden="true" color="var(--ion-color-medium, #92949c)" />
+          <Store size={64} aria-hidden="true" color="var(--ion-color-medium)" />
         )}
         <IonButton
           fill="clear"
