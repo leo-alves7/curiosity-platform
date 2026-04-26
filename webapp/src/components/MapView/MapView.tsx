@@ -6,6 +6,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useTheme } from '@/hooks/useTheme'
 import { useMapMarkers, type MarkerActions } from './useMapMarkers'
+import { useStoreClusterHandlers } from './useStoreClusterHandlers'
 import {
   fetchStoresAndCategories,
   selectStores,
@@ -217,6 +218,8 @@ function MapView({
   )
 
   const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
+
+  useStoreClusterHandlers(map, stores, categoryMap, handleViewDetails)
 
   useEffect(() => {
     if (onMarkerActionsReady) {
