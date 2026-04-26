@@ -1,6 +1,7 @@
 import { IonIcon, IonLabel, IonTabBar, IonTabButton } from '@ionic/react'
 import { mapOutline, searchOutline } from 'ionicons/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useIsMobile } from './useIsMobile'
 
 const TAB_BAR_HEIGHT = 56
@@ -10,6 +11,7 @@ function AppTabs() {
   const isMobile = useIsMobile()
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
 
   const isTabRoute = TAB_ROUTES.includes(location.pathname)
   if (!isMobile || !isTabRoute) return null
@@ -29,7 +31,7 @@ function AppTabs() {
     >
       <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
         <IonIcon icon={mapOutline} />
-        <IonLabel>Map</IonLabel>
+        <IonLabel>{t('nav.map')}</IonLabel>
       </IonTabButton>
       <IonTabButton
         tab="explore"
@@ -37,7 +39,7 @@ function AppTabs() {
         onClick={() => navigate('/explore')}
       >
         <IonIcon icon={searchOutline} />
-        <IonLabel>Explore</IonLabel>
+        <IonLabel>{t('nav.explore')}</IonLabel>
       </IonTabButton>
     </IonTabBar>
   )

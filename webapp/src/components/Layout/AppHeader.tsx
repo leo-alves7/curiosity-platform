@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonToast } from '@ionic/react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication'
 import UserAvatar from './UserAvatar'
 import ProfileMenu from './ProfileMenu'
@@ -9,6 +10,7 @@ import type { RootState } from '@/store'
 
 function AppHeader() {
   const dispatch = useDispatch()
+  const { t } = useTranslation()
   const { uid, email, displayName, photoURL } = useSelector((state: RootState) => state.auth)
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuEvent, setMenuEvent] = useState<Event | undefined>(undefined)
@@ -30,7 +32,7 @@ function AppHeader() {
     <>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Curiosity</IonTitle>
+          <IonTitle>{t('app.title')}</IonTitle>
           <IonButtons slot="end">
             <UserAvatar photoURL={photoURL} uid={uid ?? ''} onClick={handleAvatarClick} />
           </IonButtons>
@@ -46,7 +48,7 @@ function AppHeader() {
       />
       <IonToast
         isOpen={showLogoutToast}
-        message="You have been signed out"
+        message={t('auth.signedOut')}
         duration={3000}
         onDidDismiss={() => setShowLogoutToast(false)}
       />
