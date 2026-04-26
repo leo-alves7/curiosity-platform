@@ -37,6 +37,7 @@ function resolveMapStyle(prefersDark: boolean): string {
 
 interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
+  onMapReady?: (map: maplibregl.Map | null) => void
   onViewDetails?: (storeId: string) => void
   bottomOffset?: number
   showLocateFab?: boolean
@@ -44,6 +45,7 @@ interface MapViewProps {
 
 function MapView({
   onMarkerActionsReady,
+  onMapReady,
   onViewDetails,
   bottomOffset = 0,
   showLocateFab = true,
@@ -195,6 +197,12 @@ function MapView({
       onMarkerActionsReady(markerActions)
     }
   }, [onMarkerActionsReady, markerActions])
+
+  useEffect(() => {
+    if (onMapReady) {
+      onMapReady(map)
+    }
+  }, [onMapReady, map])
 
   if (status === 'failed') {
     return (
