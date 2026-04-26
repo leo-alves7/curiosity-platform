@@ -32,13 +32,7 @@ function AppHeader() {
         <IonToolbar>
           <IonTitle>Curiosity</IonTitle>
           <IonButtons slot="end">
-            <UserAvatar
-              displayName={displayName}
-              email={email}
-              photoURL={photoURL}
-              uid={uid ?? ''}
-              onClick={handleAvatarClick}
-            />
+            <UserAvatar photoURL={photoURL} uid={uid ?? ''} onClick={handleAvatarClick} />
           </IonButtons>
         </IonToolbar>
       </IonHeader>
