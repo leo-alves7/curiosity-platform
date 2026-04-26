@@ -10,6 +10,7 @@ import {
   IonToolbar,
 } from '@ionic/react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import AddStoreForm, { type AddStoreFormData } from './AddStoreForm'
 import { fetchCategories } from '@/api/categories'
 import { createStore, uploadStoreImage } from '@/api/stores'
@@ -28,6 +29,7 @@ interface AddStoreModalProps {
 
 function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStoreModalProps) {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -42,7 +44,7 @@ function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStor
         if (!cancelled) setCategories(items)
       })
       .catch(() => {
-        if (!cancelled) setErrorToast('Failed to load categories')
+        if (!cancelled) setErrorToast(t('addStore.failedToLoadCategories'))
       })
     return () => {
       cancelled = true
@@ -91,10 +93,10 @@ function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStor
       <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Add Store</IonTitle>
+            <IonTitle>{t('addStore.modalTitle')}</IonTitle>
             <IonButtons slot="end">
               <IonButton onClick={handleClose} disabled={isSubmitting}>
-                Cancel
+                {t('addStore.cancel')}
               </IonButton>
             </IonButtons>
           </IonToolbar>
@@ -112,7 +114,7 @@ function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStor
       </IonModal>
       <IonToast
         isOpen={successToast}
-        message="Store created"
+        message={t('addStore.created')}
         duration={2500}
         color="success"
         onDidDismiss={() => setSuccessToast(false)}
