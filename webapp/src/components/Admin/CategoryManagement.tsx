@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { IonAlert, IonButton, IonItem, IonLabel, IonList, IonNote } from '@ionic/react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { AppDispatch, RootState } from '../../store'
 import {
   fetchAdminCategoriesThunk,
@@ -13,6 +14,7 @@ import CategoryForm from './CategoryForm'
 
 function CategoryManagement() {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const { categories, selectedCategory } = useSelector((state: RootState) => state.admin)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
 
@@ -44,7 +46,7 @@ function CategoryManagement() {
           <span slot="start" style={{ display: 'flex' }}>
             <Plus size={18} />
           </span>
-          Add Category
+          {t('admin.addCategory')}
         </IonButton>
       </div>
 
@@ -76,11 +78,19 @@ function CategoryManagement() {
 
       <IonAlert
         isOpen={deleteTargetId !== null}
-        header="Delete Category"
-        message="Are you sure you want to delete this category?"
+        header={t('admin.deleteCategory')}
+        message={t('admin.deleteCategoryConfirm')}
         buttons={[
-          { text: 'Cancel', role: 'cancel', handler: () => setDeleteTargetId(null) },
-          { text: 'Delete', role: 'destructive', handler: handleDeleteConfirm },
+          {
+            text: t('admin.deleteCancelButton'),
+            role: 'cancel',
+            handler: () => setDeleteTargetId(null),
+          },
+          {
+            text: t('admin.deleteConfirmButton'),
+            role: 'destructive',
+            handler: handleDeleteConfirm,
+          },
         ]}
         onDidDismiss={() => setDeleteTargetId(null)}
       />

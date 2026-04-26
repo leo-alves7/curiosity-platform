@@ -1,4 +1,5 @@
 import { IonInput, IonItem, IonLabel } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 
 interface MapPickerProps {
   lat: number | null
@@ -7,6 +8,7 @@ interface MapPickerProps {
 }
 
 function MapPicker({ lat, lng, onChange }: MapPickerProps) {
+  const { t } = useTranslation()
   const handleLat = (value: string | null | undefined) => {
     const parsed = value ? parseFloat(value) : null
     onChange(isNaN(parsed as number) ? null : parsed, lng)
@@ -20,7 +22,7 @@ function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   return (
     <>
       <IonItem>
-        <IonLabel position="stacked">Latitude (-90 to 90)</IonLabel>
+        <IonLabel position="stacked">{t('admin.latLabel')}</IonLabel>
         <IonInput
           type="number"
           value={lat ?? ''}
@@ -31,7 +33,7 @@ function MapPicker({ lat, lng, onChange }: MapPickerProps) {
         />
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Longitude (-180 to 180)</IonLabel>
+        <IonLabel position="stacked">{t('admin.lngLabel')}</IonLabel>
         <IonInput
           type="number"
           value={lng ?? ''}
