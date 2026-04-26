@@ -27,11 +27,14 @@ paths:
 - Map pitch defaults to `45` and bearing to `0` — do not reset these unless explicitly required.
 - Left-drag = rotate (locked center); right-drag = pan. Do not override these bindings.
 
-### Pointer-lock interaction (important for any feature that uses map clicks)
+### Pointer-lock and drag interaction (important for any feature that uses map clicks)
 
-`MapView` uses `requestPointerLock()` on left-click to implement the custom rotation. This means:
-- Any feature that needs to capture a raw left-click on the map (e.g. pin-drop mode) will be broken if pointer lock is acquired first — the browser freezes `clientX/Y` at 0 and MapLibre's `click` event gets wrong coordinates.
-- To suppress pointer lock for a mode: add a `useRef` in `MapView` tracking the relevant Redux state, and gate `requestPointerLock()` on that ref in `onPointerDown`. Example: `if (e.button === 0 && !isAddingStoreRef.current) container.requestPointerLock?.()`. The ref is needed because the pointer handler lives in a `useEffect(() => {}, [])` closure.
+`MapView` implements custom left-drag rotation using `requestPointerLock()`. Key rules:
+
+- **Pointer lock is deferred to a drag threshold (4 px movement)** — it is NOT acquired on `pointerdown`. This means plain left-clicks (store markers, pin-drop, any overlay) land cleanly without rotating the map.
+- Rotation only starts in `onPointerMove` after `hasDragged` is set (threshold crossed). Gate: `if (activeButton === 0 && !isAddingStoreRef.current) container.requestPointerLock?.()`.
+- **Never call `requestPointerLock()` on `pointerdown`** — it causes the browser to freeze `clientX/Y` and any click that involves the slightest cursor jitter will rotate the map instead of registering as a click.
+- To suppress rotation for a mode (e.g. pin-drop): add a `useRef` in `MapView` tracking the relevant Redux state (`isAddingStoreRef`) and gate the lock + bearing change in `onPointerMove`. The ref is required because the handler lives in a `useEffect(() => {}, [])` closure.
 
 ### FAB stacking on the map canvas
 
