@@ -216,7 +216,7 @@ function MapPage() {
           <div
             style={{
               height: '100%',
-              borderRight: '1px solid var(--ion-color-light-shade, #d7d8da)',
+              borderRight: '1px solid var(--ion-color-light-shade)',
               overflow: 'hidden',
             }}
           >

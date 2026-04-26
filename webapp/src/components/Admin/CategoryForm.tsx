@@ -8,6 +8,7 @@ import {
   IonItem,
   IonLabel,
   IonModal,
+  IonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
@@ -103,7 +104,11 @@ function CategoryForm() {
             onIonChange={(e) => handleNameChange(e.detail.value ?? '')}
             placeholder="Category name"
           />
-          {nameError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{nameError}</p>}
+          {nameError && (
+            <IonText color="danger">
+              <p style={{ fontSize: '0.8rem' }}>{nameError}</p>
+            </IonText>
+          )}
         </IonItem>
         <IonItem>
           <IonLabel position="stacked">Slug *</IonLabel>
@@ -112,7 +117,11 @@ function CategoryForm() {
             onIonChange={(e) => setSlug(e.detail.value ?? '')}
             placeholder="category-slug"
           />
-          {slugError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{slugError}</p>}
+          {slugError && (
+            <IonText color="danger">
+              <p style={{ fontSize: '0.8rem' }}>{slugError}</p>
+            </IonText>
+          )}
         </IonItem>
         <IonItem>
           <IonLabel position="stacked">Icon</IonLabel>

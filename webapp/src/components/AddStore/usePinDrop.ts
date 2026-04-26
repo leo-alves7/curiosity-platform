@@ -19,7 +19,7 @@ export function usePinDrop(
       if (markerRef.current) {
         markerRef.current.setLngLat([lng, lat])
       } else {
-        const marker = new maplibregl.Marker({ color: '#3880ff', draggable: true })
+        const marker = new maplibregl.Marker({ color: 'var(--ion-color-primary)', draggable: true })
           .setLngLat([lng, lat])
           .addTo(map)
 

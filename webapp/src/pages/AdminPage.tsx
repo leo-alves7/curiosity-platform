@@ -6,6 +6,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonLabel,
+  IonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
@@ -42,7 +43,9 @@ function AdminPage() {
       </IonHeader>
       <IonContent>
         {status === 'failed' && error && (
-          <p style={{ color: 'red', padding: '8px 16px' }}>{error}</p>
+          <IonText color="danger">
+            <p style={{ padding: '8px 16px' }}>{error}</p>
+          </IonText>
         )}
         {activeTab === 'stores' && <StoreManagement />}
         {activeTab === 'categories' && <CategoryManagement />}

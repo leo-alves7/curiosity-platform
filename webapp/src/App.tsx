@@ -1,5 +1,6 @@
 import { setupIonicReact, IonApp, IonSpinner } from '@ionic/react'
 import '@ionic/core/css/core.css'
+import '@ionic/core/css/palettes/dark.class.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AdminRoute from './auth/AdminRoute'
@@ -10,10 +11,12 @@ import StoreDetailPage from './pages/StoreDetailPage'
 import AdminPage from './pages/AdminPage'
 import AppTabs from './components/AppTabs/AppTabs'
 import { useAuth } from './auth/useAuth'
+import { useTheme } from './hooks/useTheme'
 
 setupIonicReact()
 
 function App() {
+  useTheme()
   const { isLoading } = useAuth()
 
   if (isLoading) {

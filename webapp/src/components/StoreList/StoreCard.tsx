@@ -39,7 +39,7 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'var(--ion-color-light, #f4f5f8)',
+          background: 'var(--ion-color-light)',
         }}
       >
         {store.image_url ? (
@@ -49,7 +49,7 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
-          <Store size={48} aria-hidden="true" color="var(--ion-color-medium, #92949c)" />
+          <Store size={48} aria-hidden="true" color="var(--ion-color-medium)" />
         )}
       </div>
       <IonCardHeader>
