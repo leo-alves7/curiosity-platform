@@ -58,6 +58,10 @@ vi.mock('./useMapMarkers', () => ({
   useMapMarkers: vi.fn(),
 }))
 
+vi.mock('./useStoreClusterHandlers', () => ({
+  useStoreClusterHandlers: vi.fn(),
+}))
+
 vi.mock('@/slices/storesSlice', async () => {
   const actual = await vi.importActual('@/slices/storesSlice')
   return {
@@ -287,5 +291,28 @@ describe('MapView', () => {
     expect(mapInstance?.setStyle).toHaveBeenCalledWith('https://example.com/dark')
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
+  })
+
+  it('calls useStoreClusterHandlers with map and stores', async () => {
+    const { useStoreClusterHandlers } = await import('./useStoreClusterHandlers')
+    setup()
+    expect(vi.mocked(useStoreClusterHandlers)).toHaveBeenCalled()
+  })
+
+  it('calls useStoreClusterHandlers with onViewDetails callback', async () => {
+    const { useStoreClusterHandlers } = await import('./useStoreClusterHandlers')
+    const onViewDetails = vi.fn()
+    const store = makeStore()
+    render(
+      <Provider store={store}>
+        <MapView onViewDetails={onViewDetails} />
+      </Provider>,
+    )
+    expect(vi.mocked(useStoreClusterHandlers)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(Array),
+      expect.any(Object),
+      expect.any(Function),
+    )
   })
 })
