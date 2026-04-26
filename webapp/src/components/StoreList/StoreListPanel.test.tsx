@@ -62,7 +62,9 @@ interface SetupOpts {
 function setup(opts: SetupOpts = {}) {
   const testStore = configureStore({
     reducer: { ui: uiReducer },
-    preloadedState: { ui: { isPanelOpen: opts.isPanelOpen ?? true } },
+    preloadedState: {
+      ui: { isPanelOpen: opts.isPanelOpen ?? true, isAddingStore: false, pinLocation: null },
+    },
   })
   const onSearchChange = vi.fn()
   const onCategoryChange = vi.fn()

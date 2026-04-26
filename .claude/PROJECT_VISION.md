@@ -80,35 +80,41 @@ The app is community-powered: any user can add a store they found. Store owners 
 
 ---
 
-## Current Implementation State (end of Epic CSTY-2)
+## Current Implementation State
 
-| Feature | Status |
-|---|---|
-| FastAPI backend, PostgreSQL, Redis, Celery | ✅ Done |
-| Alembic migrations + Base model (UUID, soft delete) | ✅ Done |
-| Firebase Auth (Google, Apple, email/password) | ✅ Done |
-| Admin role check (Firebase custom claims) | ✅ Done |
-| Store CRUD API | ✅ Done |
-| Category CRUD API | ✅ Done |
-| Store image upload (MinIO) | ✅ Done |
-| Admin management UI (store + category) | ✅ Done |
-| Interactive map (MapLibre) with store markers | ✅ Done |
-| Store list sidebar with search + filter | ✅ Done |
-| Store detail view (modal + direct URL) | ✅ Done |
-| Cloudflare Workers frontend deployment | ✅ Done |
-| Geospatial queries (PostGIS) | ❌ Not started |
-| Real-time location / WebSockets | ❌ Not started |
-| Turn-by-turn navigation / routing engine | ❌ Not started |
-| Push notifications (FCM) | ❌ Not started |
-| Enterprise owner role + store claim flow | ❌ Not started |
-| Subscription plans (Stripe) | ❌ Not started |
-| Sponsored store system | ❌ Not started |
-| Store catalogue (items + prices) | ❌ Not started |
-| Video uploads | ❌ Not started |
-| Reviews & ratings | ❌ Not started |
-| User profiles | ❌ Not started |
-| Map marker clustering | ❌ Not started |
-| Community store add (normal user flow) | ❌ Not started |
+| Feature | Status | Ticket |
+|---|---|---|
+| FastAPI backend, PostgreSQL, Redis, Celery | ✅ Done | CSTY-2 |
+| Alembic migrations + Base model (UUID, soft delete) | ✅ Done | CSTY-2 |
+| Firebase Auth (Google, Apple, email/password) | ✅ Done | CSTY-2 |
+| Admin role check (Firebase custom claims) | ✅ Done | CSTY-2 |
+| Store CRUD API | ✅ Done | CSTY-2 |
+| Category CRUD API | ✅ Done | CSTY-2 |
+| Store image upload (MinIO) | ✅ Done | CSTY-2 |
+| Admin management UI (store + category) | ✅ Done | CSTY-2 |
+| Interactive map (MapLibre) with store markers | ✅ Done | CSTY-2 |
+| Store list sidebar with search + filter | ✅ Done | CSTY-2 |
+| Store detail view (modal + direct URL) | ✅ Done | CSTY-2 |
+| Cloudflare Workers frontend deployment | ✅ Done | CSTY-2 |
+| Map tile style (OpenFreeMap) + 3D pitch 45° + custom mouse controls | ✅ Done | CSTY-13 |
+| GPS user location (pulsing dot, accuracy ring, follow mode, Locate Me FAB) | ✅ Done | CSTY-15 |
+| Collapsible store panel + bottom tab navigation (mobile IonTabs) | ✅ Done | CSTY-16 |
+| User header + profile menu + logout (AppHeader, UserAvatar, ProfileMenu) | ✅ Done | CSTY-17 |
+| Community store add flow (Add Store FAB, pin drop, bottom sheet form) | ✅ Done | CSTY-18 |
+| Dark mode (light default, system detection, manual toggle) | ❌ Not started | CSTY-19 |
+| Internationalization (EN + PT-BR) | ❌ Not started | CSTY-20 |
+| Map marker clustering | ❌ Not started | CSTY-21 |
+| Geospatial queries (PostGIS) | ❌ Not started | — |
+| Real-time location / WebSockets | ❌ Not started | — |
+| Turn-by-turn navigation / routing engine | ❌ Not started | — |
+| Push notifications (FCM) | ❌ Not started | — |
+| Enterprise owner role + store claim flow | ❌ Not started | — |
+| Subscription plans (Stripe) | ❌ Not started | — |
+| Sponsored store system | ❌ Not started | — |
+| Store catalogue (items + prices) | ❌ Not started | — |
+| Video uploads | ❌ Not started | — |
+| Reviews & ratings | ❌ Not started | — |
+| User profiles | ❌ Not started | — |
 
 ---
 
@@ -130,14 +136,14 @@ The app is community-powered: any user can add a store they found. Store owners 
 | Epic | Title | Status |
 |---|---|---|
 | CSTY-2 | Foundation & Infrastructure | ✅ Complete |
-| CSTY-12 | UX Overhaul & Real-time Map Foundation | 🔜 To Do |
+| CSTY-12 | UX Overhaul & Real-time Map Foundation | 🚧 In Progress (5/8 done) |
 
 Stories under CSTY-12:
-- CSTY-13 — Map Tile Style + 3D Defaults + Mouse Control Swap
-- CSTY-15 — GPS User Location Indicator
-- CSTY-16 — Collapsible Store Panel + Bottom Tab Navigation
-- CSTY-17 — User Header + Profile Menu + Logout
-- CSTY-18 — Add Store Quick-Action Flow
+- CSTY-13 — Map Tile Style + 3D Defaults + Mouse Control Swap ✅ Done
+- CSTY-15 — GPS User Location Indicator ✅ Done
+- CSTY-16 — Collapsible Store Panel + Bottom Tab Navigation ✅ Done
+- CSTY-17 — User Header + Profile Menu + Logout ✅ Done
+- CSTY-18 — Add Store Quick-Action Flow ✅ Done (PR #21)
 - CSTY-19 — Dark Mode (Light Default)
 - CSTY-20 — Internationalization (EN + PT-BR)
 - CSTY-21 — Map Marker Clustering

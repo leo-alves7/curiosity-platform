@@ -1,0 +1,131 @@
+import { useEffect, useState } from 'react'
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonModal,
+  IonTitle,
+  IonToast,
+  IonToolbar,
+} from '@ionic/react'
+import { useDispatch } from 'react-redux'
+import AddStoreForm, { type AddStoreFormData } from './AddStoreForm'
+import { fetchCategories } from '@/api/categories'
+import { createStore, uploadStoreImage } from '@/api/stores'
+import { fetchStoresAndCategories } from '@/slices/storesSlice'
+import { resetAddStore, type PinLocation } from '@/slices/uiSlice'
+import type { CategoryResponse } from '@/types/category'
+import type { StoreResponse } from '@/types/store'
+import type { AppDispatch } from '@/store'
+
+interface AddStoreModalProps {
+  isOpen: boolean
+  pinLocation: PinLocation | null
+  onClose: () => void
+  onStoreCreated?: (store: StoreResponse) => void
+}
+
+function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStoreModalProps) {
+  const dispatch = useDispatch<AppDispatch>()
+  const [categories, setCategories] = useState<CategoryResponse[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [successToast, setSuccessToast] = useState(false)
+  const [errorToast, setErrorToast] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+    let cancelled = false
+    fetchCategories()
+      .then((items) => {
+        if (!cancelled) setCategories(items)
+      })
+      .catch(() => {
+        if (!cancelled) setErrorToast('Failed to load categories')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isOpen])
+
+  const handleClose = () => {
+    setSubmitError(null)
+    dispatch(resetAddStore())
+    onClose()
+  }
+
+  const handleSubmit = async (data: AddStoreFormData) => {
+    if (!pinLocation) {
+      setSubmitError('Pin location is required')
+      return
+    }
+    setIsSubmitting(true)
+    setSubmitError(null)
+    try {
+      let store = await createStore({
+        name: data.name,
+        category_id: data.categoryId,
+        lat: pinLocation.lat,
+        lng: pinLocation.lng,
+      })
+      if (data.photo) {
+        store = await uploadStoreImage(store.id, data.photo)
+      }
+      setSuccessToast(true)
+      await dispatch(fetchStoresAndCategories())
+      onStoreCreated?.(store)
+      dispatch(resetAddStore())
+      onClose()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create store'
+      setSubmitError(message)
+      setErrorToast(message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <>
+      <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Add Store</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={handleClose} disabled={isSubmitting}>
+                Cancel
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <AddStoreForm
+            pinLocation={pinLocation}
+            categories={categories}
+            onSubmit={handleSubmit}
+            onCancel={handleClose}
+            isSubmitting={isSubmitting}
+            error={submitError}
+          />
+        </IonContent>
+      </IonModal>
+      <IonToast
+        isOpen={successToast}
+        message="Store created"
+        duration={2500}
+        color="success"
+        onDidDismiss={() => setSuccessToast(false)}
+      />
+      <IonToast
+        isOpen={errorToast !== null}
+        message={errorToast ?? ''}
+        duration={3000}
+        color="danger"
+        onDidDismiss={() => setErrorToast(null)}
+      />
+    </>
+  )
+}
+
+export default AddStoreModal

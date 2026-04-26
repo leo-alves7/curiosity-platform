@@ -6,6 +6,7 @@ import authReducer from '@/slices/authSlice'
 import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
 import locationReducer from '@/slices/locationSlice'
+import uiReducer from '@/slices/uiSlice'
 import MapView from './MapView'
 
 vi.mock('@/hooks/useUserLocation', () => ({
@@ -76,6 +77,7 @@ function makeStore(storesOverrides = {}) {
       stores: storesReducer,
       map: mapReducer,
       location: locationReducer,
+      ui: uiReducer,
     },
     preloadedState: {
       stores: {

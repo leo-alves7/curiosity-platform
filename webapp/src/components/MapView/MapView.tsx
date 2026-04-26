@@ -13,6 +13,7 @@ import {
 } from '@/slices/storesSlice'
 import { setCenter, setZoom, selectMapCenter, selectMapZoom } from '@/slices/mapSlice'
 import { setFollowingUser, selectUserLocation, selectFollowingUser } from '@/slices/locationSlice'
+import { selectIsAddingStore } from '@/slices/uiSlice'
 import { useUserLocation } from '@/hooks/useUserLocation'
 import UserLocationLayer from './UserLocationLayer'
 import LocateMeFab from './LocateMeFab'
@@ -37,6 +38,7 @@ function resolveMapStyle(prefersDark: boolean): string {
 
 interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
+  onMapReady?: (map: maplibregl.Map | null) => void
   onViewDetails?: (storeId: string) => void
   bottomOffset?: number
   showLocateFab?: boolean
@@ -44,6 +46,7 @@ interface MapViewProps {
 
 function MapView({
   onMarkerActionsReady,
+  onMapReady,
   onViewDetails,
   bottomOffset = 0,
   showLocateFab = true,
@@ -61,6 +64,9 @@ function MapView({
   const error = useSelector(selectStoresError)
   const userLocation = useSelector(selectUserLocation)
   const isFollowingUser = useSelector(selectFollowingUser)
+  const isAddingStore = useSelector(selectIsAddingStore)
+  const isAddingStoreRef = useRef(false)
+  isAddingStoreRef.current = isAddingStore
 
   useUserLocation()
 
@@ -91,14 +97,14 @@ function MapView({
     let activeButton: number | null = null
     let lastX = 0
     let lastY = 0
+    let hasDragged = false
+    const DRAG_THRESHOLD = 4
 
     const onPointerDown = (e: PointerEvent) => {
       activeButton = e.button
       lastX = e.clientX
       lastY = e.clientY
-      if (e.button === 0) {
-        container.requestPointerLock?.()
-      }
+      hasDragged = false
       // Any user-initiated pan (right-drag) cancels follow mode. dragPan is disabled
       // so MapLibre's 'dragstart' event never fires — we handle it here instead.
       if (e.button === 2) {
@@ -117,7 +123,17 @@ function MapView({
         lastY = e.clientY
       }
 
-      if (activeButton === 0) {
+      // Require intentional drag before rotating or locking — prevents accidental
+      // rotation when clicking store markers or dropping a pin.
+      if (!hasDragged) {
+        if (Math.abs(dx) + Math.abs(dy) <= DRAG_THRESHOLD) return
+        hasDragged = true
+        if (activeButton === 0 && !isAddingStoreRef.current) {
+          container.requestPointerLock?.()
+        }
+      }
+
+      if (activeButton === 0 && !isAddingStoreRef.current) {
         mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
       } else if (activeButton === 1) {
         const newPitch = Math.max(0, Math.min(85, mapInstance.getPitch() - dy * 0.3))
@@ -195,6 +211,12 @@ function MapView({
       onMarkerActionsReady(markerActions)
     }
   }, [onMarkerActionsReady, markerActions])
+
+  useEffect(() => {
+    if (onMapReady) {
+      onMapReady(map)
+    }
+  }, [onMapReady, map])
 
   if (status === 'failed') {
     return (

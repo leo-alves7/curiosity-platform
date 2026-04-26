@@ -2,11 +2,14 @@ import { useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IonContent, IonFab, IonFabButton, IonIcon, IonModal, IonPage } from '@ionic/react'
 import { listOutline } from 'ionicons/icons'
+import maplibregl from 'maplibre-gl'
 import AppHeader from '@/components/Layout/AppHeader'
 import MapView from '@/components/MapView'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
 import { StoreDetailView } from '@/components/StoreDetail'
 import LocateMeFab from '@/components/MapView/LocateMeFab'
+import { AddStoreButton, AddStoreModal } from '@/components/AddStore'
+import { usePinDrop } from '@/components/AddStore/usePinDrop'
 import type { MarkerActions } from '@/components/MapView/useMapMarkers'
 import {
   selectCategories,
@@ -22,20 +25,32 @@ import {
   setSearchQuery,
   setSelectedCategory,
 } from '@/slices/storesSlice'
-import { selectIsPanelOpen, togglePanel, setPanelOpen } from '@/slices/uiSlice'
+import {
+  selectIsPanelOpen,
+  togglePanel,
+  setPanelOpen,
+  selectIsAddingStore,
+  selectPinLocation,
+  setPinLocation,
+  resetAddStore,
+} from '@/slices/uiSlice'
 import { selectUserLocation, selectFollowingUser, setFollowingUser } from '@/slices/locationSlice'
 import { useIsMobile } from '@/components/AppTabs/useIsMobile'
 import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
+import type { StoreResponse } from '@/types/store'
 import type { AppDispatch } from '@/store'
 
 function MapPage() {
   const dispatch = useDispatch<AppDispatch>()
   const markerActionsRef = useRef<MarkerActions | null>(null)
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
+  const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
   const isMobile = useIsMobile()
   const isPanelOpen = useSelector(selectIsPanelOpen)
   const userLocation = useSelector(selectUserLocation)
   const isFollowingUser = useSelector(selectFollowingUser)
+  const isAddingStore = useSelector(selectIsAddingStore)
+  const pinLocation = useSelector(selectPinLocation)
 
   const filteredStores = useSelector(selectFilteredStores)
   const categories = useSelector(selectCategories)
@@ -52,6 +67,28 @@ function MapPage() {
 
   const handleMarkerActionsReady = useCallback((actions: MarkerActions) => {
     markerActionsRef.current = actions
+  }, [])
+
+  const handleMapReady = useCallback((map: maplibregl.Map | null) => {
+    setMapInstance(map)
+  }, [])
+
+  const handlePinDropped = useCallback(
+    (lat: number, lng: number) => {
+      dispatch(setPinLocation({ lat, lng }))
+    },
+    [dispatch],
+  )
+
+  usePinDrop(mapInstance, isAddingStore && pinLocation === null, handlePinDropped)
+
+  const handleAddStoreModalClose = useCallback(() => {
+    dispatch(resetAddStore())
+  }, [dispatch])
+
+  const handleStoreCreated = useCallback((store: StoreResponse) => {
+    if (store.lat == null || store.lng == null) return
+    setSelectedStoreId(store.id)
   }, [])
 
   const handleViewDetails = useCallback((storeId: string) => {
@@ -99,6 +136,7 @@ function MapPage() {
           <div style={{ width: '100%', height: '100%' }}>
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
+              onMapReady={handleMapReady}
               onViewDetails={handleViewDetails}
               showLocateFab={false}
             />
@@ -152,6 +190,13 @@ function MapPage() {
             <IonIcon icon={listOutline} />
           </IonFabButton>
         </IonFab>
+        <AddStoreButton bottomOffset={TAB_BAR_HEIGHT + 56 + 8 + 56 + 8} />
+        <AddStoreModal
+          isOpen={isAddingStore && pinLocation !== null}
+          pinLocation={pinLocation}
+          onClose={handleAddStoreModalClose}
+          onStoreCreated={handleStoreCreated}
+        />
       </IonPage>
     )
   }
@@ -194,6 +239,7 @@ function MapPage() {
           <div style={{ height: '100%' }}>
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
+              onMapReady={handleMapReady}
               onViewDetails={handleViewDetails}
             />
           </div>
@@ -207,6 +253,13 @@ function MapPage() {
             />
           )}
         </IonModal>
+        <AddStoreButton bottomOffset={64} />
+        <AddStoreModal
+          isOpen={isAddingStore && pinLocation !== null}
+          pinLocation={pinLocation}
+          onClose={handleAddStoreModalClose}
+          onStoreCreated={handleStoreCreated}
+        />
       </IonContent>
     </IonPage>
   )
