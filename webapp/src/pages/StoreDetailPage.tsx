@@ -9,10 +9,12 @@ import {
   IonToolbar,
 } from '@ionic/react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { selectCategoryMap } from '@/slices/storesSlice'
 import { StoreDetailView } from '@/components/StoreDetail'
 
 function StoreDetailPage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const categoryMap = useSelector(selectCategoryMap)
 
@@ -23,7 +25,7 @@ function StoreDetailPage() {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/" />
           </IonButtons>
-          <IonTitle>Store Details</IonTitle>
+          <IonTitle>{t('storeDetailPage.title')}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
