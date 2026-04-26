@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
+import uiReducer from '@/slices/uiSlice'
 import StoreListPanel from './StoreListPanel'
 import type { CategoryResponse } from '@/types/category'
 import type { StoreResponse } from '@/types/store'
@@ -51,30 +55,39 @@ interface SetupOpts {
   searchQuery?: string
   selectedCategoryId?: string | null
   hasMore?: boolean
+  isMobile?: boolean
+  isPanelOpen?: boolean
 }
 
 function setup(opts: SetupOpts = {}) {
+  const testStore = configureStore({
+    reducer: { ui: uiReducer },
+    preloadedState: { ui: { isPanelOpen: opts.isPanelOpen ?? true } },
+  })
   const onSearchChange = vi.fn()
   const onCategoryChange = vi.fn()
   const onLoadMore = vi.fn()
   const onStoreClick = vi.fn()
   const result = render(
-    <StoreListPanel
-      filteredStores={opts.filteredStores ?? [makeStore()]}
-      categories={opts.categories ?? mockCategories}
-      categoryMap={opts.categoryMap ?? { 'cat-1': 'Food', 'cat-2': 'Books' }}
-      status={opts.status ?? 'succeeded'}
-      error={opts.error ?? null}
-      searchQuery={opts.searchQuery ?? ''}
-      selectedCategoryId={opts.selectedCategoryId ?? null}
-      hasMore={opts.hasMore ?? false}
-      onSearchChange={onSearchChange}
-      onCategoryChange={onCategoryChange}
-      onLoadMore={onLoadMore}
-      onStoreClick={onStoreClick}
-    />,
+    <Provider store={testStore}>
+      <StoreListPanel
+        filteredStores={opts.filteredStores ?? [makeStore()]}
+        categories={opts.categories ?? mockCategories}
+        categoryMap={opts.categoryMap ?? { 'cat-1': 'Food', 'cat-2': 'Books' }}
+        status={opts.status ?? 'succeeded'}
+        error={opts.error ?? null}
+        searchQuery={opts.searchQuery ?? ''}
+        selectedCategoryId={opts.selectedCategoryId ?? null}
+        hasMore={opts.hasMore ?? false}
+        isMobile={opts.isMobile}
+        onSearchChange={onSearchChange}
+        onCategoryChange={onCategoryChange}
+        onLoadMore={onLoadMore}
+        onStoreClick={onStoreClick}
+      />
+    </Provider>,
   )
-  return { onSearchChange, onCategoryChange, onLoadMore, onStoreClick, ...result }
+  return { testStore, onSearchChange, onCategoryChange, onLoadMore, onStoreClick, ...result }
 }
 
 describe('StoreListPanel', () => {
@@ -162,5 +175,31 @@ describe('StoreListPanel', () => {
   it('hides the segment control when there are no categories', () => {
     const { container } = setup({ categories: [] })
     expect(container.querySelector('ion-segment')).toBeNull()
+  })
+
+  describe('close button', () => {
+    it('renders close button when isMobile is true', () => {
+      setup({ isMobile: true })
+      expect(screen.getByLabelText('Close panel')).toBeDefined()
+    })
+
+    it('does not render close button when isMobile is false', () => {
+      setup({ isMobile: false })
+      expect(screen.queryByLabelText('Close panel')).toBeNull()
+    })
+
+    it('does not render close button when isMobile is undefined', () => {
+      setup()
+      expect(screen.queryByLabelText('Close panel')).toBeNull()
+    })
+
+    it('dispatches togglePanel when close button is clicked', async () => {
+      vi.useRealTimers()
+      const { testStore } = setup({ isMobile: true, isPanelOpen: true })
+      const user = userEvent.setup()
+      const closeButton = screen.getByLabelText('Close panel')
+      await user.click(closeButton)
+      expect(testStore.getState().ui.isPanelOpen).toBe(false)
+    })
   })
 })

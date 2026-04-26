@@ -38,9 +38,16 @@ function resolveMapStyle(prefersDark: boolean): string {
 interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
   onViewDetails?: (storeId: string) => void
+  bottomOffset?: number
+  showLocateFab?: boolean
 }
 
-function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
+function MapView({
+  onMarkerActionsReady,
+  onViewDetails,
+  bottomOffset = 0,
+  showLocateFab = true,
+}: MapViewProps = {}) {
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -158,7 +165,6 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
         document.exitPointerLock?.()
       }
       container.removeEventListener('contextmenu', onContextMenu)
-      setMap(null)
       mapInstance.remove()
     }
   }, [])
@@ -170,14 +176,16 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
     [onViewDetails],
   )
 
+  useEffect(() => {
+    if (!isFollowingUser || !map || !userLocation) return
+    map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
+  }, [isFollowingUser, map, userLocation])
+
   const handleToggleFollow = useCallback(
     (active: boolean) => {
       dispatch(setFollowingUser(active))
-      if (active && map && userLocation) {
-        map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
-      }
     },
-    [dispatch, map, userLocation],
+    [dispatch],
   )
 
   const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
@@ -212,11 +220,14 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
         </div>
       )}
       <UserLocationLayer map={map} userLocation={userLocation} />
-      <LocateMeFab
-        userLocation={userLocation}
-        isFollowingUser={isFollowingUser}
-        onToggleFollow={handleToggleFollow}
-      />
+      {showLocateFab && (
+        <LocateMeFab
+          userLocation={userLocation}
+          isFollowingUser={isFollowingUser}
+          onToggleFollow={handleToggleFollow}
+          bottomOffset={bottomOffset}
+        />
+      )}
       <IonToast
         isOpen={showPermissionToast}
         message="Location permission denied. Enable it in your browser settings."

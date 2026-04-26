@@ -7,8 +7,10 @@ import authReducer from '@/slices/authSlice'
 import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
 import locationReducer from '@/slices/locationSlice'
+import uiReducer from '@/slices/uiSlice'
 import MapPage from './MapPage'
 import type { StoreResponse } from '@/types/store'
+import * as useIsMobileModule from '@/components/AppTabs/useIsMobile'
 
 vi.mock('maplibre-gl', () => ({
   default: {
@@ -19,8 +21,8 @@ vi.mock('maplibre-gl', () => ({
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
       getBearing: vi.fn().mockReturnValue(0),
-      setBearing: vi.fn(),
       getPitch: vi.fn().mockReturnValue(45),
+      setBearing: vi.fn(),
       setPitch: vi.fn(),
       panBy: vi.fn(),
       flyTo: vi.fn(),
@@ -82,6 +84,7 @@ interface SetupOpts {
   items?: StoreResponse[]
   categoryMap?: Record<string, string>
   status?: 'idle' | 'loading' | 'succeeded' | 'failed'
+  isPanelOpen?: boolean
 }
 
 function setup(opts: SetupOpts = {}) {
@@ -91,6 +94,7 @@ function setup(opts: SetupOpts = {}) {
       stores: storesReducer,
       map: mapReducer,
       location: locationReducer,
+      ui: uiReducer,
     },
     preloadedState: {
       stores: {
@@ -104,6 +108,9 @@ function setup(opts: SetupOpts = {}) {
         page: 1,
         pageSize: 20,
         hasMore: false,
+      },
+      ui: {
+        isPanelOpen: opts.isPanelOpen ?? true,
       },
     },
   })
@@ -124,28 +131,69 @@ describe('MapPage', () => {
     cleanup()
   })
 
-  it('renders without crashing', () => {
-    const { container } = setup()
-    expect(container).toBeDefined()
+  describe('desktop layout', () => {
+    beforeEach(() => {
+      vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(false)
+    })
+
+    it('renders without crashing', () => {
+      const { container } = setup()
+      expect(container).toBeDefined()
+    })
+
+    it('renders both the store list panel and the map container', () => {
+      const { container } = setup({
+        items: [makeStore({ id: '1', name: 'Alpha Store' })],
+        categoryMap: { 'cat-1': 'Food' },
+      })
+      expect(screen.getByText('Stores')).toBeDefined()
+      expect(screen.getByText('Alpha Store')).toBeDefined()
+      expect(container.querySelectorAll('div').length).toBeGreaterThan(0)
+    })
+
+    it('opens the store detail view when a store card is clicked', async () => {
+      setup({
+        items: [makeStore({ id: 'abc', name: 'Clickable' })],
+      })
+      const user = userEvent.setup()
+      await user.click(screen.getByText('Clickable'))
+      const modal = document.body.querySelector('ion-modal')
+      expect(modal).not.toBeNull()
+    })
+
+    it('does not render the toggle FAB on desktop', () => {
+      const { container } = setup()
+      expect(container.querySelector('[aria-label="Toggle store list"]')).toBeNull()
+    })
   })
 
-  it('renders both the store list panel and the map container', () => {
-    const { container } = setup({
-      items: [makeStore({ id: '1', name: 'Alpha Store' })],
-      categoryMap: { 'cat-1': 'Food' },
+  describe('mobile layout', () => {
+    beforeEach(() => {
+      vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(true)
     })
-    expect(screen.getByText('Stores')).toBeDefined()
-    expect(screen.getByText('Alpha Store')).toBeDefined()
-    expect(container.querySelectorAll('div').length).toBeGreaterThan(0)
-  })
 
-  it('opens the store detail view when a store card is clicked', async () => {
-    setup({
-      items: [makeStore({ id: 'abc', name: 'Clickable' })],
+    it('renders MapView full-screen without left panel', () => {
+      setup()
+      expect(screen.queryByText('Stores')).toBeNull()
     })
-    const user = userEvent.setup()
-    await user.click(screen.getByText('Clickable'))
-    const modal = document.body.querySelector('ion-modal')
-    expect(modal).not.toBeNull()
+
+    it('renders the toggle FAB on mobile', () => {
+      const { container } = setup()
+      expect(container.querySelector('[aria-label="Toggle store list"]')).not.toBeNull()
+    })
+
+    it('dispatches togglePanel when FAB is clicked', async () => {
+      const { store } = setup({ isPanelOpen: false })
+      const user = userEvent.setup()
+      const fab = screen.getByLabelText('Toggle store list')
+      await user.click(fab)
+      expect(store.getState().ui.isPanelOpen).toBe(true)
+    })
+
+    it('renders panel modal when isPanelOpen is true', () => {
+      const { container } = setup({ isPanelOpen: true })
+      const modals = container.querySelectorAll('ion-modal')
+      expect(modals.length).toBeGreaterThan(0)
+    })
   })
 })

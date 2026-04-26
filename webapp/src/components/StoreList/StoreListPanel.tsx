@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react'
-import { IonLabel, IonSearchbar, IonSegment, IonSegmentButton, IonText } from '@ionic/react'
+import { useDispatch } from 'react-redux'
+import {
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonSearchbar,
+  IonSegment,
+  IonSegmentButton,
+  IonText,
+} from '@ionic/react'
+import { closeOutline } from 'ionicons/icons'
 import StoreList from './StoreList'
 import { useSearchDebounce } from './useSearchDebounce'
+import { togglePanel } from '@/slices/uiSlice'
+import type { AppDispatch } from '@/store'
 import type { CategoryResponse } from '@/types/category'
 import type { StoreResponse } from '@/types/store'
 
@@ -14,6 +26,7 @@ interface StoreListPanelProps {
   searchQuery: string
   selectedCategoryId: string | null
   hasMore: boolean
+  isMobile?: boolean
   onSearchChange: (query: string) => void
   onCategoryChange: (categoryId: string | null) => void
   onLoadMore: () => void
@@ -31,11 +44,13 @@ function StoreListPanel({
   searchQuery,
   selectedCategoryId,
   hasMore,
+  isMobile,
   onSearchChange,
   onCategoryChange,
   onLoadMore,
   onStoreClick,
 }: StoreListPanelProps) {
+  const dispatch = useDispatch<AppDispatch>()
   const [localQuery, setLocalQuery] = useState(searchQuery)
 
   useEffect(() => {
@@ -64,9 +79,22 @@ function StoreListPanel({
       }}
     >
       <div style={{ padding: '12px 16px 0' }}>
-        <IonText>
-          <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600 }}>Stores</h2>
-        </IonText>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <IonText>
+            <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600 }}>Stores</h2>
+          </IonText>
+          {isMobile && (
+            <IonButton
+              size="small"
+              fill="clear"
+              color="medium"
+              aria-label="Close panel"
+              onClick={() => dispatch(togglePanel())}
+            >
+              <IonIcon slot="icon-only" icon={closeOutline} />
+            </IonButton>
+          )}
+        </div>
         <IonSearchbar
           aria-label="Search stores"
           value={localQuery}
