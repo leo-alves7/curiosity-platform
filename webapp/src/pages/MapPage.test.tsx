@@ -12,6 +12,8 @@ import MapPage from './MapPage'
 import type { StoreResponse } from '@/types/store'
 import * as useIsMobileModule from '@/components/AppTabs/useIsMobile'
 
+vi.mock('@/components/Layout/AppHeader', () => ({ default: () => null }))
+
 vi.mock('maplibre-gl', () => ({
   default: {
     Map: vi.fn().mockImplementation(() => ({
@@ -97,6 +99,14 @@ function setup(opts: SetupOpts = {}) {
       ui: uiReducer,
     },
     preloadedState: {
+      auth: {
+        isAuthenticated: false,
+        uid: null,
+        email: null,
+        isAdmin: false,
+        displayName: null,
+        photoURL: null,
+      },
       stores: {
         items: opts.items ?? [],
         categories: [],

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { IonContent, IonModal } from '@ionic/react'
+import { IonContent, IonModal, IonPage } from '@ionic/react'
+import AppHeader from '@/components/Layout/AppHeader'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
 import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
 import { StoreDetailView } from '@/components/StoreDetail'
@@ -60,7 +61,8 @@ function ExplorePage() {
   }, [dispatch, page])
 
   return (
-    <div className="ion-page">
+    <IonPage>
+      <AppHeader />
       <IonContent style={{ '--padding-bottom': `${TAB_BAR_HEIGHT}px` }}>
         <StoreListPanel
           filteredStores={paginatedStores}
@@ -86,7 +88,7 @@ function ExplorePage() {
           )}
         </IonModal>
       </IonContent>
-    </div>
+    </IonPage>
   )
 }
 

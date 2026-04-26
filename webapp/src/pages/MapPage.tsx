@@ -1,7 +1,8 @@
 import { useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { IonContent, IonFab, IonFabButton, IonIcon, IonModal } from '@ionic/react'
+import { IonContent, IonFab, IonFabButton, IonIcon, IonModal, IonPage } from '@ionic/react'
 import { listOutline } from 'ionicons/icons'
+import AppHeader from '@/components/Layout/AppHeader'
 import MapView from '@/components/MapView'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
 import { StoreDetailView } from '@/components/StoreDetail'
@@ -92,7 +93,8 @@ function MapPage() {
 
   if (isMobile) {
     return (
-      <div className="ion-page">
+      <IonPage>
+        <AppHeader />
         <IonContent scrollY={false} style={{ '--padding-bottom': `${TAB_BAR_HEIGHT}px` }}>
           <div style={{ width: '100%', height: '100%' }}>
             <MapView
@@ -150,12 +152,13 @@ function MapPage() {
             <IonIcon icon={listOutline} />
           </IonFabButton>
         </IonFab>
-      </div>
+      </IonPage>
     )
   }
 
   return (
-    <div className="ion-page">
+    <IonPage>
+      <AppHeader />
       <IonContent>
         <div
           style={{
@@ -205,7 +208,7 @@ function MapPage() {
           )}
         </IonModal>
       </IonContent>
-    </div>
+    </IonPage>
   )
 }
 
