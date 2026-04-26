@@ -70,6 +70,8 @@ function MapView({
   isAddingStoreRef.current = isAddingStore
 
   const effectiveTheme = useTheme()
+  const mapRef = useRef<maplibregl.Map | null>(null)
+  mapRef.current = map
 
   useUserLocation()
 
@@ -201,9 +203,9 @@ function MapView({
   }, [isFollowingUser, map, userLocation])
 
   useEffect(() => {
-    if (!map) return
-    map.setStyle(resolveMapStyle(effectiveTheme === 'dark'))
-  }, [map, effectiveTheme])
+    if (!mapRef.current) return
+    mapRef.current.setStyle(resolveMapStyle(effectiveTheme === 'dark'))
+  }, [effectiveTheme])
 
   const handleToggleFollow = useCallback(
     (active: boolean) => {

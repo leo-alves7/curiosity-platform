@@ -1,5 +1,6 @@
 import { setupIonicReact, IonApp, IonSpinner } from '@ionic/react'
 import '@ionic/core/css/core.css'
+import '@ionic/core/css/palettes/dark.class.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AdminRoute from './auth/AdminRoute'

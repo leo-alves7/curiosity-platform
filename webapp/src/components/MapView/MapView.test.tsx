@@ -262,23 +262,25 @@ describe('MapView', () => {
     expect(store.getState().location.isFollowingUser).toBe(false)
   })
 
-  it('calls setStyle when effectiveTheme changes', async () => {
+  it('calls setStyle when effectiveTheme changes after mount', async () => {
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_DARK', 'https://example.com/dark')
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://example.com/light')
-    vi.stubGlobal(
-      'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: false,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
-    )
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }))
     const maplibregl = await import('maplibre-gl')
-    setup({ storesOverrides: {}, theme: 'dark' })
+    const { store } = setup({ theme: 'light' })
     const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
-    expect(mapInstance?.setStyle).toHaveBeenCalled()
+    // setStyle must NOT be called on initial mount (map already created with correct style)
+    expect(mapInstance?.setStyle).not.toHaveBeenCalled()
+    // Dispatch a theme change — the reactive effect should now call setStyle
+    const { setTheme } = await import('@/slices/settingsSlice')
+    await import('@testing-library/react').then(({ act }) =>
+      act(() => { store.dispatch(setTheme('dark')) }),
+    )
+    expect(mapInstance?.setStyle).toHaveBeenCalledWith('https://example.com/dark')
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
   })
