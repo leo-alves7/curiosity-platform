@@ -26,7 +26,7 @@ curiosity-platform/
 ├── webapp/                    # React + TypeScript frontend
 │   ├── src/
 │   │   ├── api/               # Axios client and API hooks
-│   │   ├── components/        # Reusable UI components (AppTabs, MapView, StoreList, …)
+│   │   ├── components/        # Reusable UI components (AppTabs, Layout, MapView, StoreList, …)
 │   │   ├── features/          # Feature-scoped logic
 │   │   ├── hooks/             # Shared React hooks (e.g. useUserLocation)
 │   │   ├── pages/             # Page-level components
@@ -87,6 +87,7 @@ curiosity-platform/
 
 ## Features
 
+- **User header + profile menu** — a persistent `AppHeader` (`IonHeader`/`IonToolbar`) appears on `/map` and `/explore` (not `/login`). The right slot shows a `UserAvatar`: an `<img>` when Firebase `photoURL` is available, otherwise a colored circle with the user's initial (background color derived deterministically from `uid` via HSL hashing). Tapping the avatar opens an `IonPopover` (`ProfileMenu`) with the user's display name, email, a Settings stub (placeholder for future dark-mode and i18n toggles), and a **Logout** action. Logout calls `FirebaseAuthentication.signOut()`, dispatches `clearAuth()` to Redux, shows a confirmation `IonToast`, then redirects to `/login` via `ProtectedRoute`. Components live in `webapp/src/components/Layout/`.
 - **GPS user location** — "Locate me" FAB (bottom-right of map canvas) centers the map on the user's real-time GPS position with a pulsing dot and semi-transparent accuracy circle rendered via MapLibre GeoJSON layers; follow mode re-centers automatically as the user moves and deactivates (button changes state) when the map is panned manually; uses `navigator.geolocation.watchPosition` with `enableHighAccuracy: true`; location state and follow flag live in Redux `locationSlice`; `useUserLocation` hook in `src/hooks/` handles GPS subscription and cleanup — fully implemented
 - **Interactive map** with **MapLibre GL JS** — store pins, click-to-open popups (name, category, address), map position preserved in Redux across navigation — fully implemented
 - **Bottom tab navigation** — on mobile (< 768 px) the app renders two tabs: **Map** (`/map`) and **Explore** (`/explore`); on desktop the sidebar layout is preserved. `AppTabs` wraps authenticated routes and renders `IonTabBar` on mobile using `useNavigate` + `useLocation` from React Router v6. Panel collapsed state is stored in Redux (`uiSlice`) and persisted in `localStorage`.
@@ -190,7 +191,7 @@ POST /api/v1/admin/stores/{id}/toggle-active  # Toggle is_active flag on a store
 - Base model includes `uuid` PKs, `created_at`, `updated_at`, `deleted_at` (soft delete); soft-deleted records are automatically excluded from all ORM queries via a `do_orm_execute` event listener — no manual filtering required
 - Inject the database session into route handlers using `DbSession` from `curiosity.web.dependencies`: `async def handle_foo(session: DbSession) -> ...`
 - The `db_session` async fixture is available in all tests via `tests/conftest.py`; tests that use it must add `pytestmark = pytest.mark.xdist_group("db")` to prevent parallel-create race conditions
-- Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves.
+- Frontend auth: `useAuth` hook subscribes to Firebase Auth state via `onAuthStateChanged`, dispatches `setAuth`/`clearAuth` to Redux, and exposes `signInWithGoogle()`, `signInWithApple()`, `signInWithEmailAndPassword()`, and `signOut()`. `signOut()` explicitly dispatches `clearAuth()` in addition to calling `FirebaseAuthentication.signOut()` (the `onAuthStateChanged` null-callback also fires clearAuth as a fallback). The `useAuth` hook is called in `App.tsx`; the app renders a spinner until the initial auth state resolves. Redux `authSlice` stores: `isAuthenticated`, `uid`, `email`, `isAdmin`, `displayName`, `photoURL`.
 - `ProtectedRoute` reads `isAuthenticated` from Redux and redirects unauthenticated users to `/login`; `LoginPage` redirects authenticated users to `/map`
 - Routing structure: `/login` → `LoginPage`; authenticated users enter `AppTabs` which wraps `/map` → `MapPage`, `/explore` → `ExplorePage`, `/stores/:id` → `StoreDetailPage`; `/admin` is separately guarded by `AdminRoute`
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
