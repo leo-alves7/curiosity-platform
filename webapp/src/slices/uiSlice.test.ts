@@ -1,11 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { configureStore } from '@reduxjs/toolkit'
-import uiReducer, { togglePanel, setPanelOpen, selectIsPanelOpen } from './uiSlice'
+import uiReducer, {
+  togglePanel,
+  setPanelOpen,
+  setIsAddingStore,
+  setPinLocation,
+  resetAddStore,
+  selectIsPanelOpen,
+  selectIsAddingStore,
+  selectPinLocation,
+} from './uiSlice'
 
 function makeStore(isPanelOpen?: boolean) {
   return configureStore({
     reducer: { ui: uiReducer },
-    preloadedState: isPanelOpen !== undefined ? { ui: { isPanelOpen } } : undefined,
+    preloadedState:
+      isPanelOpen !== undefined
+        ? { ui: { isPanelOpen, isAddingStore: false, pinLocation: null } }
+        : undefined,
   })
 }
 
@@ -73,6 +85,53 @@ describe('uiSlice', () => {
     const store = makeStore(false)
     expect(selectIsPanelOpen(store.getState() as Parameters<typeof selectIsPanelOpen>[0])).toBe(
       false,
+    )
+  })
+
+  it('isAddingStore defaults to false', () => {
+    const store = makeStore()
+    expect(selectIsAddingStore(store.getState() as Parameters<typeof selectIsAddingStore>[0])).toBe(
+      false,
+    )
+  })
+
+  it('setIsAddingStore enables add-store mode', () => {
+    const store = makeStore()
+    store.dispatch(setIsAddingStore(true))
+    expect(selectIsAddingStore(store.getState() as Parameters<typeof selectIsAddingStore>[0])).toBe(
+      true,
+    )
+  })
+
+  it('setIsAddingStore(false) clears pinLocation', () => {
+    const store = makeStore()
+    store.dispatch(setIsAddingStore(true))
+    store.dispatch(setPinLocation({ lat: 1, lng: 2 }))
+    store.dispatch(setIsAddingStore(false))
+    expect(selectPinLocation(store.getState() as Parameters<typeof selectPinLocation>[0])).toBe(
+      null,
+    )
+  })
+
+  it('setPinLocation stores coordinates', () => {
+    const store = makeStore()
+    store.dispatch(setPinLocation({ lat: 10, lng: 20 }))
+    expect(selectPinLocation(store.getState() as Parameters<typeof selectPinLocation>[0])).toEqual({
+      lat: 10,
+      lng: 20,
+    })
+  })
+
+  it('resetAddStore clears both isAddingStore and pinLocation', () => {
+    const store = makeStore()
+    store.dispatch(setIsAddingStore(true))
+    store.dispatch(setPinLocation({ lat: 1, lng: 2 }))
+    store.dispatch(resetAddStore())
+    expect(selectIsAddingStore(store.getState() as Parameters<typeof selectIsAddingStore>[0])).toBe(
+      false,
+    )
+    expect(selectPinLocation(store.getState() as Parameters<typeof selectPinLocation>[0])).toBe(
+      null,
     )
   })
 })
