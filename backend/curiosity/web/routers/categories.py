@@ -25,7 +25,8 @@ async def handle_create_category(
     current_user: CurrentUser,
 ) -> CategoryResponse:
     category = await category_manager.create_category(session, data)
-    return CategoryResponse.model_validate(category)
+    loaded = await category_manager.get_category(session, category.id)
+    return CategoryResponse.model_validate(loaded)
 
 
 @categories_router.get("/{category_id}", response_model=CategoryResponse)

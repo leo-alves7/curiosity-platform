@@ -57,8 +57,10 @@ class CategoryManager:
         for key, value in data.model_dump(exclude_unset=True).items():
             setattr(category, key, value)
         await session.flush()
-        await session.refresh(category)
-        return category
+        result = await session.execute(
+            select(Category).where(Category.id == category_id).options(selectinload(Category.stores))
+        )
+        return result.scalar_one()
 
     async def delete_category(self, session: AsyncSession, category_id: uuid.UUID) -> bool:
         result = await session.execute(select(Category).where(Category.id == category_id))
