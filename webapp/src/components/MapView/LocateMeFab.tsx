@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { IonFab, IonFabButton, IonToast } from '@ionic/react'
 import { Locate, LocateOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface UserLocation {
   lat: number
@@ -21,6 +22,7 @@ function LocateMeFab({
   onToggleFollow,
   bottomOffset = 0,
 }: LocateMeFabProps) {
+  const { t } = useTranslation()
   const hasLocation = userLocation !== null
   const [showSettingsToast, setShowSettingsToast] = useState(false)
 
@@ -44,7 +46,11 @@ function LocateMeFab({
         <IonFabButton
           color={!hasLocation ? 'light' : isFollowingUser ? 'primary' : 'medium'}
           title={
-            !hasLocation ? 'Allow location access' : isFollowingUser ? 'Following' : 'Locate me'
+            !hasLocation
+              ? t('map.locateAllowAccess')
+              : isFollowingUser
+                ? t('map.locateFollowing')
+                : t('map.locateMe')
           }
           onClick={handleClick}
         >
@@ -57,7 +63,7 @@ function LocateMeFab({
       </IonFab>
       <IonToast
         isOpen={showSettingsToast}
-        message="Location access is blocked. Enable it in your browser settings and reload."
+        message={t('map.locationBlocked')}
         duration={4000}
         onDidDismiss={() => setShowSettingsToast(false)}
       />
