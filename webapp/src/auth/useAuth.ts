@@ -29,7 +29,15 @@ export function useAuth(): AuthHook {
         const tokenResult = await user.getIdTokenResult()
         setIdToken(tokenResult.token)
         const isAdmin = tokenResult.claims['role'] === 'admin'
-        dispatch(setAuth({ uid: user.uid, email: user.email ?? '', isAdmin }))
+        dispatch(
+          setAuth({
+            uid: user.uid,
+            email: user.email ?? '',
+            isAdmin,
+            displayName: user.displayName ?? null,
+            photoURL: user.photoURL ?? null,
+          }),
+        )
       } else {
         setIdToken(null)
         dispatch(clearAuth())
@@ -53,6 +61,7 @@ export function useAuth(): AuthHook {
 
   const signOut = async () => {
     await FirebaseAuthentication.signOut()
+    dispatch(clearAuth())
   }
 
   return {

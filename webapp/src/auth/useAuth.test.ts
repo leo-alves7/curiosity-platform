@@ -54,6 +54,8 @@ describe('useAuth', () => {
     const mockUser = {
       uid: 'uid-1',
       email: 'alice@example.com',
+      displayName: 'Alice',
+      photoURL: 'https://photo.url',
       getIdToken: vi.fn().mockResolvedValue('tok'),
       getIdTokenResult: vi.fn().mockResolvedValue({ token: 'tok', claims: {} }),
     }
@@ -68,6 +70,8 @@ describe('useAuth', () => {
     expect(store.getState().auth.isAuthenticated).toBe(true)
     expect(store.getState().auth.uid).toBe('uid-1')
     expect(store.getState().auth.email).toBe('alice@example.com')
+    expect(store.getState().auth.displayName).toBe('Alice')
+    expect(store.getState().auth.photoURL).toBe('https://photo.url')
   })
 
   it('dispatches clearAuth on sign-out', async () => {
@@ -96,5 +100,15 @@ describe('useAuth', () => {
     const { unmount } = renderHook(() => useAuth(), { wrapper })
     unmount()
     expect(mockUnsubscribe).toHaveBeenCalled()
+  })
+
+  it('dispatches clearAuth explicitly when signOut is called', async () => {
+    const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication')
+    mockOnAuthStateChanged.mockImplementation(() => mockUnsubscribe)
+    const { wrapper, store } = makeWrapper()
+    const { result } = renderHook(() => useAuth(), { wrapper })
+    await result.current.signOut()
+    expect(FirebaseAuthentication.signOut).toHaveBeenCalled()
+    expect(store.getState().auth.isAuthenticated).toBe(false)
   })
 })
