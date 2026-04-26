@@ -64,10 +64,14 @@ function UserLocationLayer({ map, userLocation }: UserLocationLayerProps) {
     }
 
     return () => {
-      map.off('load', addLayers)
-      if (map.getLayer(DOT_LAYER_ID)) map.removeLayer(DOT_LAYER_ID)
-      if (map.getLayer(ACCURACY_LAYER_ID)) map.removeLayer(ACCURACY_LAYER_ID)
-      if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
+      try {
+        map.off('load', addLayers)
+        if (map.getLayer(DOT_LAYER_ID)) map.removeLayer(DOT_LAYER_ID)
+        if (map.getLayer(ACCURACY_LAYER_ID)) map.removeLayer(ACCURACY_LAYER_ID)
+        if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
+      } catch {
+        // map.remove() already ran; internal style state is gone, nothing to clean up.
+      }
     }
   }, [map])
 

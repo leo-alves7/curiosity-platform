@@ -158,7 +158,6 @@ function MapView({ onMarkerActionsReady, onViewDetails }: MapViewProps = {}) {
         document.exitPointerLock?.()
       }
       container.removeEventListener('contextmenu', onContextMenu)
-      setMap(null)
       mapInstance.remove()
     }
   }, [])
