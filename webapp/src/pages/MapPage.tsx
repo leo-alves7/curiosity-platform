@@ -190,7 +190,7 @@ function MapPage() {
             <IonIcon icon={listOutline} />
           </IonFabButton>
         </IonFab>
-        <AddStoreButton bottomOffset={TAB_BAR_HEIGHT + 16 + 56 + 8 + 56 + 8} />
+        <AddStoreButton bottomOffset={TAB_BAR_HEIGHT + 56 + 8 + 56 + 8} />
         <AddStoreModal
           isOpen={isAddingStore && pinLocation !== null}
           pinLocation={pinLocation}
@@ -253,7 +253,7 @@ function MapPage() {
             />
           )}
         </IonModal>
-        <AddStoreButton />
+        <AddStoreButton bottomOffset={64} />
         <AddStoreModal
           isOpen={isAddingStore && pinLocation !== null}
           pinLocation={pinLocation}

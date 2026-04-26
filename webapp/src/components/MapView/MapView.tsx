@@ -13,6 +13,7 @@ import {
 } from '@/slices/storesSlice'
 import { setCenter, setZoom, selectMapCenter, selectMapZoom } from '@/slices/mapSlice'
 import { setFollowingUser, selectUserLocation, selectFollowingUser } from '@/slices/locationSlice'
+import { selectIsAddingStore } from '@/slices/uiSlice'
 import { useUserLocation } from '@/hooks/useUserLocation'
 import UserLocationLayer from './UserLocationLayer'
 import LocateMeFab from './LocateMeFab'
@@ -63,6 +64,9 @@ function MapView({
   const error = useSelector(selectStoresError)
   const userLocation = useSelector(selectUserLocation)
   const isFollowingUser = useSelector(selectFollowingUser)
+  const isAddingStore = useSelector(selectIsAddingStore)
+  const isAddingStoreRef = useRef(false)
+  isAddingStoreRef.current = isAddingStore
 
   useUserLocation()
 
@@ -98,7 +102,7 @@ function MapView({
       activeButton = e.button
       lastX = e.clientX
       lastY = e.clientY
-      if (e.button === 0) {
+      if (e.button === 0 && !isAddingStoreRef.current) {
         container.requestPointerLock?.()
       }
       // Any user-initiated pan (right-drag) cancels follow mode. dragPan is disabled
