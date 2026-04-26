@@ -40,12 +40,7 @@ function LocateMeFab({
 
   return (
     <>
-      <IonFab
-        vertical="bottom"
-        horizontal="end"
-        slot="fixed"
-        style={{ bottom: `${bottomOffset + 16}px` }}
-      >
+      <IonFab style={{ position: 'absolute', bottom: `${bottomOffset + 16}px`, right: '16px' }}>
         <IonFabButton
           color={!hasLocation ? 'light' : isFollowingUser ? 'primary' : 'medium'}
           title={

@@ -5,6 +5,7 @@ import { listOutline } from 'ionicons/icons'
 import MapView from '@/components/MapView'
 import StoreListPanel from '@/components/StoreList/StoreListPanel'
 import { StoreDetailView } from '@/components/StoreDetail'
+import LocateMeFab from '@/components/MapView/LocateMeFab'
 import type { MarkerActions } from '@/components/MapView/useMapMarkers'
 import {
   selectCategories,
@@ -21,6 +22,7 @@ import {
   setSelectedCategory,
 } from '@/slices/storesSlice'
 import { selectIsPanelOpen, togglePanel, setPanelOpen } from '@/slices/uiSlice'
+import { selectUserLocation, selectFollowingUser, setFollowingUser } from '@/slices/locationSlice'
 import { useIsMobile } from '@/components/AppTabs/useIsMobile'
 import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
 import type { AppDispatch } from '@/store'
@@ -31,6 +33,8 @@ function MapPage() {
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
   const isMobile = useIsMobile()
   const isPanelOpen = useSelector(selectIsPanelOpen)
+  const userLocation = useSelector(selectUserLocation)
+  const isFollowingUser = useSelector(selectFollowingUser)
 
   const filteredStores = useSelector(selectFilteredStores)
   const categories = useSelector(selectCategories)
@@ -79,6 +83,13 @@ function MapPage() {
     dispatch(setPanelOpen(false))
   }, [dispatch])
 
+  const handleLocateToggle = useCallback(
+    (active: boolean) => {
+      dispatch(setFollowingUser(active))
+    },
+    [dispatch],
+  )
+
   if (isMobile) {
     return (
       <div className="ion-page">
@@ -87,19 +98,9 @@ function MapPage() {
             <MapView
               onMarkerActionsReady={handleMarkerActionsReady}
               onViewDetails={handleViewDetails}
-              bottomOffset={TAB_BAR_HEIGHT}
+              showLocateFab={false}
             />
           </div>
-          <IonFab
-            vertical="bottom"
-            horizontal="end"
-            slot="fixed"
-            style={{ bottom: `${TAB_BAR_HEIGHT + 16 + 56 + 8}px` }}
-          >
-            <IonFabButton onClick={handleTogglePanel} aria-label="Toggle store list">
-              <IonIcon icon={listOutline} />
-            </IonFabButton>
-          </IonFab>
           <IonModal
             isOpen={isPanelOpen}
             onDidDismiss={handlePanelDismiss}
@@ -132,6 +133,23 @@ function MapPage() {
             )}
           </IonModal>
         </IonContent>
+        <LocateMeFab
+          userLocation={userLocation}
+          isFollowingUser={isFollowingUser}
+          onToggleFollow={handleLocateToggle}
+          bottomOffset={TAB_BAR_HEIGHT}
+        />
+        <IonFab
+          style={{
+            position: 'absolute',
+            bottom: `${TAB_BAR_HEIGHT + 16 + 56 + 8}px`,
+            right: '16px',
+          }}
+        >
+          <IonFabButton onClick={handleTogglePanel} aria-label="Toggle store list">
+            <IonIcon icon={listOutline} />
+          </IonFabButton>
+        </IonFab>
       </div>
     )
   }

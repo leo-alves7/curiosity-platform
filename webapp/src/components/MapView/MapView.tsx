@@ -39,9 +39,15 @@ interface MapViewProps {
   onMarkerActionsReady?: (actions: MarkerActions) => void
   onViewDetails?: (storeId: string) => void
   bottomOffset?: number
+  showLocateFab?: boolean
 }
 
-function MapView({ onMarkerActionsReady, onViewDetails, bottomOffset = 0 }: MapViewProps = {}) {
+function MapView({
+  onMarkerActionsReady,
+  onViewDetails,
+  bottomOffset = 0,
+  showLocateFab = true,
+}: MapViewProps = {}) {
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -170,14 +176,16 @@ function MapView({ onMarkerActionsReady, onViewDetails, bottomOffset = 0 }: MapV
     [onViewDetails],
   )
 
+  useEffect(() => {
+    if (!isFollowingUser || !map || !userLocation) return
+    map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
+  }, [isFollowingUser, map, userLocation])
+
   const handleToggleFollow = useCallback(
     (active: boolean) => {
       dispatch(setFollowingUser(active))
-      if (active && map && userLocation) {
-        map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
-      }
     },
-    [dispatch, map, userLocation],
+    [dispatch],
   )
 
   const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
@@ -212,12 +220,14 @@ function MapView({ onMarkerActionsReady, onViewDetails, bottomOffset = 0 }: MapV
         </div>
       )}
       <UserLocationLayer map={map} userLocation={userLocation} />
-      <LocateMeFab
-        userLocation={userLocation}
-        isFollowingUser={isFollowingUser}
-        onToggleFollow={handleToggleFollow}
-        bottomOffset={bottomOffset}
-      />
+      {showLocateFab && (
+        <LocateMeFab
+          userLocation={userLocation}
+          isFollowingUser={isFollowingUser}
+          onToggleFollow={handleToggleFollow}
+          bottomOffset={bottomOffset}
+        />
+      )}
       <IonToast
         isOpen={showPermissionToast}
         message="Location permission denied. Enable it in your browser settings."
