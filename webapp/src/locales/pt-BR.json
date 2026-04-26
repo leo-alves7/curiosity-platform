@@ -1,0 +1,132 @@
+{
+  "app": {
+    "title": "Curiosity"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "emailLabel": "Email",
+    "passwordLabel": "Senha",
+    "signInWithEmail": "Entrar com Email",
+    "signInWithGoogle": "Entrar com Google",
+    "signInWithApple": "Entrar com Apple",
+    "invalidCredentials": "Email ou senha inválidos",
+    "googleFailed": "Falha no login com Google",
+    "appleFailed": "Falha no login com Apple",
+    "signedOut": "Você foi desconectado"
+  },
+  "nav": {
+    "map": "Mapa",
+    "explore": "Explorar"
+  },
+  "profile": {
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "themeSystem": "Sistema",
+    "language": "Idioma",
+    "languageEn": "EN",
+    "languagePtBR": "PT-BR",
+    "languageAuto": "Auto",
+    "logout": "Sair",
+    "userAvatar": "Avatar do usuário"
+  },
+  "map": {
+    "failedToLoadStores": "Erro ao carregar lojas: {{error}}",
+    "locationPermissionDenied": "Permissão de localização negada. Ative nas configurações do navegador.",
+    "locationBlocked": "Acesso à localização bloqueado. Ative nas configurações do navegador e recarregue.",
+    "locateAllowAccess": "Permitir localização",
+    "locateFollowing": "Seguindo",
+    "locateMe": "Localizar-me"
+  },
+  "storeList": {
+    "loading": "Carregando lojas",
+    "failedToLoad": "Erro ao carregar lojas{{error}}",
+    "noStores": "Nenhuma loja encontrada. Ajuste os filtros.",
+    "loadingMore": "Carregando mais lojas...",
+    "heading": "Lojas",
+    "closePanel": "Fechar painel",
+    "search": "Buscar lojas",
+    "all": "Todas",
+    "addressUnavailable": "Endereço indisponível",
+    "viewOnMap": "Ver {{name}} no mapa"
+  },
+  "storePopup": {
+    "uncategorised": "Sem categoria",
+    "viewDetails": "Ver detalhes",
+    "addressUnavailable": "Endereço indisponível"
+  },
+  "storeDetail": {
+    "retry": "Tentar novamente",
+    "close": "Fechar",
+    "addressUnavailable": "Endereço indisponível",
+    "noDescription": "Nenhuma descrição disponível.",
+    "share": "Compartilhar"
+  },
+  "addStore": {
+    "cancelAdding": "Cancelar adição de loja",
+    "addStore": "Adicionar loja",
+    "modalTitle": "Adicionar Loja",
+    "cancel": "Cancelar",
+    "created": "Loja criada",
+    "failedToLoadCategories": "Erro ao carregar categorias",
+    "pinLocation": "Pino: {{lat}}, {{lng}}",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "Nome da loja",
+    "nameError": "O nome deve ter entre {{min}} e {{max}} caracteres",
+    "categoryLabel": "Categoria *",
+    "categoryPlaceholder": "Selecionar categoria",
+    "categoryRequired": "Categoria é obrigatória",
+    "photoLabel": "Foto (opcional)",
+    "photoTypeError": "Selecione um arquivo de imagem",
+    "photoSizeError": "A imagem deve ter menos de 5MB",
+    "saving": "Salvando...",
+    "save": "Salvar Loja"
+  },
+  "admin": {
+    "title": "Admin",
+    "tabStores": "Lojas",
+    "tabCategories": "Categorias",
+    "addCategory": "Adicionar Categoria",
+    "editCategory": "Editar Categoria",
+    "addStore": "Adicionar Loja",
+    "editStore": "Editar Loja",
+    "cancel": "Cancelar",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "Nome da categoria",
+    "nameRequired": "Nome é obrigatório",
+    "slugLabel": "Slug *",
+    "slugPlaceholder": "slug-da-categoria",
+    "slugRequired": "Slug é obrigatório",
+    "iconLabel": "Ícone",
+    "iconPlaceholder": "Nome do ícone (ex: restaurant)",
+    "colorLabel": "Cor",
+    "colorPlaceholder": "#FF5733",
+    "createCategory": "Criar Categoria",
+    "saveChanges": "Salvar Alterações",
+    "createStore": "Criar Loja",
+    "descriptionLabel": "Descrição",
+    "addressLabel": "Endereço",
+    "categoryLabel": "Categoria",
+    "categoryNone": "Nenhuma",
+    "latLabel": "Latitude (-90 a 90)",
+    "lngLabel": "Longitude (-180 a 180)",
+    "activeLabel": "Ativo",
+    "imageLabel": "Imagem",
+    "uploadImage": "Enviar Imagem",
+    "changeImage": "Alterar Imagem",
+    "searchPlaceholder": "Buscar lojas...",
+    "noAddress": "Sem endereço",
+    "deleteCategory": "Excluir Categoria",
+    "deleteCategoryConfirm": "Tem certeza que deseja excluir esta categoria?",
+    "deleteStore": "Excluir Loja",
+    "deleteStoreConfirm": "Tem certeza que deseja excluir esta loja? Esta ação não pode ser desfeita.",
+    "deleteConfirmButton": "Excluir",
+    "deleteCancelButton": "Cancelar"
+  },
+  "storeDetailPage": {
+    "title": "Detalhes da Loja"
+  },
+  "i18n": {
+    "autoSwitchedToast": "Idioma alterado para Português (BR) | Language auto-set to Portuguese (BR)"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "app": {
+    "title": "Curiosity"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signInWithEmail": "Sign in with Email",
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithApple": "Sign in with Apple",
+    "invalidCredentials": "Invalid email or password",
+    "googleFailed": "Google sign-in failed",
+    "appleFailed": "Apple sign-in failed",
+    "signedOut": "You have been signed out"
+  },
+  "nav": {
+    "map": "Map",
+    "explore": "Explore"
+  },
+  "profile": {
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "language": "Language",
+    "languageEn": "EN",
+    "languagePtBR": "PT-BR",
+    "languageAuto": "Auto",
+    "logout": "Logout",
+    "userAvatar": "User avatar"
+  },
+  "map": {
+    "failedToLoadStores": "Failed to load stores: {{error}}",
+    "locationPermissionDenied": "Location permission denied. Enable it in your browser settings.",
+    "locationBlocked": "Location access is blocked. Enable it in your browser settings and reload.",
+    "locateAllowAccess": "Allow location access",
+    "locateFollowing": "Following",
+    "locateMe": "Locate me"
+  },
+  "storeList": {
+    "loading": "Loading stores",
+    "failedToLoad": "Failed to load stores{{error}}",
+    "noStores": "No stores found. Try adjusting your filters.",
+    "loadingMore": "Loading more stores...",
+    "heading": "Stores",
+    "closePanel": "Close panel",
+    "search": "Search stores",
+    "all": "All",
+    "addressUnavailable": "Address unavailable",
+    "viewOnMap": "View {{name}} on map"
+  },
+  "storePopup": {
+    "uncategorised": "Uncategorised",
+    "viewDetails": "View details",
+    "addressUnavailable": "Address unavailable"
+  },
+  "storeDetail": {
+    "retry": "Retry",
+    "close": "Close",
+    "addressUnavailable": "Address unavailable",
+    "noDescription": "No description available.",
+    "share": "Share"
+  },
+  "addStore": {
+    "cancelAdding": "Cancel adding store",
+    "addStore": "Add store",
+    "modalTitle": "Add Store",
+    "cancel": "Cancel",
+    "created": "Store created",
+    "failedToLoadCategories": "Failed to load categories",
+    "pinLocation": "Pin: {{lat}}, {{lng}}",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Store name",
+    "nameError": "Name must be between {{min}} and {{max}} characters",
+    "categoryLabel": "Category *",
+    "categoryPlaceholder": "Select category",
+    "categoryRequired": "Category is required",
+    "photoLabel": "Photo (optional)",
+    "photoTypeError": "Please select an image file",
+    "photoSizeError": "Image must be smaller than 5MB",
+    "saving": "Saving...",
+    "save": "Save Store"
+  },
+  "admin": {
+    "title": "Admin",
+    "tabStores": "Stores",
+    "tabCategories": "Categories",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "addStore": "Add Store",
+    "editStore": "Edit Store",
+    "cancel": "Cancel",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Category name",
+    "nameRequired": "Name is required",
+    "slugLabel": "Slug *",
+    "slugPlaceholder": "category-slug",
+    "slugRequired": "Slug is required",
+    "iconLabel": "Icon",
+    "iconPlaceholder": "Icon name (e.g. restaurant)",
+    "colorLabel": "Color",
+    "colorPlaceholder": "#FF5733",
+    "createCategory": "Create Category",
+    "saveChanges": "Save Changes",
+    "createStore": "Create Store",
+    "descriptionLabel": "Description",
+    "addressLabel": "Address",
+    "categoryLabel": "Category",
+    "categoryNone": "None",
+    "latLabel": "Latitude (-90 to 90)",
+    "lngLabel": "Longitude (-180 to 180)",
+    "activeLabel": "Active",
+    "imageLabel": "Image",
+    "uploadImage": "Upload Image",
+    "changeImage": "Change Image",
+    "searchPlaceholder": "Search stores...",
+    "noAddress": "No address",
+    "deleteCategory": "Delete Category",
+    "deleteCategoryConfirm": "Are you sure you want to delete this category?",
+    "deleteStore": "Delete Store",
+    "deleteStoreConfirm": "Are you sure you want to delete this store? This action cannot be undone.",
+    "deleteConfirmButton": "Delete",
+    "deleteCancelButton": "Cancel"
+  },
+  "storeDetailPage": {
+    "title": "Store Details"
+  },
+  "i18n": {
+    "autoSwitchedToast": "Idioma alterado para Português (BR) | Language auto-set to Portuguese (BR)"
+  }
+}
