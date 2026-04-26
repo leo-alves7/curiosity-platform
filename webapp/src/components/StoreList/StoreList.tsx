@@ -5,6 +5,7 @@ import {
   IonSpinner,
   IonText,
 } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 import StoreCard from './StoreCard'
 import type { StoreResponse } from '@/types/store'
 
@@ -27,6 +28,8 @@ function StoreList({
   onLoadMore,
   hasMore,
 }: StoreListProps) {
+  const { t } = useTranslation()
+
   if (status === 'loading' && stores.length === 0) {
     return (
       <div
@@ -37,7 +40,7 @@ function StoreList({
           padding: 32,
         }}
       >
-        <IonSpinner aria-label="Loading stores" />
+        <IonSpinner aria-label={t('storeList.loading')} />
       </div>
     )
   }
@@ -45,7 +48,9 @@ function StoreList({
   if (status === 'failed') {
     return (
       <IonText color="danger">
-        <p style={{ padding: 16 }}>Failed to load stores{error ? `: ${error}` : ''}</p>
+        <p style={{ padding: 16 }}>
+          {t('storeList.failedToLoad', { error: error ? `: ${error}` : '' })}
+        </p>
       </IonText>
     )
   }
@@ -53,9 +58,7 @@ function StoreList({
   if (stores.length === 0) {
     return (
       <IonText color="medium">
-        <p style={{ padding: 16, textAlign: 'center' }}>
-          No stores found. Try adjusting your filters.
-        </p>
+        <p style={{ padding: 16, textAlign: 'center' }}>{t('storeList.noStores')}</p>
       </IonText>
     )
   }
@@ -78,7 +81,10 @@ function StoreList({
         ))}
       </IonList>
       <IonInfiniteScroll onIonInfinite={handleInfinite} disabled={!hasMore} threshold="100px">
-        <IonInfiniteScrollContent loadingText="Loading more stores..." loadingSpinner="bubbles" />
+        <IonInfiniteScrollContent
+          loadingText={t('storeList.loadingMore')}
+          loadingSpinner="bubbles"
+        />
       </IonInfiniteScroll>
     </>
   )

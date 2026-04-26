@@ -9,6 +9,7 @@ import {
   IonSegmentButton,
   IonText,
 } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 import { closeOutline } from 'ionicons/icons'
 import StoreList from './StoreList'
 import { useSearchDebounce } from './useSearchDebounce'
@@ -51,6 +52,7 @@ function StoreListPanel({
   onStoreClick,
 }: StoreListPanelProps) {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const [localQuery, setLocalQuery] = useState(searchQuery)
 
   useEffect(() => {
@@ -81,14 +83,16 @@ function StoreListPanel({
       <div style={{ padding: '12px 16px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <IonText>
-            <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600 }}>Stores</h2>
+            <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600 }}>
+              {t('storeList.heading')}
+            </h2>
           </IonText>
           {isMobile && (
             <IonButton
               size="small"
               fill="clear"
               color="medium"
-              aria-label="Close panel"
+              aria-label={t('storeList.closePanel')}
               onClick={() => dispatch(togglePanel())}
             >
               <IonIcon slot="icon-only" icon={closeOutline} />
@@ -96,9 +100,9 @@ function StoreListPanel({
           )}
         </div>
         <IonSearchbar
-          aria-label="Search stores"
+          aria-label={t('storeList.search')}
           value={localQuery}
-          placeholder="Search stores"
+          placeholder={t('storeList.search')}
           debounce={0}
           onIonInput={(event) => setLocalQuery(event.detail.value ?? '')}
         />
@@ -110,7 +114,7 @@ function StoreListPanel({
           >
             <IonSegmentButton value={ALL_CATEGORIES_VALUE}>
               <IonLabel>
-                <span>All</span>
+                <span>{t('storeList.all')}</span>
               </IonLabel>
             </IonSegmentButton>
             {categories.map((cat) => (
