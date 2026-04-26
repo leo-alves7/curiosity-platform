@@ -97,14 +97,14 @@ function MapView({
     let activeButton: number | null = null
     let lastX = 0
     let lastY = 0
+    let hasDragged = false
+    const DRAG_THRESHOLD = 4
 
     const onPointerDown = (e: PointerEvent) => {
       activeButton = e.button
       lastX = e.clientX
       lastY = e.clientY
-      if (e.button === 0 && !isAddingStoreRef.current) {
-        container.requestPointerLock?.()
-      }
+      hasDragged = false
       // Any user-initiated pan (right-drag) cancels follow mode. dragPan is disabled
       // so MapLibre's 'dragstart' event never fires — we handle it here instead.
       if (e.button === 2) {
@@ -123,7 +123,17 @@ function MapView({
         lastY = e.clientY
       }
 
-      if (activeButton === 0) {
+      // Require intentional drag before rotating or locking — prevents accidental
+      // rotation when clicking store markers or dropping a pin.
+      if (!hasDragged) {
+        if (Math.abs(dx) + Math.abs(dy) <= DRAG_THRESHOLD) return
+        hasDragged = true
+        if (activeButton === 0 && !isAddingStoreRef.current) {
+          container.requestPointerLock?.()
+        }
+      }
+
+      if (activeButton === 0 && !isAddingStoreRef.current) {
         mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
       } else if (activeButton === 1) {
         const newPitch = Math.max(0, Math.min(85, mapInstance.getPitch() - dy * 0.3))
