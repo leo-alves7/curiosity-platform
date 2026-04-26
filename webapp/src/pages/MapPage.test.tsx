@@ -19,6 +19,8 @@ vi.mock('maplibre-gl', () => ({
     Map: vi.fn().mockImplementation(() => ({
       remove: vi.fn(),
       on: vi.fn(),
+      off: vi.fn(),
+      getCanvas: vi.fn().mockReturnValue({ style: { cursor: '' } }),
       addControl: vi.fn(),
       getCenter: vi.fn().mockReturnValue({ lng: -53.45528, lat: -24.95583 }),
       getZoom: vi.fn().mockReturnValue(12),
@@ -87,6 +89,8 @@ interface SetupOpts {
   categoryMap?: Record<string, string>
   status?: 'idle' | 'loading' | 'succeeded' | 'failed'
   isPanelOpen?: boolean
+  isAddingStore?: boolean
+  pinLocation?: { lat: number; lng: number } | null
 }
 
 function setup(opts: SetupOpts = {}) {
@@ -121,6 +125,8 @@ function setup(opts: SetupOpts = {}) {
       },
       ui: {
         isPanelOpen: opts.isPanelOpen ?? true,
+        isAddingStore: opts.isAddingStore ?? false,
+        pinLocation: opts.pinLocation ?? null,
       },
     },
   })
@@ -204,6 +210,32 @@ describe('MapPage', () => {
       const { container } = setup({ isPanelOpen: true })
       const modals = container.querySelectorAll('ion-modal')
       expect(modals.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('add store flow', () => {
+    beforeEach(() => {
+      vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(false)
+    })
+
+    it('renders the AddStoreButton', () => {
+      setup()
+      expect(screen.getByLabelText('Add store')).toBeDefined()
+    })
+
+    it('toggles isAddingStore in Redux when AddStoreButton is clicked', async () => {
+      const { store } = setup()
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText('Add store'))
+      expect(store.getState().ui.isAddingStore).toBe(true)
+    })
+
+    it('clears add-store state when the cancel variant is clicked', async () => {
+      const { store } = setup({ isAddingStore: true, pinLocation: { lat: 1, lng: 2 } })
+      const user = userEvent.setup()
+      await user.click(screen.getByLabelText('Cancel adding store'))
+      expect(store.getState().ui.isAddingStore).toBe(false)
+      expect(store.getState().ui.pinLocation).toBeNull()
     })
   })
 })
