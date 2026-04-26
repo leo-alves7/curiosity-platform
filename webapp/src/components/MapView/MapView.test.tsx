@@ -7,6 +7,7 @@ import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
 import locationReducer from '@/slices/locationSlice'
 import uiReducer from '@/slices/uiSlice'
+import settingsReducer, { type ThemePreference } from '@/slices/settingsSlice'
 import MapView from './MapView'
 
 vi.mock('@/hooks/useUserLocation', () => ({
@@ -35,6 +36,7 @@ vi.mock('maplibre-gl', () => ({
       setPitch: vi.fn(),
       panBy: vi.fn(),
       easeTo: vi.fn(),
+      setStyle: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
@@ -70,7 +72,7 @@ vi.mock('@/slices/storesSlice', async () => {
   }
 })
 
-function makeStore(storesOverrides = {}) {
+function makeStore(storesOverrides = {}, theme: ThemePreference = 'system') {
   return configureStore({
     reducer: {
       auth: authReducer,
@@ -78,6 +80,7 @@ function makeStore(storesOverrides = {}) {
       map: mapReducer,
       location: locationReducer,
       ui: uiReducer,
+      settings: settingsReducer,
     },
     preloadedState: {
       stores: {
@@ -93,12 +96,13 @@ function makeStore(storesOverrides = {}) {
         hasMore: false,
         ...storesOverrides,
       },
+      settings: { theme },
     },
   })
 }
 
-function setup(storesOverrides = {}) {
-  const store = makeStore(storesOverrides)
+function setup({ storesOverrides = {}, theme = 'system' as ThemePreference } = {}) {
+  const store = makeStore(storesOverrides, theme)
   const result = render(
     <Provider store={store}>
       <MapView />
@@ -122,17 +126,17 @@ describe('MapView', () => {
   })
 
   it('shows loading spinner when status is loading', () => {
-    const { container } = setup({ status: 'loading' })
+    const { container } = setup({ storesOverrides: { status: 'loading' } })
     expect(container.querySelector('ion-spinner')).not.toBeNull()
   })
 
   it('shows error message when status is failed', () => {
-    setup({ status: 'failed', error: 'Network error' })
+    setup({ storesOverrides: { status: 'failed', error: 'Network error' } })
     expect(screen.getByText(/Failed to load stores: Network error/)).toBeDefined()
   })
 
   it('renders map container when succeeded', () => {
-    const { container } = setup({ status: 'succeeded' })
+    const { container } = setup({ storesOverrides: { status: 'succeeded' } })
     expect(container.querySelector('div')).toBeDefined()
   })
 
@@ -223,7 +227,16 @@ describe('MapView', () => {
   it('uses VITE_MAPLIBRE_STYLE_URL_LIGHT env var for light mode style', async () => {
     const maplibregl = await import('maplibre-gl')
     vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://tiles.openfreemap.org/styles/liberty')
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+    vi.stubGlobal(
+      'matchMedia',
+      vi
+        .fn()
+        .mockReturnValue({
+          matches: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }),
+    )
     setup()
     const MapConstructor = vi.mocked(maplibregl.default.Map)
     expect(MapConstructor).toHaveBeenCalledWith(
@@ -247,5 +260,26 @@ describe('MapView', () => {
     )
 
     expect(store.getState().location.isFollowingUser).toBe(false)
+  })
+
+  it('calls setStyle when effectiveTheme changes', async () => {
+    vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_DARK', 'https://example.com/dark')
+    vi.stubEnv('VITE_MAPLIBRE_STYLE_URL_LIGHT', 'https://example.com/light')
+    vi.stubGlobal(
+      'matchMedia',
+      vi
+        .fn()
+        .mockReturnValue({
+          matches: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }),
+    )
+    const maplibregl = await import('maplibre-gl')
+    setup({ storesOverrides: {}, theme: 'dark' })
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    expect(mapInstance?.setStyle).toHaveBeenCalled()
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
   })
 })

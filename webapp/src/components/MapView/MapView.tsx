@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { IonSpinner, IonText, IonToast } from '@ionic/react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { useTheme } from '@/hooks/useTheme'
 import { useMapMarkers, type MarkerActions } from './useMapMarkers'
 import {
   fetchStoresAndCategories,
@@ -67,6 +68,8 @@ function MapView({
   const isAddingStore = useSelector(selectIsAddingStore)
   const isAddingStoreRef = useRef(false)
   isAddingStoreRef.current = isAddingStore
+
+  const effectiveTheme = useTheme()
 
   useUserLocation()
 
@@ -196,6 +199,11 @@ function MapView({
     if (!isFollowingUser || !map || !userLocation) return
     map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 500 })
   }, [isFollowingUser, map, userLocation])
+
+  useEffect(() => {
+    if (!map) return
+    map.setStyle(resolveMapStyle(effectiveTheme === 'dark'))
+  }, [map, effectiveTheme])
 
   const handleToggleFollow = useCallback(
     (active: boolean) => {

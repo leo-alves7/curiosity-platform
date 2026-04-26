@@ -8,6 +8,7 @@ import storesReducer from '@/slices/storesSlice'
 import mapReducer from '@/slices/mapSlice'
 import locationReducer from '@/slices/locationSlice'
 import uiReducer from '@/slices/uiSlice'
+import settingsReducer from '@/slices/settingsSlice'
 import MapPage from './MapPage'
 import type { StoreResponse } from '@/types/store'
 import * as useIsMobileModule from '@/components/AppTabs/useIsMobile'
@@ -31,6 +32,7 @@ vi.mock('maplibre-gl', () => ({
       panBy: vi.fn(),
       flyTo: vi.fn(),
       easeTo: vi.fn(),
+      setStyle: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
@@ -101,6 +103,7 @@ function setup(opts: SetupOpts = {}) {
       map: mapReducer,
       location: locationReducer,
       ui: uiReducer,
+      settings: settingsReducer,
     },
     preloadedState: {
       auth: {
@@ -128,6 +131,7 @@ function setup(opts: SetupOpts = {}) {
         isAddingStore: opts.isAddingStore ?? false,
         pinLocation: opts.pinLocation ?? null,
       },
+      settings: { theme: 'system' as const },
     },
   })
   const result = render(
