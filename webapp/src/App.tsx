@@ -1,7 +1,10 @@
-import { setupIonicReact, IonApp, IonSpinner } from '@ionic/react'
+import { setupIonicReact, IonApp, IonSpinner, IonToast } from '@ionic/react'
 import '@ionic/core/css/core.css'
 import '@ionic/core/css/palettes/dark.class.css'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import ProtectedRoute from './auth/ProtectedRoute'
 import AdminRoute from './auth/AdminRoute'
 import LoginPage from './pages/LoginPage'
@@ -12,12 +15,32 @@ import AdminPage from './pages/AdminPage'
 import AppTabs from './components/AppTabs/AppTabs'
 import { useAuth } from './auth/useAuth'
 import { useTheme } from './hooks/useTheme'
+import { selectLanguage } from './slices/settingsSlice'
+import i18n from './i18n/index'
+import { detectLanguage } from './i18n/detectLanguage'
 
 setupIonicReact()
 
 function App() {
   useTheme()
   const { isLoading } = useAuth()
+  const { t } = useTranslation()
+  const language = useSelector(selectLanguage)
+  const [showAutoSwitchToast, setShowAutoSwitchToast] = useState(false)
+
+  useEffect(() => {
+    if (language !== null) {
+      i18n.changeLanguage(language)
+      return
+    }
+    const detected = detectLanguage()
+    if (detected === 'pt-BR') {
+      i18n.changeLanguage('pt-BR')
+      setShowAutoSwitchToast(true)
+    } else {
+      i18n.changeLanguage('en')
+    }
+  }, [language])
 
   if (isLoading) {
     return (
@@ -44,6 +67,13 @@ function App() {
         </Routes>
         <AppTabs />
       </BrowserRouter>
+      <IonToast
+        isOpen={showAutoSwitchToast}
+        message={t('i18n.autoSwitchedToast')}
+        duration={5000}
+        buttons={[{ text: 'OK', role: 'cancel' }]}
+        onDidDismiss={() => setShowAutoSwitchToast(false)}
+      />
     </IonApp>
   )
 }

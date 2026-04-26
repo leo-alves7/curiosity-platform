@@ -10,7 +10,7 @@ import type { ThemePreference } from '@/slices/settingsSlice'
 function makeWrapper(theme: ThemePreference) {
   const store = configureStore({
     reducer: { settings: settingsReducer },
-    preloadedState: { settings: { theme } },
+    preloadedState: { settings: { theme, language: null as null } },
   })
   return ({ children }: { children: React.ReactNode }) =>
     React.createElement(Provider, { store, children })
@@ -28,13 +28,11 @@ describe('resolveEffectiveTheme', () => {
   it('returns dark when system and OS is dark', () => {
     vi.stubGlobal(
       'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: true,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
+      vi.fn().mockReturnValue({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     )
     expect(resolveEffectiveTheme('system')).toBe('dark')
     vi.unstubAllGlobals()
@@ -43,13 +41,11 @@ describe('resolveEffectiveTheme', () => {
   it('returns light when system and OS is light', () => {
     vi.stubGlobal(
       'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: false,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     )
     expect(resolveEffectiveTheme('system')).toBe('light')
     vi.unstubAllGlobals()

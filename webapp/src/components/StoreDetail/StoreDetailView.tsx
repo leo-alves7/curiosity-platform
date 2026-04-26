@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { IonButton, IonSkeletonText, IonText } from '@ionic/react'
 import { Share } from '@capacitor/share'
+import { useTranslation } from 'react-i18next'
 import { fetchStore } from '@/api/stores'
 import type { StoreResponse } from '@/types/store'
 import StoreDetailContent from './StoreDetailContent'
@@ -12,6 +13,7 @@ interface StoreDetailViewProps {
 }
 
 function StoreDetailView({ storeId, categoryMap, onClose }: StoreDetailViewProps) {
+  const { t } = useTranslation()
   const [store, setStore] = useState<StoreResponse | null>(null)
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -59,7 +61,7 @@ function StoreDetailView({ storeId, categoryMap, onClose }: StoreDetailViewProps
         <IonText color="danger">
           <p>{error}</p>
         </IonText>
-        <IonButton onClick={() => setRetryKey((k) => k + 1)}>Retry</IonButton>
+        <IonButton onClick={() => setRetryKey((k) => k + 1)}>{t('storeDetail.retry')}</IonButton>
       </div>
     )
   }

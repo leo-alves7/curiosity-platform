@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IonSpinner, IonText, IonToast } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useTheme } from '@/hooks/useTheme'
@@ -52,6 +53,7 @@ function MapView({
   bottomOffset = 0,
   showLocateFab = true,
 }: MapViewProps = {}) {
+  const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
@@ -231,7 +233,7 @@ function MapView({
   if (status === 'failed') {
     return (
       <IonText color="danger">
-        <p>Failed to load stores: {error}</p>
+        <p>{t('map.failedToLoadStores', { error })}</p>
       </IonText>
     )
   }
@@ -262,7 +264,7 @@ function MapView({
       )}
       <IonToast
         isOpen={showPermissionToast}
-        message="Location permission denied. Enable it in your browser settings."
+        message={t('map.locationPermissionDenied')}
         duration={4000}
         onDidDismiss={() => setShowPermissionToast(false)}
       />

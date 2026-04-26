@@ -12,6 +12,7 @@ import {
 } from '@ionic/react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { AppDispatch, RootState } from '../../store'
 import {
   fetchAdminStoresThunk,
@@ -25,6 +26,7 @@ import StoreForm from './StoreForm'
 
 function StoreManagement() {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const { stores, status, error, selectedStore } = useSelector((state: RootState) => state.admin)
   const [search, setSearch] = useState('')
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
@@ -67,14 +69,14 @@ function StoreManagement() {
         <IonInput
           value={search}
           onIonChange={(e) => setSearch(e.detail.value ?? '')}
-          placeholder="Search stores..."
+          placeholder={t('admin.searchPlaceholder')}
           style={{ flex: 1 }}
         />
         <IonButton onClick={handleAddNew}>
           <span slot="start" style={{ display: 'flex' }}>
             <Plus size={18} />
           </span>
-          Add Store
+          {t('admin.addStore')}
         </IonButton>
       </div>
 
@@ -85,7 +87,7 @@ function StoreManagement() {
           <IonItem key={store.id}>
             <IonLabel>
               <h2>{store.name}</h2>
-              <IonNote>{store.address ?? 'No address'}</IonNote>
+              <IonNote>{store.address ?? t('admin.noAddress')}</IonNote>
             </IonLabel>
             <IonToggle
               slot="end"
@@ -109,11 +111,19 @@ function StoreManagement() {
 
       <IonAlert
         isOpen={deleteTargetId !== null}
-        header="Delete Store"
-        message="Are you sure you want to delete this store? This action cannot be undone."
+        header={t('admin.deleteStore')}
+        message={t('admin.deleteStoreConfirm')}
         buttons={[
-          { text: 'Cancel', role: 'cancel', handler: () => setDeleteTargetId(null) },
-          { text: 'Delete', role: 'destructive', handler: handleDeleteConfirm },
+          {
+            text: t('admin.deleteCancelButton'),
+            role: 'cancel',
+            handler: () => setDeleteTargetId(null),
+          },
+          {
+            text: t('admin.deleteConfirmButton'),
+            role: 'destructive',
+            handler: handleDeleteConfirm,
+          },
         ]}
         onDidDismiss={() => setDeleteTargetId(null)}
       />

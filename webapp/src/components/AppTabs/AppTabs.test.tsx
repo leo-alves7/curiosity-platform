@@ -1,3 +1,4 @@
+import '@/i18n/index'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'

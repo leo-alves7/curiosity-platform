@@ -11,6 +11,7 @@ import {
   IonToolbar,
 } from '@ionic/react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { RootState } from '../store'
 import StoreManagement from '../components/Admin/StoreManagement'
 import CategoryManagement from '../components/Admin/CategoryManagement'
@@ -18,6 +19,7 @@ import CategoryManagement from '../components/Admin/CategoryManagement'
 type AdminTab = 'stores' | 'categories'
 
 function AdminPage() {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<AdminTab>('stores')
   const { status, error } = useSelector((state: RootState) => state.admin)
 
@@ -25,7 +27,7 @@ function AdminPage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Admin</IonTitle>
+          <IonTitle>{t('admin.title')}</IonTitle>
         </IonToolbar>
         <IonToolbar>
           <IonSegment
@@ -33,10 +35,10 @@ function AdminPage() {
             onIonChange={(e) => setActiveTab(e.detail.value as AdminTab)}
           >
             <IonSegmentButton value="stores">
-              <IonLabel>Stores</IonLabel>
+              <IonLabel>{t('admin.tabStores')}</IonLabel>
             </IonSegmentButton>
             <IonSegmentButton value="categories">
-              <IonLabel>Categories</IonLabel>
+              <IonLabel>{t('admin.tabCategories')}</IonLabel>
             </IonSegmentButton>
           </IonSegment>
         </IonToolbar>

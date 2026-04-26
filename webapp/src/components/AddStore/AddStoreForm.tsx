@@ -8,6 +8,7 @@ import {
   IonSelectOption,
   IonText,
 } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 import type { CategoryResponse } from '@/types/category'
 import type { PinLocation } from '@/slices/uiSlice'
 
@@ -41,6 +42,7 @@ function AddStoreForm({
   const [name, setName] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
+  const { t } = useTranslation()
   const [nameError, setNameError] = useState('')
   const [categoryError, setCategoryError] = useState('')
   const [photoError, setPhotoError] = useState('')
@@ -54,12 +56,12 @@ function AddStoreForm({
       return
     }
     if (!file.type.startsWith('image/')) {
-      setPhotoError('Please select an image file')
+      setPhotoError(t('addStore.photoTypeError'))
       setPhoto(null)
       return
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setPhotoError('Image must be smaller than 5MB')
+      setPhotoError(t('addStore.photoSizeError'))
       setPhoto(null)
       return
     }
@@ -71,13 +73,13 @@ function AddStoreForm({
     let valid = true
     const trimmed = name.trim()
     if (trimmed.length < NAME_MIN || trimmed.length > NAME_MAX) {
-      setNameError(`Name must be between ${NAME_MIN} and ${NAME_MAX} characters`)
+      setNameError(t('addStore.nameError', { min: NAME_MIN, max: NAME_MAX }))
       valid = false
     } else {
       setNameError('')
     }
     if (!categoryId) {
-      setCategoryError('Category is required')
+      setCategoryError(t('addStore.categoryRequired'))
       valid = false
     } else {
       setCategoryError('')
@@ -96,17 +98,20 @@ function AddStoreForm({
         <IonItem lines="none">
           <IonLabel>
             <p>
-              Pin: {pinLocation.lat.toFixed(5)}, {pinLocation.lng.toFixed(5)}
+              {t('addStore.pinLocation', {
+                lat: pinLocation.lat.toFixed(5),
+                lng: pinLocation.lng.toFixed(5),
+              })}
             </p>
           </IonLabel>
         </IonItem>
       )}
       <IonItem>
-        <IonLabel position="stacked">Name *</IonLabel>
+        <IonLabel position="stacked">{t('addStore.nameLabel')}</IonLabel>
         <IonInput
           value={name}
           onIonInput={(e) => setName(e.detail.value ?? '')}
-          placeholder="Store name"
+          placeholder={t('addStore.namePlaceholder')}
           maxlength={NAME_MAX}
           disabled={isSubmitting}
         />
@@ -117,11 +122,11 @@ function AddStoreForm({
         )}
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Category *</IonLabel>
+        <IonLabel position="stacked">{t('addStore.categoryLabel')}</IonLabel>
         <IonSelect
           value={categoryId}
           onIonChange={(e) => setCategoryId(e.detail.value ?? '')}
-          placeholder="Select category"
+          placeholder={t('addStore.categoryPlaceholder')}
           disabled={isSubmitting}
           aria-label="Category"
         >
@@ -138,7 +143,7 @@ function AddStoreForm({
         )}
       </IonItem>
       <IonItem>
-        <IonLabel position="stacked">Photo (optional)</IonLabel>
+        <IonLabel position="stacked">{t('addStore.photoLabel')}</IonLabel>
         <input
           ref={fileInputRef}
           type="file"
@@ -161,10 +166,10 @@ function AddStoreForm({
       )}
       <div style={{ display: 'flex', gap: 8, padding: 16 }}>
         <IonButton fill="outline" expand="block" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
+          {t('addStore.cancel')}
         </IonButton>
         <IonButton expand="block" onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save Store'}
+          {isSubmitting ? t('addStore.saving') : t('addStore.save')}
         </IonButton>
       </div>
     </div>

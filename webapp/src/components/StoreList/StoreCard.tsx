@@ -8,6 +8,7 @@ import {
   IonLabel,
 } from '@ionic/react'
 import { Store } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { StoreResponse } from '@/types/store'
 
 interface StoreCardProps {
@@ -17,6 +18,7 @@ interface StoreCardProps {
 }
 
 function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
+  const { t } = useTranslation()
   const handleClick = () => onClick(store.id)
   const handleKeyDown = (event: React.KeyboardEvent<HTMLIonCardElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -30,7 +32,7 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
       button
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      aria-label={`View ${store.name} on map`}
+      aria-label={t('storeList.viewOnMap', { name: store.name })}
     >
       <div
         style={{
@@ -63,7 +65,7 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
             textOverflow: 'ellipsis',
           }}
         >
-          {store.address ?? 'Address unavailable'}
+          {store.address ?? t('storeList.addressUnavailable')}
         </IonCardSubtitle>
       </IonCardHeader>
       {categoryName && (

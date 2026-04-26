@@ -1,6 +1,7 @@
 import { IonFab, IonFabButton, IonIcon } from '@ionic/react'
 import { add, close } from 'ionicons/icons'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { resetAddStore, selectIsAddingStore, setIsAddingStore } from '@/slices/uiSlice'
 import type { AppDispatch } from '@/store'
 
@@ -10,6 +11,7 @@ interface AddStoreButtonProps {
 
 function AddStoreButton({ bottomOffset = 0 }: AddStoreButtonProps) {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const isAddingStore = useSelector(selectIsAddingStore)
 
   const handleClick = () => {
@@ -24,8 +26,8 @@ function AddStoreButton({ bottomOffset = 0 }: AddStoreButtonProps) {
     <IonFab style={{ position: 'absolute', bottom: `${bottomOffset + 16}px`, right: '16px' }}>
       <IonFabButton
         color={isAddingStore ? 'danger' : 'primary'}
-        title={isAddingStore ? 'Cancel adding store' : 'Add store'}
-        aria-label={isAddingStore ? 'Cancel adding store' : 'Add store'}
+        title={isAddingStore ? t('addStore.cancelAdding') : t('addStore.addStore')}
+        aria-label={isAddingStore ? t('addStore.cancelAdding') : t('addStore.addStore')}
         onClick={handleClick}
       >
         <IonIcon icon={isAddingStore ? close : add} />

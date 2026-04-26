@@ -17,6 +17,7 @@ import {
   IonToolbar,
 } from '@ionic/react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { AppDispatch, RootState } from '../../store'
 import {
   closeStoreForm,
@@ -29,6 +30,7 @@ import MapPicker from './MapPicker'
 
 function StoreForm() {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const { storeForm, selectedStore, categories } = useSelector((state: RootState) => state.admin)
 
   const [name, setName] = useState(selectedStore?.name ?? '')
@@ -52,7 +54,7 @@ function StoreForm() {
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      setNameError('Name is required')
+      setNameError(t('admin.nameRequired'))
       return
     }
     setNameError('')
@@ -96,19 +98,21 @@ function StoreForm() {
     <IonModal isOpen={storeForm.isOpen} onDidDismiss={handleCancel}>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>{storeForm.mode === 'create' ? 'Add Store' : 'Edit Store'}</IonTitle>
+          <IonTitle>
+            {storeForm.mode === 'create' ? t('admin.addStore') : t('admin.editStore')}
+          </IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={handleCancel}>Cancel</IonButton>
+            <IonButton onClick={handleCancel}>{t('admin.cancel')}</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
         <IonItem>
-          <IonLabel position="stacked">Name *</IonLabel>
+          <IonLabel position="stacked">{t('admin.nameLabel')}</IonLabel>
           <IonInput
             value={name}
             onIonChange={(e) => setName(e.detail.value ?? '')}
-            placeholder="Store name"
+            placeholder={t('admin.namePlaceholder')}
           />
           {nameError && (
             <IonText color="danger">
@@ -117,7 +121,7 @@ function StoreForm() {
           )}
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">Description</IonLabel>
+          <IonLabel position="stacked">{t('admin.descriptionLabel')}</IonLabel>
           <IonTextarea
             value={description}
             onIonChange={(e) => setDescription(e.detail.value ?? '')}
@@ -125,17 +129,17 @@ function StoreForm() {
           />
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">Address</IonLabel>
+          <IonLabel position="stacked">{t('admin.addressLabel')}</IonLabel>
           <IonInput value={address} onIonChange={(e) => setAddress(e.detail.value ?? '')} />
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">Category</IonLabel>
+          <IonLabel position="stacked">{t('admin.categoryLabel')}</IonLabel>
           <IonSelect
             value={categoryId}
             onIonChange={(e) => setCategoryId(e.detail.value)}
-            placeholder="Select category"
+            placeholder={t('addStore.categoryPlaceholder')}
           >
-            <IonSelectOption value="">None</IonSelectOption>
+            <IonSelectOption value="">{t('admin.categoryNone')}</IonSelectOption>
             {categories.map((cat) => (
               <IonSelectOption key={cat.id} value={cat.id}>
                 {cat.name}
@@ -152,7 +156,7 @@ function StoreForm() {
           }}
         />
         <IonItem>
-          <IonLabel>Active</IonLabel>
+          <IonLabel>{t('admin.activeLabel')}</IonLabel>
           <IonToggle
             checked={isActive}
             onIonChange={(e) => setIsActive(e.detail.checked)}
@@ -160,7 +164,7 @@ function StoreForm() {
           />
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">Image</IonLabel>
+          <IonLabel position="stacked">{t('admin.imageLabel')}</IonLabel>
           {imagePreview && (
             <img src={imagePreview} alt="preview" style={{ maxHeight: 120, marginTop: 8 }} />
           )}
@@ -172,11 +176,11 @@ function StoreForm() {
             onChange={handleImageChange}
           />
           <IonButton fill="outline" onClick={() => fileInputRef.current?.click()}>
-            {imagePreview ? 'Change Image' : 'Upload Image'}
+            {imagePreview ? t('admin.changeImage') : t('admin.uploadImage')}
           </IonButton>
         </IonItem>
         <IonButton expand="block" onClick={handleSubmit} style={{ marginTop: 16 }}>
-          {storeForm.mode === 'create' ? 'Create Store' : 'Save Changes'}
+          {storeForm.mode === 'create' ? t('admin.createStore') : t('admin.saveChanges')}
         </IonButton>
       </IonContent>
     </IonModal>

@@ -15,9 +15,11 @@ import {
   IonText,
   IonSpinner,
 } from '@ionic/react'
+import { useTranslation } from 'react-i18next'
 import { RootState } from '../store'
 
 function LoginPage() {
+  const { t } = useTranslation()
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,7 +36,7 @@ function LoginPage() {
     try {
       await FirebaseAuthentication.signInWithEmailAndPassword({ email, password })
     } catch {
-      setError('Invalid email or password')
+      setError(t('auth.invalidCredentials'))
     } finally {
       setLoading(false)
     }
@@ -45,7 +47,7 @@ function LoginPage() {
     try {
       await FirebaseAuthentication.signInWithGoogle()
     } catch {
-      setError('Google sign-in failed')
+      setError(t('auth.googleFailed'))
     }
   }
 
@@ -54,7 +56,7 @@ function LoginPage() {
     try {
       await FirebaseAuthentication.signInWithApple()
     } catch {
-      setError('Apple sign-in failed')
+      setError(t('auth.appleFailed'))
     }
   }
 
@@ -62,16 +64,16 @@ function LoginPage() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Sign In</IonTitle>
+          <IonTitle>{t('auth.signIn')}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
         <IonItem>
-          <IonLabel position="stacked">Email</IonLabel>
+          <IonLabel position="stacked">{t('auth.emailLabel')}</IonLabel>
           <IonInput type="email" value={email} onIonInput={(e) => setEmail(e.detail.value ?? '')} />
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">Password</IonLabel>
+          <IonLabel position="stacked">{t('auth.passwordLabel')}</IonLabel>
           <IonInput
             type="password"
             value={password}
@@ -89,13 +91,13 @@ function LoginPage() {
           disabled={loading}
           className="ion-margin-top"
         >
-          {loading ? <IonSpinner name="dots" /> : 'Sign in with Email'}
+          {loading ? <IonSpinner name="dots" /> : t('auth.signInWithEmail')}
         </IonButton>
         <IonButton expand="block" fill="outline" onClick={handleGoogleSignIn} disabled={loading}>
-          Sign in with Google
+          {t('auth.signInWithGoogle')}
         </IonButton>
         <IonButton expand="block" fill="outline" onClick={handleAppleSignIn} disabled={loading}>
-          Sign in with Apple
+          {t('auth.signInWithApple')}
         </IonButton>
       </IonContent>
     </IonPage>
