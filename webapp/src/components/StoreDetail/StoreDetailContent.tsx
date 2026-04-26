@@ -1,5 +1,6 @@
 import { IonButton, IonChip, IonItem, IonLabel, IonList, IonText } from '@ionic/react'
 import { Store, Share2, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { StoreResponse } from '@/types/store'
 
 interface StoreDetailContentProps {
@@ -10,6 +11,7 @@ interface StoreDetailContentProps {
 }
 
 function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDetailContentProps) {
+  const { t } = useTranslation()
   return (
     <div>
       <div
@@ -34,7 +36,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
         )}
         <IonButton
           fill="clear"
-          aria-label="Close"
+          aria-label={t('storeDetail.close')}
           onClick={onClose}
           style={{ position: 'absolute', top: 8, right: 8 }}
         >
@@ -59,13 +61,13 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
 
         <IonItem lines="none">
           <IonText color="medium">
-            <p>{store.address ?? 'Address unavailable'}</p>
+            <p>{store.address ?? t('storeDetail.addressUnavailable')}</p>
           </IonText>
         </IonItem>
 
         <IonItem lines="none">
           <IonText>
-            <p>{store.description ?? 'No description available.'}</p>
+            <p>{store.description ?? t('storeDetail.noDescription')}</p>
           </IonText>
         </IonItem>
 
@@ -74,7 +76,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
             <span slot="start" style={{ display: 'flex' }}>
               <Share2 size={18} />
             </span>
-            Share
+            {t('storeDetail.share')}
           </IonButton>
         </IonItem>
       </IonList>
