@@ -20,11 +20,11 @@ function AppTabs() {
     <IonTabBar
       style={{
         position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: TAB_BAR_HEIGHT,
-        zIndex: 10,
+        bottom: '0',
+        left: '0',
+        right: '0',
+        height: `${TAB_BAR_HEIGHT}px`,
+        zIndex: '10',
       }}
     >
       <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
