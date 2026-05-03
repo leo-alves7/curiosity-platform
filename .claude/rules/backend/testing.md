@@ -23,6 +23,19 @@ File: `tests/unit/conftest.py`
 File: `tests/unit/web/conftest.py`
 - `api_client` — async test client for hitting API endpoints directly
 
+## TDD Approach
+
+Apply TDD for **managers**, **API handlers**, **Pydantic schemas with validation logic**, and **utility functions**. The workflow:
+
+1. Write the test first — it will fail because the source does not exist yet
+2. Implement the minimum code to make the test pass
+3. Refactor without breaking the test
+
+**TDD applies to:** managers, API handlers, schemas with non-trivial validation, utility/helper functions.
+**TDD is exempt for:** Alembic migrations, third-party SDK initialization (Firebase Admin, Stripe, Sentry), infrastructure configuration.
+
+In commit history, test commits must appear **before** the source commits they test — the failing test is the spec; the implementation is the answer.
+
 ## General guidelines
 
 - When testing a function that produces different results based on different states, use `@pytest.mark.parametrize` to test multiple scenarios.

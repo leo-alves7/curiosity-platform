@@ -32,7 +32,7 @@ Spawn a **Plan subagent** (`subagent_type: "Plan"`) with a detailed prompt that 
 - The full Jira issue text
 - Your one-paragraph summary from Phase 1
 - The relevant file paths and any excerpts needed for context
-- The instruction: "Produce a numbered, step-by-step implementation plan. Group steps into logical commits (e.g. 'Commit 1: base model and migration', 'Commit 2: manager and router', 'Commit 3: frontend components'). For each step, name the exact file to change, what to change, and why. Include a section for new or modified tests. Apply the decomposition rule: no file should exceed ~300 lines — if a module would grow beyond that, split it into focused sub-modules."
+- The instruction: "Produce a numbered, step-by-step implementation plan. Group steps into logical commits (e.g. 'Commit 1: base model and migration', 'Commit 2: failing tests for manager', 'Commit 3: manager implementation', 'Commit 4: frontend slice tests', 'Commit 5: frontend slice + hook'). For each step, name the exact file to change, what to change, and why. Apply TDD ordering: within each commit group, test commits must come before the source commits they test — the failing test defines the contract, the implementation satisfies it. Exempt from TDD ordering: Alembic migrations, Capacitor build config, third-party SDK initialization (Sentry, Firebase Analytics, Stripe setup), and UI-only React components. Apply the decomposition rule: no file should exceed ~300 lines — if a module would grow beyond that, split it into focused sub-modules."
 
 After the Plan agent returns its plan, **review it yourself** against these criteria:
 
@@ -65,6 +65,7 @@ After the Plan agent returns its plan, **review it yourself** against these crit
      - Backend handlers must be `async def` and named `handle_*`
      - Business logic goes in managers, not routers
      - **Decomposition rule**: keep files focused and under ~300 lines. If a module grows beyond that, split it — e.g. a large router becomes `stores_router.py` + `store_validators.py`; a large component becomes multiple sub-components in their own files. Never create a monolithic file when the logic naturally separates. Apply this judgment during implementation, not as a post-step refactor.
+     - **TDD workflow**: for backend managers, API handlers, and schemas with validation logic; and for frontend Redux slice reducers/selectors, custom hooks, and pure utility functions — write the test file first (it will fail), then implement the minimum code to make it pass, then refactor. Commit the failing test before the source it tests. Skip TDD for: Alembic migrations, Capacitor native config, third-party SDK init (Sentry, Firebase Analytics, Stripe), and React UI component layout.
      - After all changes are made, send a message back to the team lead listing every file changed, grouped by the commit groups from the plan
 
 Wait for the coder teammate to message you with the grouped file list before proceeding.

@@ -151,3 +151,27 @@ This file is a permanent log of architectural decisions made in Curiosity Platfo
 - Source only MIT-licensed animations from lottiefiles.com or hand-craft them.
 - Store animation JSON in `webapp/src/assets/animations/`.
 - The `EmptyState` component (`src/components/EmptyState/`) accepts an optional `animationData` prop — falls back to a lucide icon when no animation is provided.
+
+---
+
+## ADR-014 — Test-Driven Development (TDD) as standard process
+
+**Status:** Active
+
+**Decision:** Apply TDD as the default implementation methodology for all new backend and frontend logic, encoded in the implementor skill and testing rule files.
+
+**Applies to:**
+- Backend: managers, API handlers, Pydantic schemas with validation logic, utility functions
+- Frontend: Redux slice reducers/selectors, custom hooks (`use*.ts`), pure utility/helper functions
+
+**Exempt from TDD:**
+- Alembic migrations (infrastructure, no testable logic before schema exists)
+- Capacitor native build config (no unit-testable surface)
+- Third-party SDK initialization (Sentry DSN setup, Firebase Analytics init, Stripe client creation)
+- React UI component layout (visual structure is tested via manual review, not red-green-refactor)
+
+**Reasoning:** Adopted after Epic 3 completion (2026-05-03). TDD forces clearer contracts before implementation begins, prevents tests from being bolted on at the end (or skipped under time pressure), and fits naturally with the implementor's incremental commit structure. Tests written first become the spec; implementation is the answer. The exemption list is intentional — forcing TDD on config and UI layout adds friction without design signal.
+
+**Commit ordering rule:** In every commit group, test commits precede their source commits. Example: `"CSTY-X - failing tests for nearby stores manager"` → `"CSTY-X - nearby stores manager implementation"`.
+
+**Where it's enforced:** `.claude/rules/backend/testing.md`, `.claude/rules/frontend/testing.md`, `.claude/skills/implementor/SKILL.md` (Phase 2 plan format + Phase 3 coder prompt).
