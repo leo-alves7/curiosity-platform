@@ -13,6 +13,7 @@ interface AuthHook {
   signInWithGoogle: () => Promise<void>
   signInWithApple: () => Promise<void>
   signInWithEmailAndPassword: (email: string, password: string) => Promise<void>
+  createUserWithEmailAndPassword: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -59,6 +60,10 @@ export function useAuth(): AuthHook {
     await FirebaseAuthentication.signInWithEmailAndPassword({ email, password })
   }
 
+  const createUserWithEmailAndPassword = async (email: string, password: string) => {
+    await FirebaseAuthentication.createUserWithEmailAndPassword({ email, password })
+  }
+
   const signOut = async () => {
     await FirebaseAuthentication.signOut()
     dispatch(clearAuth())
@@ -71,6 +76,7 @@ export function useAuth(): AuthHook {
     signInWithGoogle,
     signInWithApple,
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     signOut,
   }
 }
