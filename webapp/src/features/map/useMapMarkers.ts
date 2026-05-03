@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import maplibregl from 'maplibre-gl'
+import type { CategoryResponse } from '@/types/category'
 import type { StoreResponse } from '@/types/store'
 import { storesToFeatureCollection } from './storeGeoJSONConverter'
 import {
@@ -9,6 +10,7 @@ import {
   UNCLUSTERED_LAYER_ID,
   getClusterLayerDefs,
 } from './storeClusterLayers'
+import { useMapImageLoader } from './useMapImageLoader'
 
 export interface MarkerActions {
   panToMarker: (storeId: string) => void
@@ -18,7 +20,7 @@ export interface MarkerActions {
 export function useMapMarkers(
   map: maplibregl.Map | null,
   stores: StoreResponse[],
-  _categoryMap: Record<string, string>,
+  categories: CategoryResponse[],
   _onViewDetails: (storeId: string) => void,
 ): MarkerActions {
   const mapRef = useRef<maplibregl.Map | null>(null)
@@ -31,13 +33,24 @@ export function useMapMarkers(
   mapRef.current = map
   storesRef.current = stores
 
+  const categorySlugMap = useMemo(
+    () =>
+      categories.reduce<Record<string, string>>((acc, c) => {
+        acc[c.id] = c.slug
+        return acc
+      }, {}),
+    [categories],
+  )
+
+  useMapImageLoader(map, categories)
+
   useEffect(() => {
     if (!map) return
 
     const addLayers = () => {
       if (map.getSource(STORES_SOURCE_ID)) return
 
-      const featureCollection = storesToFeatureCollection(stores)
+      const featureCollection = storesToFeatureCollection(storesRef.current, categorySlugMap)
       map.addSource(STORES_SOURCE_ID, {
         type: 'geojson',
         data: featureCollection,
@@ -74,8 +87,8 @@ export function useMapMarkers(
     if (!map) return
     const source = map.getSource(STORES_SOURCE_ID) as maplibregl.GeoJSONSource | undefined
     if (!source) return
-    source.setData(storesToFeatureCollection(stores))
-  }, [map, stores])
+    source.setData(storesToFeatureCollection(stores, categorySlugMap))
+  }, [map, stores, categorySlugMap])
 
   actionsRef.current = {
     panToMarker: (storeId: string) => {

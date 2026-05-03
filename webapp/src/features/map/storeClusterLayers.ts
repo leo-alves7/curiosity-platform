@@ -35,14 +35,18 @@ export function getClusterLayerDefs(): maplibregl.LayerSpecification[] {
     },
     {
       id: UNCLUSTERED_LAYER_ID,
-      type: 'circle',
+      type: 'symbol',
       source: STORES_SOURCE_ID,
       filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-color': '#22c55e',
-        'circle-radius': 8,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#fff',
+      layout: {
+        'icon-image': [
+          'coalesce',
+          ['image', ['concat', 'category:', ['get', 'category_slug']]],
+          ['image', 'category:default'],
+        ],
+        'icon-size': 0.7,
+        'icon-allow-overlap': true,
+        'icon-anchor': 'bottom',
       },
     },
   ]

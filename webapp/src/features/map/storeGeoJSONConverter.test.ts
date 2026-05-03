@@ -79,4 +79,20 @@ describe('storesToFeatureCollection', () => {
     const result = storesToFeatureCollection(stores)
     expect(result.features).toHaveLength(3)
   })
+
+  it('sets category_slug from slugMap when category_id is present', () => {
+    const slugMap = { 'cat-1': 'restaurant' }
+    const result = storesToFeatureCollection([makeStore()], slugMap)
+    expect(result.features[0].properties?.category_slug).toBe('restaurant')
+  })
+
+  it('defaults category_slug to "default" when category_id not in slugMap', () => {
+    const result = storesToFeatureCollection([makeStore()], {})
+    expect(result.features[0].properties?.category_slug).toBe('default')
+  })
+
+  it('defaults category_slug to "default" when category_id is null', () => {
+    const result = storesToFeatureCollection([makeStore({ category_id: null })])
+    expect(result.features[0].properties?.category_slug).toBe('default')
+  })
 })

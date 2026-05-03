@@ -10,6 +10,7 @@ import { useStoreClusterHandlers } from './useStoreClusterHandlers'
 import {
   fetchStoresAndCategories,
   selectStores,
+  selectCategories,
   selectCategoryMap,
   selectStoresStatus,
   selectStoresError,
@@ -63,6 +64,7 @@ function MapView({
   const center = useSelector(selectMapCenter)
   const zoom = useSelector(selectMapZoom)
   const stores = useSelector(selectStores)
+  const categories = useSelector(selectCategories)
   const categoryMap = useSelector(selectCategoryMap)
   const status = useSelector(selectStoresStatus)
   const error = useSelector(selectStoresError)
@@ -217,7 +219,7 @@ function MapView({
     [dispatch],
   )
 
-  const markerActions = useMapMarkers(map, stores, categoryMap, handleViewDetails)
+  const markerActions = useMapMarkers(map, stores, categories, handleViewDetails)
 
   useStoreClusterHandlers(map, stores, categoryMap, handleViewDetails)
 
