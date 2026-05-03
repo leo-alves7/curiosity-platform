@@ -40,6 +40,7 @@ vi.mock('maplibre-gl', () => ({
       setStyle: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
+      touchZoomRotate: { enable: vi.fn(), disable: vi.fn() },
     })),
     AttributionControl: vi.fn().mockImplementation(() => ({})),
     Marker: vi.fn().mockImplementation(() => ({
@@ -160,7 +161,7 @@ describe('MapView', () => {
     expect(mapInstance?.dragRotate.disable).toHaveBeenCalled()
   })
 
-  it('rotates map on left pointer drag', async () => {
+  it('pans map on left pointer drag', async () => {
     const maplibregl = await import('maplibre-gl')
     const { container } = setup()
     const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
@@ -180,10 +181,10 @@ describe('MapView', () => {
     )
     mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
 
-    expect(mapInstance?.setBearing).toHaveBeenCalled()
+    expect(mapInstance?.panBy).toHaveBeenCalled()
   })
 
-  it('pans map on right pointer drag', async () => {
+  it('rotates map on right pointer drag', async () => {
     const maplibregl = await import('maplibre-gl')
     const { container } = setup()
     const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
@@ -203,7 +204,7 @@ describe('MapView', () => {
     )
     mapDiv.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
 
-    expect(mapInstance?.panBy).toHaveBeenCalled()
+    expect(mapInstance?.setBearing).toHaveBeenCalled()
   })
 
   it('adjusts pitch on middle mouse button drag', async () => {
@@ -249,11 +250,10 @@ describe('MapView', () => {
     vi.unstubAllGlobals()
   })
 
-  it('dispatches setFollowingUser(false) when user right-clicks to pan', async () => {
+  it('does NOT cancel follow mode on right-click without drag', async () => {
     const { container, store } = setup()
     const mapDiv = container.querySelector('div > div > div') as HTMLElement
 
-    // Pre-set following to true so we can verify it gets cleared
     const { setFollowingUser } = await import('@/slices/locationSlice')
     store.dispatch(setFollowingUser(true))
     expect(store.getState().location.isFollowingUser).toBe(true)
@@ -262,7 +262,139 @@ describe('MapView', () => {
       new PointerEvent('pointerdown', { button: 2, clientX: 100, clientY: 100, bubbles: true }),
     )
 
+    expect(store.getState().location.isFollowingUser).toBe(true)
+  })
+
+  it('cancels follow mode when left-drag threshold is crossed', async () => {
+    const { container, store } = setup()
+    const { setFollowingUser } = await import('@/slices/locationSlice')
+    store.dispatch(setFollowingUser(true))
+    expect(store.getState().location.isFollowingUser).toBe(true)
+
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 0, clientX: 100, clientY: 100, bubbles: true }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        button: 0,
+        clientX: 150,
+        clientY: 100,
+        buttons: 1,
+        bubbles: true,
+      }),
+    )
+
     expect(store.getState().location.isFollowingUser).toBe(false)
+  })
+
+  it('cancels follow mode when right-drag threshold is crossed', async () => {
+    const { container, store } = setup()
+    const { setFollowingUser } = await import('@/slices/locationSlice')
+    store.dispatch(setFollowingUser(true))
+    expect(store.getState().location.isFollowingUser).toBe(true)
+
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', { button: 2, clientX: 100, clientY: 100, bubbles: true }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        button: 2,
+        clientX: 150,
+        clientY: 100,
+        buttons: 2,
+        bubbles: true,
+      }),
+    )
+
+    expect(store.getState().location.isFollowingUser).toBe(false)
+  })
+
+  it('cancels follow mode on scroll wheel', async () => {
+    const { container, store } = setup()
+    const { setFollowingUser } = await import('@/slices/locationSlice')
+    store.dispatch(setFollowingUser(true))
+    expect(store.getState().location.isFollowingUser).toBe(true)
+
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+    mapDiv.dispatchEvent(new WheelEvent('wheel', { bubbles: true }))
+
+    expect(store.getState().location.isFollowingUser).toBe(false)
+  })
+
+  it('pans map on single-finger touch drag', async () => {
+    const maplibregl = await import('maplibre-gl')
+    const { container } = setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        button: 0,
+        pointerType: 'touch',
+        pointerId: 1,
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        pointerType: 'touch',
+        pointerId: 1,
+        clientX: 150,
+        clientY: 100,
+        buttons: 1,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerup', { pointerType: 'touch', pointerId: 1, bubbles: true }),
+    )
+
+    expect(mapInstance?.panBy).toHaveBeenCalled()
+  })
+
+  it('does NOT pan or rotate on two-finger touch drag', async () => {
+    const maplibregl = await import('maplibre-gl')
+    const { container } = setup()
+    const mapInstance = vi.mocked(maplibregl.default.Map).mock.results[0]?.value
+    const mapDiv = container.querySelector('div > div > div') as HTMLElement
+
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        button: 0,
+        pointerType: 'touch',
+        pointerId: 1,
+        clientX: 100,
+        clientY: 100,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        button: 0,
+        pointerType: 'touch',
+        pointerId: 2,
+        clientX: 200,
+        clientY: 100,
+        bubbles: true,
+      }),
+    )
+    mapDiv.dispatchEvent(
+      new PointerEvent('pointermove', {
+        pointerType: 'touch',
+        pointerId: 1,
+        clientX: 150,
+        clientY: 100,
+        buttons: 1,
+        bubbles: true,
+      }),
+    )
+
+    expect(mapInstance?.panBy).not.toHaveBeenCalled()
+    expect(mapInstance?.setBearing).not.toHaveBeenCalled()
   })
 
   it('calls setStyle when effectiveTheme changes after mount', async () => {
