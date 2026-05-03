@@ -25,6 +25,7 @@ vi.mock('@capacitor-firebase/authentication', () => ({
     signInWithGoogle: vi.fn(),
     signInWithApple: vi.fn(),
     signInWithEmailAndPassword: vi.fn(),
+    createUserWithEmailAndPassword: vi.fn(),
     signOut: vi.fn(),
   },
 }))
@@ -100,6 +101,18 @@ describe('useAuth', () => {
     const { unmount } = renderHook(() => useAuth(), { wrapper })
     unmount()
     expect(mockUnsubscribe).toHaveBeenCalled()
+  })
+
+  it('calls FirebaseAuthentication.createUserWithEmailAndPassword', async () => {
+    const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication')
+    mockOnAuthStateChanged.mockImplementation(() => mockUnsubscribe)
+    const { wrapper } = makeWrapper()
+    const { result } = renderHook(() => useAuth(), { wrapper })
+    await result.current.createUserWithEmailAndPassword('a@b.com', 'pass123')
+    expect(FirebaseAuthentication.createUserWithEmailAndPassword).toHaveBeenCalledWith({
+      email: 'a@b.com',
+      password: 'pass123',
+    })
   })
 
   it('dispatches clearAuth explicitly when signOut is called', async () => {
