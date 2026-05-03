@@ -2,9 +2,9 @@ import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IonContent, IonModal, IonPage } from '@ionic/react'
 import AppHeader from '@/components/Layout/AppHeader'
-import StoreListPanel from '@/components/StoreList/StoreListPanel'
+import StoreListPanel from '@/features/stores/StoreListPanel'
 import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
-import { StoreDetailView } from '@/components/StoreDetail'
+import StoreDetailView from '@/features/stores/StoreDetailView'
 import {
   selectCategories,
   selectCategoryMap,

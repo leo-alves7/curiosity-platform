@@ -51,7 +51,7 @@ vi.mock('maplibre-gl', () => ({
   },
 }))
 
-vi.mock('@/components/MapView/useMapMarkers', () => ({
+vi.mock('@/features/map/useMapMarkers', () => ({
   useMapMarkers: vi.fn(() => ({
     panToMarker: vi.fn(),
     openMarkerPopup: vi.fn(),
@@ -62,11 +62,11 @@ vi.mock('@/hooks/useUserLocation', () => ({
   useUserLocation: vi.fn(),
 }))
 
-vi.mock('@/components/MapView/UserLocationLayer', () => ({
+vi.mock('@/features/map/UserLocationLayer', () => ({
   default: vi.fn().mockReturnValue(null),
 }))
 
-vi.mock('@/components/MapView/LocateMeFab', () => ({
+vi.mock('@/features/map/LocateMeFab', () => ({
   default: vi.fn().mockReturnValue(null),
 }))
 

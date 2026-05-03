@@ -4,13 +4,14 @@ import { IonContent, IonFab, IonFabButton, IonModal, IonPage } from '@ionic/reac
 import { List } from 'lucide-react'
 import maplibregl from 'maplibre-gl'
 import AppHeader from '@/components/Layout/AppHeader'
-import MapView from '@/components/MapView'
-import StoreListPanel from '@/components/StoreList/StoreListPanel'
-import { StoreDetailView } from '@/components/StoreDetail'
-import LocateMeFab from '@/components/MapView/LocateMeFab'
-import { AddStoreButton, AddStoreModal } from '@/components/AddStore'
-import { usePinDrop } from '@/components/AddStore/usePinDrop'
-import type { MarkerActions } from '@/components/MapView/useMapMarkers'
+import MapView from '@/features/map/MapView'
+import StoreListPanel from '@/features/stores/StoreListPanel'
+import StoreDetailView from '@/features/stores/StoreDetailView'
+import LocateMeFab from '@/features/map/LocateMeFab'
+import AddStoreButton from '@/features/stores/AddStoreButton'
+import AddStoreModal from '@/features/stores/AddStoreModal'
+import { usePinDrop } from '@/features/stores/usePinDrop'
+import type { MarkerActions } from '@/features/map/useMapMarkers'
 import {
   selectCategories,
   selectCategoryMap,
