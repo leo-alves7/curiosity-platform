@@ -87,4 +87,10 @@ describe('StoreCard', () => {
     await user.click(screen.getByText('Test Store'))
     expect(onClick).toHaveBeenCalledWith('store-1')
   })
+
+  it('renders image container with 16:9 aspect ratio', () => {
+    const { container } = setup()
+    const wrapper = container.querySelector('[style*="56.25%"]')
+    expect(wrapper).not.toBeNull()
+  })
 })

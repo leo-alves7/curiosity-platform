@@ -8,6 +8,7 @@ import {
   IonList,
   IonNote,
   IonSpinner,
+  IonText,
   IonToggle,
 } from '@ionic/react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
@@ -22,6 +23,7 @@ import {
   openStoreForm,
   setSelectedStore,
 } from '../../slices/adminSlice'
+import EmptyState from '@/components/EmptyState/EmptyState'
 import StoreForm from './StoreForm'
 
 function StoreManagement() {
@@ -80,34 +82,46 @@ function StoreManagement() {
         </IonButton>
       </div>
 
-      {error && <p style={{ color: 'red', padding: '0 16px' }}>{error}</p>}
+      {error && (
+        <IonText color="danger">
+          <p style={{ padding: '0 16px' }}>{error}</p>
+        </IonText>
+      )}
 
-      <IonList>
-        {filtered.map((store) => (
-          <IonItem key={store.id}>
-            <IonLabel>
-              <h2>{store.name}</h2>
-              <IonNote>{store.address ?? t('admin.noAddress')}</IonNote>
-            </IonLabel>
-            <IonToggle
-              slot="end"
-              checked={store.is_active}
-              onIonChange={() => handleToggleActive(store.id)}
-            />
-            <IonButton fill="clear" slot="end" onClick={() => handleEdit(store)}>
-              <Pencil size={18} />
-            </IonButton>
-            <IonButton
-              fill="clear"
-              slot="end"
-              color="danger"
-              onClick={() => setDeleteTargetId(store.id)}
-            >
-              <Trash2 size={18} />
-            </IonButton>
-          </IonItem>
-        ))}
-      </IonList>
+      {status === 'succeeded' && filtered.length === 0 && (
+        <EmptyState
+          title={t('admin.noStoresFound')}
+          description={t('admin.noStoresFoundDescription')}
+        />
+      )}
+      {filtered.length > 0 && (
+        <IonList>
+          {filtered.map((store) => (
+            <IonItem key={store.id}>
+              <IonLabel>
+                <h2>{store.name}</h2>
+                <IonNote>{store.address ?? t('admin.noAddress')}</IonNote>
+              </IonLabel>
+              <IonToggle
+                slot="end"
+                checked={store.is_active}
+                onIonChange={() => handleToggleActive(store.id)}
+              />
+              <IonButton fill="clear" slot="end" onClick={() => handleEdit(store)}>
+                <Pencil size={18} />
+              </IonButton>
+              <IonButton
+                fill="clear"
+                slot="end"
+                color="danger"
+                onClick={() => setDeleteTargetId(store.id)}
+              >
+                <Trash2 size={18} />
+              </IonButton>
+            </IonItem>
+          ))}
+        </IonList>
+      )}
 
       <IonAlert
         isOpen={deleteTargetId !== null}

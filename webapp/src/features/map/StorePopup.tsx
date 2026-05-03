@@ -11,7 +11,7 @@ interface StorePopupProps {
 function StorePopup({ store, categoryName, onViewDetails }: StorePopupProps) {
   const { t } = useTranslation()
   return (
-    <div style={{ minWidth: 200, padding: '8px 4px' }}>
+    <div style={{ minWidth: 200, padding: '8px 12px' }}>
       <h3 style={{ margin: '0 0 4px' }}>{store.name}</h3>
       <IonText color="medium">
         <p style={{ margin: '0 0 4px' }}>{categoryName ?? t('storePopup.uncategorised')}</p>

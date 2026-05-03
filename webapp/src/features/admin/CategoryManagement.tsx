@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { IonAlert, IonButton, IonItem, IonLabel, IonList, IonNote } from '@ionic/react'
+import EmptyState from '@/components/EmptyState/EmptyState'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -50,31 +51,39 @@ function CategoryManagement() {
         </IonButton>
       </div>
 
-      <IonList>
-        {categories.map((category) => (
-          <IonItem key={category.id}>
-            <IonLabel>
-              <h2>{category.name}</h2>
-              <IonNote>
-                {category.slug}
-                {category.icon && ` · ${category.icon}`}
-                {category.color && ` · ${category.color}`}
-              </IonNote>
-            </IonLabel>
-            <IonButton fill="clear" slot="end" onClick={() => handleEdit(category)}>
-              <Pencil size={18} />
-            </IonButton>
-            <IonButton
-              fill="clear"
-              slot="end"
-              color="danger"
-              onClick={() => setDeleteTargetId(category.id)}
-            >
-              <Trash2 size={18} />
-            </IonButton>
-          </IonItem>
-        ))}
-      </IonList>
+      {categories.length === 0 && (
+        <EmptyState
+          title={t('admin.noCategoriesFound')}
+          description={t('admin.noCategoriesFoundDescription')}
+        />
+      )}
+      {categories.length > 0 && (
+        <IonList>
+          {categories.map((category) => (
+            <IonItem key={category.id}>
+              <IonLabel>
+                <h2>{category.name}</h2>
+                <IonNote>
+                  {category.slug}
+                  {category.icon && ` · ${category.icon}`}
+                  {category.color && ` · ${category.color}`}
+                </IonNote>
+              </IonLabel>
+              <IonButton fill="clear" slot="end" onClick={() => handleEdit(category)}>
+                <Pencil size={18} />
+              </IonButton>
+              <IonButton
+                fill="clear"
+                slot="end"
+                color="danger"
+                onClick={() => setDeleteTargetId(category.id)}
+              >
+                <Trash2 size={18} />
+              </IonButton>
+            </IonItem>
+          ))}
+        </IonList>
+      )}
 
       <IonAlert
         isOpen={deleteTargetId !== null}

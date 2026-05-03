@@ -65,7 +65,7 @@ curiosity-platform/
 | Build Tool            | Vite + SWC                                         |
 | State Management      | Redux Toolkit                                      |
 | HTTP Client           | Axios                                              |
-| UI Components / Icons | Ionic React + ionicons (mobile-first)              |
+| UI Components / Icons | Ionic React + lucide-react (mobile-first)          |
 | Map                   | MapLibre GL JS                                     |
 | Routing               | React Router v6                                    |
 | Auth                  | Firebase Auth + @capacitor-firebase/authentication |
@@ -98,7 +98,7 @@ curiosity-platform/
 - **Store Explorer page** — dedicated `/explore` route (`ExplorePage`) that shows the full store list with search and category filters but no map; used as the Explore tab on mobile.
 - **Store list sidebar** — scrollable panel alongside the map on desktop with real-time name search (debounced 300 ms), category filter tabs, infinite scroll pagination, loading/empty states; clicking a card opens the store detail view — fully implemented
 - **Store detail view** — slide-in panel showing cover image, name, category chip, address, and description; accessible from map popup "View details" button or store card click; native share via Capacitor Share plugin; IonSkeletonText loading state and error/retry state; also available as a direct URL at `/stores/:id` — fully implemented
-- **Admin management UI** — protected section at `/admin` (requires `role: admin` Firebase custom claim); store management with inline activate/deactivate toggle, edit modal (StoreForm), and soft-delete confirmation; category management with add/edit/delete — fully implemented
+- **Admin management UI** — protected section at `/admin` (requires `role: admin` Firebase custom claim); store management with inline activate/deactivate toggle, edit modal (StoreForm), soft-delete confirmation, and an `EmptyState` when the filtered list is empty; category management with add/edit/delete and an `EmptyState` when no categories exist yet — fully implemented
 - **Store image upload** — admins can upload images per store via `POST /api/v1/stores/{id}/image`; images are stored in MinIO and the URL is persisted on the store record — fully implemented
 - **Store management API (CRUD)** backed by PostgreSQL — fully implemented at `/api/v1/stores`
 - **Category management API (CRUD)** for grouping and filtering stores — fully implemented at `/api/v1/categories`

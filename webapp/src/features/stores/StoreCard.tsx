@@ -33,29 +33,42 @@ function StoreCard({ store, categoryName, onClick }: StoreCardProps) {
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       aria-label={t('storeList.viewOnMap', { name: store.name })}
+      style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
     >
       <div
         style={{
+          position: 'relative',
           width: '100%',
-          height: 120,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          paddingBottom: '56.25%',
+          overflow: 'hidden',
           background: 'var(--ion-color-light)',
         }}
       >
-        {store.image_url ? (
-          <img
-            src={store.image_url}
-            alt={store.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <Store size={48} aria-hidden="true" color="var(--ion-color-medium)" />
-        )}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {store.image_url ? (
+            <img
+              src={store.image_url}
+              alt={store.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <Store size={48} aria-hidden="true" color="var(--ion-color-medium)" />
+          )}
+        </div>
       </div>
       <IonCardHeader>
-        <IonCardTitle>{store.name}</IonCardTitle>
+        <IonCardTitle style={{ fontWeight: 700 }}>{store.name}</IonCardTitle>
         <IonCardSubtitle
           style={{
             display: '-webkit-box',
