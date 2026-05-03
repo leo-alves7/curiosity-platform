@@ -57,6 +57,8 @@
     "heading": "Stores",
     "closePanel": "Close panel",
     "search": "Search stores",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "all": "All",
     "addressUnavailable": "Address unavailable",
     "viewOnMap": "View {{name}} on map"

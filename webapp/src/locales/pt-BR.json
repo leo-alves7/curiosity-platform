@@ -57,6 +57,8 @@
     "heading": "Lojas",
     "closePanel": "Fechar painel",
     "search": "Buscar lojas",
+    "collapseSidebar": "Recolher painel",
+    "expandSidebar": "Expandir painel",
     "all": "Todas",
     "addressUnavailable": "Endereço indisponível",
     "viewOnMap": "Ver {{name}} no mapa"

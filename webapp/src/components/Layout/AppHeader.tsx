@@ -1,20 +1,44 @@
-import { useState } from 'react'
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonToast } from '@ionic/react'
+import { useEffect, useState } from 'react'
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonSearchbar, IonToast } from '@ionic/react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import UserAvatar from './UserAvatar'
 import ProfileMenu from './ProfileMenu'
 import { clearAuth } from '@/slices/authSlice'
+import { useSearchDebounce } from '@/hooks/useSearchDebounce'
 import type { RootState } from '@/store'
+import type { AppDispatch } from '@/store'
 
-function AppHeader() {
-  const dispatch = useDispatch()
+export interface AppHeaderProps {
+  showSidebarToggle?: boolean
+  isSidebarCollapsed?: boolean
+  onToggleSidebar?: () => void
+  searchQuery?: string
+  onSearchChange?: (query: string) => void
+}
+
+function AppHeader({
+  showSidebarToggle = false,
+  isSidebarCollapsed = false,
+  onToggleSidebar,
+  searchQuery,
+  onSearchChange,
+}: AppHeaderProps) {
+  const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
   const { uid, email, displayName, photoURL } = useSelector((state: RootState) => state.auth)
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuEvent, setMenuEvent] = useState<Event | undefined>(undefined)
   const [showLogoutToast, setShowLogoutToast] = useState(false)
+  const [localQuery, setLocalQuery] = useState(searchQuery ?? '')
+
+  useEffect(() => {
+    setLocalQuery(searchQuery ?? '')
+  }, [searchQuery])
+
+  useSearchDebounce(localQuery, 300, onSearchChange ?? (() => {}))
 
   const handleAvatarClick = (e: React.MouseEvent) => {
     setMenuEvent(e.nativeEvent)
@@ -32,7 +56,29 @@ function AppHeader() {
     <>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>{t('app.title')}</IonTitle>
+          {showSidebarToggle && (
+            <IonButtons slot="start">
+              <IonButton
+                fill="clear"
+                aria-label={isSidebarCollapsed ? t('storeList.expandSidebar') : t('storeList.collapseSidebar')}
+                onClick={onToggleSidebar}
+              >
+                {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+              </IonButton>
+            </IonButtons>
+          )}
+          {onSearchChange ? (
+            <IonSearchbar
+              aria-label={t('storeList.search')}
+              value={localQuery}
+              placeholder={t('storeList.search')}
+              debounce={0}
+              onIonInput={(e) => setLocalQuery(e.detail.value ?? '')}
+              style={{ maxWidth: 400, flex: 1 }}
+            />
+          ) : (
+            <IonTitle>{t('app.title')}</IonTitle>
+          )}
           <IonButtons slot="end">
             <UserAvatar photoURL={photoURL} uid={uid ?? ''} onClick={handleAvatarClick} />
           </IonButtons>

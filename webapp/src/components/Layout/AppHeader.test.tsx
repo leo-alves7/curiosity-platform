@@ -1,12 +1,13 @@
 import '@/i18n/index'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { MemoryRouter } from 'react-router-dom'
 import authReducer from '@/slices/authSlice'
 import AppHeader from './AppHeader'
+import type { AppHeaderProps } from './AppHeader'
 
 vi.mock('@capacitor-firebase/authentication', () => ({
   FirebaseAuthentication: {
@@ -39,12 +40,12 @@ function makeStore() {
   })
 }
 
-function setup() {
+function setup(props: AppHeaderProps = {}) {
   const store = makeStore()
   const result = render(
     <Provider store={store}>
       <MemoryRouter>
-        <AppHeader />
+        <AppHeader {...props} />
       </MemoryRouter>
     </Provider>,
   )
@@ -98,5 +99,58 @@ describe('AppHeader', () => {
     expect(
       container.querySelector('ion-toast') ?? document.body.querySelector('ion-toast'),
     ).not.toBeNull()
+  })
+
+  describe('sidebar toggle', () => {
+    it('does not render toggle button when showSidebarToggle is false', () => {
+      setup()
+      expect(screen.queryByLabelText('Collapse sidebar')).toBeNull()
+    })
+
+    it('renders collapse button when sidebar is expanded', () => {
+      setup({ showSidebarToggle: true, isSidebarCollapsed: false, onToggleSidebar: vi.fn() })
+      expect(screen.getByLabelText('Collapse sidebar')).toBeDefined()
+    })
+
+    it('renders expand button when sidebar is collapsed', () => {
+      setup({ showSidebarToggle: true, isSidebarCollapsed: true, onToggleSidebar: vi.fn() })
+      expect(screen.getByLabelText('Expand sidebar')).toBeDefined()
+    })
+
+    it('calls onToggleSidebar when toggle button is clicked', async () => {
+      const onToggleSidebar = vi.fn()
+      setup({ showSidebarToggle: true, isSidebarCollapsed: false, onToggleSidebar })
+      const btn = screen.getByLabelText('Collapse sidebar')
+      await userEvent.setup().click(btn)
+      expect(onToggleSidebar).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('desktop search bar', () => {
+    it('does not render searchbar when onSearchChange is not provided', () => {
+      const { container } = setup()
+      expect(container.querySelector('ion-searchbar')).toBeNull()
+    })
+
+    it('renders searchbar when onSearchChange is provided', () => {
+      setup({ onSearchChange: vi.fn(), searchQuery: '' })
+      expect(screen.getByLabelText('Search stores')).toBeDefined()
+    })
+
+    it('calls onSearchChange after debounce elapses', async () => {
+      vi.useFakeTimers()
+      const onSearchChange = vi.fn()
+      const { container } = setup({ onSearchChange, searchQuery: '' })
+      const searchbar = container.querySelector('ion-searchbar') as unknown as HTMLElement
+      act(() => {
+        fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: 'pizza' } }))
+      })
+      expect(onSearchChange).not.toHaveBeenCalledWith('pizza')
+      act(() => {
+        vi.advanceTimersByTime(300)
+      })
+      expect(onSearchChange).toHaveBeenCalledWith('pizza')
+      vi.useRealTimers()
+    })
   })
 })
