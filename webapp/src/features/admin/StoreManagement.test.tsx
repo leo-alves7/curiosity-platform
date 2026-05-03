@@ -139,4 +139,26 @@ describe('StoreManagement', () => {
     expect(state.storeForm.isOpen).toBe(true)
     expect(state.storeForm.mode).toBe('edit')
   })
+
+  it('shows empty state when no stores found', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/admin/stores', () =>
+        HttpResponse.json({ items: [], total: 0, page: 1, page_size: 200 }),
+      ),
+    )
+    setup()
+    expect(await screen.findByText('No stores found')).toBeDefined()
+  })
+
+  it('renders error without hardcoded color when fetch fails', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/admin/stores', () =>
+        HttpResponse.json({ detail: 'Server error' }, { status: 500 }),
+      ),
+    )
+    const { container } = setup()
+    await screen.findByText('Add Store')
+    const dangerText = container.querySelector('ion-text[color="danger"]')
+    expect(dangerText).not.toBeNull()
+  })
 })

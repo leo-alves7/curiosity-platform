@@ -102,4 +102,14 @@ describe('CategoryManagement', () => {
     expect(store.getState().admin.categoryForm.isOpen).toBe(true)
     expect(store.getState().admin.categoryForm.mode).toBe('edit')
   })
+
+  it('shows empty state when there are no categories', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/categories', () =>
+        HttpResponse.json({ items: [], total: 0, page: 1, page_size: 20 }),
+      ),
+    )
+    setup()
+    expect(await screen.findByText('No categories yet')).toBeDefined()
+  })
 })
