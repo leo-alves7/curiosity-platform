@@ -133,13 +133,18 @@ The app is community-powered: any user can add a store they found. Store owners 
 
 ## Epic Tracking
 
-| Epic | Title | Status |
-|---|---|---|
-| CSTY-2 | Foundation & Infrastructure | ✅ Complete |
-| CSTY-12 | UX Overhaul & Real-time Map Foundation | ✅ Complete |
+| Epic | Jira | Title | Status |
+|---|---|---|---|
+| Epic 1 | CSTY-2 | Foundation & Infrastructure | ✅ Complete |
+| Epic 2 | CSTY-12 | UX Overhaul & Real-time Map Foundation | ✅ Complete |
+| Epic 3 | — | Core UX & Stability | ✅ Complete (CSTY-27, CSTY-28, CSTY-29, CSTY-30) |
+| Epic 4 | CSTY-31 | Observability & Analytics | 🔜 Next |
+| Epic 5 | CSTY-34 | PostGIS & Proximity | ⬜ Defined |
+| Epic 6 | CSTY-38 | Native App & Distribution | ⬜ Defined |
+| Epic 7 | CSTY-42 | Enterprise & Monetization | ⬜ Defined |
 
-CSTY-12 complete — see git history for implementation details.
-
----
-
-## Next Epic — TBD
+### Epic 3 — Core UX & Stability (complete)
+- CSTY-27: Map controls overhaul — fixed inverted pan/rotate, follow-mode cancellation, mobile touch support
+- CSTY-28: Login page redesign + email/password registration
+- CSTY-29: Desktop layout overhaul — search bar in AppHeader, collapsible sidebar, uiSlice persistence
+- CSTY-30: UI polish pass — 8px spacing grid, 16:9 store cards, typography hierarchy, empty states
