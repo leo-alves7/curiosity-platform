@@ -101,9 +101,9 @@ The app is community-powered: any user can add a store they found. Store owners 
 | Collapsible store panel + bottom tab navigation (mobile IonTabs) | ✅ Done | CSTY-16 |
 | User header + profile menu + logout (AppHeader, UserAvatar, ProfileMenu) | ✅ Done | CSTY-17 |
 | Community store add flow (Add Store FAB, pin drop, bottom sheet form) | ✅ Done | CSTY-18 |
-| Dark mode (light default, system detection, manual toggle) | ❌ Not started | CSTY-19 |
-| Internationalization (EN + PT-BR) | ❌ Not started | CSTY-20 |
-| Map marker clustering | ❌ Not started | CSTY-21 |
+| Dark mode (light default, system detection, manual toggle) | ✅ Done | CSTY-19 |
+| Internationalization (EN + PT-BR) | ✅ Done | CSTY-20 |
+| Map marker clustering | ✅ Done | CSTY-21 |
 | Geospatial queries (PostGIS) | ❌ Not started | — |
 | Real-time location / WebSockets | ❌ Not started | — |
 | Turn-by-turn navigation / routing engine | ❌ Not started | — |
@@ -136,88 +136,10 @@ The app is community-powered: any user can add a store they found. Store owners 
 | Epic | Title | Status |
 |---|---|---|
 | CSTY-2 | Foundation & Infrastructure | ✅ Complete |
-| CSTY-12 | UX Overhaul & Real-time Map Foundation | 🚧 In Progress (5/8 done) |
+| CSTY-12 | UX Overhaul & Real-time Map Foundation | ✅ Complete |
 
-Stories under CSTY-12:
-- CSTY-13 — Map Tile Style + 3D Defaults + Mouse Control Swap ✅ Done
-- CSTY-15 — GPS User Location Indicator ✅ Done
-- CSTY-16 — Collapsible Store Panel + Bottom Tab Navigation ✅ Done
-- CSTY-17 — User Header + Profile Menu + Logout ✅ Done
-- CSTY-18 — Add Store Quick-Action Flow ✅ Done (PR #21)
-- CSTY-19 — Dark Mode (Light Default)
-- CSTY-20 — Internationalization (EN + PT-BR)
-- CSTY-21 — Map Marker Clustering
+CSTY-12 complete — see git history for implementation details.
 
 ---
 
-## Active Epic — UX Overhaul & Real-time Map Foundation (CSTY-12)
-
-**Goal:** Make the app feel like a real product on mobile. Fix all critical UX gaps on the navigation map, establish the dark/light theme and i18n systems that every future epic will depend on.
-
-### Stories (recommended implementation order)
-
-#### 1. Map Tile Style + 3D Defaults + Control Swap
-The current tile source (demotiles) shows only flat country colors — no roads, no buildings, no terrain.
-- Replace tile style with **OpenFreeMap** (`https://tiles.openfreemap.org/styles/liberty`) — shows roads, buildings, labels
-- Add a **dark map style URL** used when dark mode is active
-- Set default `pitch: 45` and `bearing: 0` — 3D perspective by default
-- Swap mouse controls: **left-drag = rotate** (locked center, camera orbits), **right-drag = pan** (free movement)
-- New env vars: `VITE_MAPLIBRE_STYLE_URL_LIGHT`, `VITE_MAPLIBRE_STYLE_URL_DARK`
-
-#### 2. GPS User Location Indicator
-Core to the mobile-first real-time vision — user must see themselves on the map.
-- "Locate me" FAB button (bottom-right of map canvas)
-- Animated pulsing dot at user's real-time GPS position (`navigator.geolocation.watchPosition`)
-- Accuracy circle around the dot (scaled to GPS accuracy radius)
-- Map auto-centers on user when the tab is first opened
-- **Button highlights** when the viewport has panned away from the user's position
-- Redux slice tracks `userLocation` + `isFollowingUser` flag
-
-#### 3. Collapsible Store Panel + Bottom Tab Navigation
-The left panel currently cannot be closed. Mobile layout must use bottom tabs, not a persistent sidebar.
-- Collapse/toggle button on the store list panel with slide animation
-- Panel state (`isOpen: boolean`) stored in Redux, persisted
-- Add proper **bottom tab bar** (Ionic `IonTabs`): Tab 1 = Navigation Map (`/map`), Tab 2 = Store Explorer (`/explore`)
-- On desktop, sidebar behavior can remain; on mobile, full-screen map with bottom tabs
-
-#### 4. User Header + Profile Menu + Logout
-No way to logout or see profile after login.
-- Persistent header/toolbar: user avatar (Firebase `photoURL`, fallback to initials) + menu icon
-- Profile popover/sheet: display name, email, language selector, theme toggle, logout
-- Logout calls Firebase `signOut()` and clears Redux auth state
-
-#### 5. Add Store Quick-Action Flow
-No way to add a store from the UI.
-- FAB on the map canvas (above locate-me button) — "+" icon
-- "Add mode": user taps/clicks to drop a pin on the map
-- Bottom sheet slides up with form: name, category (dropdown), optional photo upload
-- On submit: `POST /api/v1/stores` with lat/lng from dropped pin, confirmation toast
-
-#### 6. Dark Mode (Light Default)
-- Ionic dark palette toggle (`ion-palette-dark` class on `<html>`)
-- System preference auto-detection (`prefers-color-scheme: dark`) on first load
-- Manual toggle in profile menu; preference persisted in Redux + `localStorage`
-- Map tile style swaps to dark URL when dark mode is active
-- Settings: `{ theme: 'light' | 'dark' | 'system' }`
-
-#### 7. Internationalization — EN + PT-BR
-- Add `react-i18next` with locale JSON files (`webapp/src/locales/en.json`, `pt-BR.json`)
-- Supported locales: `en` (default) and `pt-BR`
-- Auto-detect: browser locale first; if timezone/locale indicates Brazil, switch to `pt-BR`
-- Show a dismissable toast on auto-switch: "Idioma alterado para Português (BR)"
-- Language preference stored in Redux; overrides auto-detection after first manual change
-- All existing UI strings extracted to locale files
-
-#### 8. Map Marker Clustering
-Dense urban areas will have hundreds of overlapping markers.
-- Use MapLibre's built-in GeoJSON cluster source (`cluster: true`, `clusterMaxZoom`, `clusterRadius`)
-- Cluster circles show store count badge; color scales with count
-- Clicking a cluster zooms in to expand it
-- Individual store markers appear only past cluster threshold
-
-### Key Tech Decisions for This Epic
-- **Map tile provider**: OpenFreeMap — free, no API key, production-ready
-- **i18n library**: `react-i18next` — ecosystem standard, simple JSON locale files
-- **Dark mode**: Ionic CSS variables + `ion-palette-dark` — no extra library
-- **Geolocation**: native `navigator.geolocation.watchPosition` — no extra library
-- **Clustering**: MapLibre built-in cluster source — zero extra dependencies
+## Next Epic — TBD

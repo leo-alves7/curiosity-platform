@@ -1,8 +1,6 @@
 # Curiosity Platform
 
-Curiosity Platform is a map-based store explorer — a platform where users can discover, browse, and interact with stores and points of interest on an interactive map. Think of it as a foundation for location-aware commerce experiences.
-
-The project is being rebuilt from scratch with a production-grade stack inspired by [PredictAP Platform](https://github.com/predictap/platform), adopting its patterns for backend architecture, database management, authentication, and frontend tooling.
+Curiosity Platform is a **mobile-first, real-time store discovery app** — think Google Maps + TripAdvisor + Waze, laser-focused on helping people find and explore stores and points of interest nearby. Community-powered: any user can add a place they found; store owners can claim and enrich their listing with catalogues, photos, and promotional visibility.
 
 ---
 
@@ -162,7 +160,7 @@ Backend API available at [http://localhost:8081](http://localhost:8081).
 
 ## API Design
 
-RESTful endpoints following the same modular router pattern as PredictAP Platform:
+RESTful endpoints following the modular router pattern:
 
 ```
 GET  /health                    # Health check — returns {"status": "ok"} (public)
@@ -209,7 +207,7 @@ POST /api/v1/admin/stores/{id}/toggle-active  # Toggle is_active flag on a store
 - Admin-only routes use `AdminUser = Annotated[UserContext, Depends(require_admin)]`; `require_admin` raises 403 if the token's `role` custom claim is not `"admin"`
 - To grant admin access to a user, set the Firebase custom claim `role: "admin"` on their account (use Firebase Admin SDK or the Firebase console)
 - MinIO env vars (set in `backend/.env`): `MINIO_ENDPOINT` (default `localhost:9000`), `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET` (default `curiosity`), `MINIO_URL_BASE` (default `http://localhost:9000/curiosity`)
-- Create the MinIO bucket (`curiosity` by default) in the MinIO console at [http://localhost:9001](http://localhost:9001) (credentials: `minioadmin` / `minioadmin`) before uploading images
+- The `createbuckets` service in docker-compose creates the `curiosity` bucket automatically on first run. No manual step required.
 - Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
 
 ---
