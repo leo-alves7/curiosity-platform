@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import maplibregl from 'maplibre-gl'
-import StorePopup from '@/components/StorePopup'
+import StorePopup from './StorePopup'
 import type { StoreResponse } from '@/types/store'
 
 export function createStorePopup(

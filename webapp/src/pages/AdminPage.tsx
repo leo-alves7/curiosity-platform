@@ -13,8 +13,8 @@ import {
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { RootState } from '../store'
-import StoreManagement from '../components/Admin/StoreManagement'
-import CategoryManagement from '../components/Admin/CategoryManagement'
+import StoreManagement from '../features/admin/StoreManagement'
+import CategoryManagement from '../features/admin/CategoryManagement'
 
 type AdminTab = 'stores' | 'categories'
 

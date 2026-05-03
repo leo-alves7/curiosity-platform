@@ -44,8 +44,11 @@ curiosity-platform/
 ├── webapp/
 │   ├── src/
 │   │   ├── api/                # Axios client and API hooks
-│   │   ├── components/         # Shared-only reusable UI components
-│   │   ├── features/           # Feature-scoped components (in progress — migration ticket T5 pending)
+│   │   ├── components/         # Shared-only reusable UI components (Layout/, AppTabs/)
+│   │   ├── features/           # Feature-scoped components
+│   │   │   ├── map/            # MapView, clustering, GPS, FABs, StorePopup
+│   │   │   ├── stores/         # StoreList, StoreDetail, AddStore flows
+│   │   │   └── admin/          # Admin store/category management
 │   │   ├── hooks/              # Shared React hooks
 │   │   ├── pages/              # Page-level components
 │   │   ├── slices/             # Redux state slices (7 slices)

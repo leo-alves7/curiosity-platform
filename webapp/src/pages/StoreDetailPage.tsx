@@ -11,7 +11,7 @@ import {
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { selectCategoryMap } from '@/slices/storesSlice'
-import { StoreDetailView } from '@/components/StoreDetail'
+import StoreDetailView from '@/features/stores/StoreDetailView'
 
 function StoreDetailPage() {
   const { t } = useTranslation()
