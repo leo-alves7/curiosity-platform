@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { IonButton, IonIcon } from '@ionic/react'
-import { personCircle } from 'ionicons/icons'
+import { IonButton } from '@ionic/react'
+import { CircleUser } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface UserAvatarProps {
@@ -28,7 +28,7 @@ function UserAvatar({ photoURL, onClick }: UserAvatarProps) {
 
   return (
     <IonButton fill="clear" shape="round" onClick={onClick} aria-label={t('profile.userAvatar')}>
-      <IonIcon icon={personCircle} style={{ fontSize: '32px' }} />
+      <CircleUser size={32} />
     </IonButton>
   )
 }

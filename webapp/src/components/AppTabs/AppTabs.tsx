@@ -1,5 +1,5 @@
-import { IonIcon, IonLabel, IonTabBar, IonTabButton } from '@ionic/react'
-import { mapOutline, searchOutline } from 'ionicons/icons'
+import { IonLabel, IonTabBar, IonTabButton } from '@ionic/react'
+import { Map, Search } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useIsMobile } from './useIsMobile'
@@ -30,7 +30,7 @@ function AppTabs() {
       }}
     >
       <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
-        <IonIcon icon={mapOutline} />
+        <Map size={22} />
         <IonLabel>{t('nav.map')}</IonLabel>
       </IonTabButton>
       <IonTabButton
@@ -38,7 +38,7 @@ function AppTabs() {
         selected={activeTab === 'explore'}
         onClick={() => navigate('/explore')}
       >
-        <IonIcon icon={searchOutline} />
+        <Search size={22} />
         <IonLabel>{t('nav.explore')}</IonLabel>
       </IonTabButton>
     </IonTabBar>
