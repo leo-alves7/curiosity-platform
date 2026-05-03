@@ -180,6 +180,14 @@ The PR body must follow this structure:
 <how to test this manually and what automated tests were added>
 ```
 
+After creating the PR, close the Jira ticket:
+
+```bash
+acli jira workitem edit $0 --status "Done" || echo "[CSTY] Warning: could not transition $0 to Done — verify the status manually on Jira"
+```
+
+If the status transition name in the project workflow differs (e.g. "Resolved", "In Review"), the command fails silently — the `||` keeps this non-blocking.
+
 ## Phase 9 — Cleanup
 
 1. Shut down the coder teammate by sending a `shutdown_request` message and waiting for confirmation.
