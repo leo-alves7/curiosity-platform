@@ -5,6 +5,7 @@ import AppHeader from '@/components/Layout/AppHeader'
 import StoreListPanel from '@/features/stores/StoreListPanel'
 import { TAB_BAR_HEIGHT } from '@/components/AppTabs/AppTabs'
 import StoreDetailView from '@/features/stores/StoreDetailView'
+import { useIsMobile } from '@/components/AppTabs/useIsMobile'
 import {
   selectCategories,
   selectCategoryMap,
@@ -23,6 +24,7 @@ import type { AppDispatch } from '@/store'
 
 function ExplorePage() {
   const dispatch = useDispatch<AppDispatch>()
+  const isMobile = useIsMobile()
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
 
   const filteredStores = useSelector(selectFilteredStores)
@@ -62,7 +64,14 @@ function ExplorePage() {
 
   return (
     <IonPage>
-      <AppHeader />
+      <AppHeader
+        {...(!isMobile
+          ? {
+              searchQuery,
+              onSearchChange: handleSearchChange,
+            }
+          : {})}
+      />
       <IonContent style={{ '--padding-bottom': `${TAB_BAR_HEIGHT}px` }}>
         <StoreListPanel
           filteredStores={paginatedStores}
@@ -77,6 +86,7 @@ function ExplorePage() {
           onCategoryChange={handleCategoryChange}
           onLoadMore={handleLoadMore}
           onStoreClick={handleViewDetails}
+          isMobile={isMobile}
         />
         <IonModal isOpen={selectedStoreId !== null} onDidDismiss={() => setSelectedStoreId(null)}>
           {selectedStoreId !== null && (
