@@ -12,8 +12,8 @@ You are running the **memory-update** skill. Your job is to capture what was lea
 
 Read both of these in parallel:
 
-1. `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/MEMORY.md`
-2. `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/project_state.md`
+1. `.claude/memory/MEMORY.md`
+2. `.claude/memory/project_state.md`
 
 ---
 
@@ -54,7 +54,7 @@ Wait for the user to respond before writing each memory. This prevents low-quali
 
 ## Step 4 — Update project_state.md
 
-Always update `project_state.md` regardless of other memory changes. Mark any newly completed tickets, add any new patterns or gotchas discovered, and remove or correct anything that is now stale.
+Always update `.claude/memory/project_state.md` regardless of other memory changes. Mark any newly completed tickets, add any new patterns or gotchas discovered, and remove or correct anything that is now stale.
 
 ---
 
@@ -80,7 +80,7 @@ Use the next available ADR number. Never modify existing ADR entries — only ma
 
 ## Step 6 — Update MEMORY.md index
 
-Read `MEMORY.md` again and add a line for any new memory file created in Step 3. Each line must be:
+Read `.claude/memory/MEMORY.md` again and add a line for any new memory file created in Step 3. Each line must be:
 
 ```
 - [Title](filename.md) — one-line hook (under ~150 chars)

@@ -165,7 +165,97 @@ docker compose logs -f db   # Follow database logs
 
 ## Session Protocol
 
-At the start of any planning or implementation session, read all memory files in `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/` before reading any ticket or starting any work.
+At the start of any planning or implementation session, read all memory files in `.claude/memory/` before reading any ticket or starting any work.
+
+## New Machine Setup
+
+After cloning the repo on a new machine, these steps restore the full development environment:
+
+### 1. Install tools
+```bash
+# macOS
+brew install uv node gh
+brew install --cask docker
+
+# Install acli (Atlassian CLI)
+npm install -g @anthropic/acli   # or follow https://acli.atlassian.com
+
+# Node dependencies
+cd webapp && npm install
+cd ../backend && uv sync
+```
+
+### 2. Recreate .claude/settings.local.json (gitignored)
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(uv run ruff check:*)", "Bash(uv run ruff format:*)",
+      "Bash(uv run pytest:*)", "Bash(uv run mypy:*)",
+      "Bash(uv run alembic:*)", "Bash(uv run uvicorn:*)",
+      "Bash(uv sync:*)", "Bash(uv add:*)", "Bash(uv remove:*)", "Bash(uv run:*)",
+      "Bash(npm run:*)", "Bash(npm install:*)", "Bash(npx prettier:*)",
+      "Bash(docker compose:*)",
+      "Bash(git checkout:*)", "Bash(git branch:*)", "Bash(git add:*)",
+      "Bash(git commit:*)", "Bash(git push:*)", "Bash(git diff:*)",
+      "Bash(git status:*)", "Bash(git log:*)",
+      "Bash(gh pr create:*)", "Bash(gh pr list:*)", "Bash(gh pr view:*)",
+      "Bash(acli jira workitem view:*)", "Bash(acli jira workitem create:*)",
+      "Bash(acli jira workitem edit:*)", "Bash(acli jira workitem search:*)",
+      "Bash(python3:*)", "Bash(python -c:*)", "Bash(ls:*)",
+      "WebFetch(domain:curiosity-platform.atlassian.net)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "Stop": [{
+      "matcher": "",
+      "hooks": [{"type": "command", "command": "echo '\\n[MEMORY REMINDER] Run /memory-update to save session state to memory before ending.'"}]
+    }]
+  },
+  "enableAllProjectMcpServers": true
+}
+```
+
+### 3. Recreate .mcp.json (gitignored — contains API token)
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://curiosity-platform.atlassian.net",
+        "JIRA_USERNAME": "leandro.curiosityteam@gmail.com",
+        "JIRA_API_TOKEN": "<token from 1Password>"
+      }
+    }
+  }
+}
+```
+
+### 4. Recreate credentials (get from 1Password / secure transfer)
+- `backend/.env` — PostgreSQL, Firebase project ID, MinIO, Redis config
+- `backend/service-account.json` — Firebase Admin SDK service account JSON
+- `webapp/.env.local` — Firebase web API key, auth domain, app ID, API URL
+
+### 5. Authenticate CLI tools
+```bash
+gh auth login               # GitHub CLI
+acli jira auth login        # Atlassian CLI → site: curiosity-platform.atlassian.net
+```
+
+### 6. Start services and verify
+```bash
+docker compose up -d
+cd backend && uv run alembic upgrade head
+cd backend && uv run uvicorn curiosity.web.main:app --reload --port 8081
+cd webapp && npm run dev
+```
+
+Memory is fully available immediately after clone — all memory files are in `.claude/memory/` and travel with the repo.
 
 ## Important Rules
 

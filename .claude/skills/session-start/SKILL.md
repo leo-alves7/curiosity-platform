@@ -11,7 +11,7 @@ You are running the **session-start** orientation skill. Your job is to produce 
 
 ## Step 1 — Read all memory files
 
-1. Read `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/MEMORY.md`
+1. Read `.claude/memory/MEMORY.md`
 2. For every linked file in that index, read it now. Do not skip any.
 
 ---
