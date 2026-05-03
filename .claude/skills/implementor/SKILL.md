@@ -187,6 +187,19 @@ The PR body must follow this structure:
 
 ---
 
+## Phase 9.5 — Save Session State to Memory
+
+**This step is mandatory and must not be skipped.**
+
+Before writing the session summary, update memory:
+
+1. Read `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/project_state.md`
+2. Update it: mark the ticket as complete, add what was implemented, add any implementation-level details future sessions should know (new patterns, gotchas, trade-offs made).
+3. If a new architectural pattern was introduced (new Redux slice, new service, new hook pattern, new backend layer), update the relevant architecture memory file (`architecture_frontend.md` or `architecture_backend.md`).
+4. Read `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/MEMORY.md` and update the index if new memory files were created.
+
+---
+
 ## Phase 10 — Session Summary
 
 This is the final output you return to the user in the main session. Write it as a senior engineer handing off to a colleague. Output the following — each section in its own markdown block so the user can copy-paste.

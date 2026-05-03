@@ -29,9 +29,11 @@ curiosity-platform/
 ├── backend/
 │   ├── curiosity/
 │   │   ├── web/
-│   │   │   ├── routers/        # Feature-based FastAPI routers
+│   │   │   ├── routers/        # Feature-based FastAPI routers (HTTP handlers only)
 │   │   │   ├── managers/       # Business logic
 │   │   │   ├── model/          # SQLAlchemy ORM models
+│   │   │   ├── schemas/        # Pydantic request/response/validation models
+│   │   │   ├── services/       # External service clients (Firebase, MinIO) — no business logic
 │   │   │   └── dependencies/   # FastAPI dependency injection
 │   │   └── common/
 │   │       ├── model/          # Base SQLAlchemy model (UUID PK, soft delete)
@@ -42,10 +44,11 @@ curiosity-platform/
 ├── webapp/
 │   ├── src/
 │   │   ├── api/                # Axios client and API hooks
-│   │   ├── components/         # Reusable UI components
-│   │   ├── features/           # Feature-scoped logic
+│   │   ├── components/         # Shared-only reusable UI components
+│   │   ├── features/           # Feature-scoped components (in progress — migration ticket T5 pending)
+│   │   ├── hooks/              # Shared React hooks
 │   │   ├── pages/              # Page-level components
-│   │   ├── slices/             # Redux state slices
+│   │   ├── slices/             # Redux state slices (7 slices)
 │   │   └── auth/               # Firebase auth integration
 │   ├── package.json
 │   └── vite.config.ts
@@ -114,11 +117,14 @@ docker compose logs -f db   # Follow database logs
 - **Routers**: Feature-based modules in `curiosity/web/routers/`, each file exports a `*_router` variable
 - **Handler naming**: Route handler functions are prefixed with `handle_` (e.g. `handle_get_stores`)
 - **Managers**: Business logic lives in `curiosity/web/managers/`, not inside routers
+- **Schemas**: Pydantic request/response/validation models live in `curiosity/web/schemas/` — separate from ORM models in `model/`
+- **Services**: External service clients (Firebase Admin SDK, MinIO client, Stripe future) live in `curiosity/web/services/` — no business logic here, services only wrap external API clients
 - **Dependency injection**: FastAPI `Depends()` for DB sessions, auth, and shared services
 - **Async throughout**: All handlers, DB queries, and I/O are async (`async def`, `AsyncSession`, `asyncpg`)
 - **Base model**: All ORM models inherit from `Base` — includes UUID PK, `created_at`, `updated_at`, `deleted_at` (soft delete, auto-filtered)
 - **Pydantic v2**: Request/response schemas use `BaseModel` with `model_config = ConfigDict(from_attributes=True)`
 - **Configuration**: `pydantic-settings` with `.env` file for local config
+- **New endpoint checklist**: schema in `schemas/`, logic in manager, handler in router — never put ORM queries or business logic directly in routers
 
 ### Frontend Patterns
 - **API client**: Singleton Axios instance in `src/api/client.ts`
@@ -154,15 +160,9 @@ docker compose logs -f db   # Follow database logs
 - Use the `get-jira-issue` skill to fetch issue details
 - Use the `implementor` skill to implement a Jira issue end-to-end
 
-## Upcoming / Active Tech Decisions
+## Session Protocol
 
-- **PostGIS** — must be added to PostgreSQL for geospatial proximity queries ("stores near me"). Not yet implemented.
-- **Map tiles** — replacing demotiles with **OpenFreeMap** (`https://tiles.openfreemap.org/styles/liberty`). Dark style URL configured separately.
-- **i18n** — `react-i18next` with `en` (default) and `pt-BR` locale files. All UI strings must be extracted; no hardcoded user-facing strings.
-- **Dark mode** — Ionic `ion-palette-dark` class + CSS variables. No hardcoded light-only colors in components.
-- **Routing/navigation** — MapLibre is the renderer; routing engine (OSRM or Mapbox Directions API) to be added in a future epic.
-- **Stripe** — payment/subscription processing, added when enterprise subscription epic begins.
-- **Cloudflare R2** — production replacement for MinIO (same S3 API, CDN egress).
+At the start of any planning or implementation session, read all memory files in `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/` before reading any ticket or starting any work.
 
 ## Important Rules
 
