@@ -54,6 +54,7 @@ curiosity-platform/
 | Background Tasks     | Celery + Celery Beat                        |
 | Auth                 | Firebase Admin SDK (JWT RS256 verification) |
 | Config               | pydantic-settings                           |
+| Error Tracking       | Sentry (`sentry-sdk[fastapi]`)              |
 | Linting / Formatting | Ruff + mypy                                 |
 | Testing              | pytest + pytest-asyncio                     |
 
@@ -70,6 +71,7 @@ curiosity-platform/
 | Routing               | React Router v6                                    |
 | Auth                  | Firebase Auth + @capacitor-firebase/authentication |
 | i18n                  | react-i18next (EN default, PT-BR supported)        |
+| Error Tracking        | Sentry (`@sentry/react`)                           |
 | Testing               | Vitest + React Testing Library                     |
 
 ### Infrastructure (local dev via Docker Compose)
@@ -225,13 +227,13 @@ POST /api/v1/admin/stores/{id}/toggle-active  # Toggle is_active flag on a store
 - Axios client injects Firebase ID token as `Authorization: Bearer` on each request; a 401 response triggers `user.getIdToken(true)` (force refresh) and a single retry before calling `signOut`
 - Map clustering is powered by MapLibre's native GeoJSON cluster source. Store data is converted to a `GeoJSON.FeatureCollection` by `storesToFeatureCollection` (`src/features/map/storeGeoJSONConverter.ts`) and fed into a single source with `cluster: true`. Three layers are defined in `storeClusterLayers.ts`: `clusters` (coloured circles), `cluster-count` (text label), and `unclustered-point` (SVG icon per category). Category SVG marker files live in `webapp/src/assets/markers/` (restaurant, pharmacy, gas_station, market, hotel, default); they are pre-loaded into MapLibre via the `useMapImageLoader` hook (`src/features/map/useMapImageLoader.ts`) which also re-registers images on `styledata` events so dark/light theme switches don't wipe the icons. Click handling (zoom-on-cluster, popup-on-marker) is managed by `useStoreClusterHandlers`; popup creation reuses `StorePopup` via `createStorePopup`. The map always shows **all** active stores (not a paginated subset) because `fetchStoresAndCategories` calls `fetchAllStores()` (`GET /api/v1/stores?page_size=10000`). Five seed categories (Restaurant, Pharmacy, Gas Station, Market, Hotel) are inserted by the Alembic migration `seed_categories`.
 - GPS location is powered by `useUserLocation` (`src/hooks/useUserLocation.ts`), which wraps `navigator.geolocation.watchPosition`. It dispatches `setUserLocation` and the Redux `locationSlice` tracks `{ userLocation: { lat, lng, accuracy } | null, isFollowingUser: boolean }`. `UserLocationLayer` renders the dot and accuracy circle as MapLibre GeoJSON layers (source: `user-location`). `LocateMeFab` shows the button state (primary when following, medium when off-center). Follow mode is cancelled when any drag exceeds the 4 px threshold (`hasDragged` transitions to `true` in `onPointerMove`) or when a scroll-wheel event fires on the map container; it is NOT cancelled on `pointerdown`.
-- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL_LIGHT` (optional — light map style, defaults to OpenFreeMap liberty: `https://tiles.openfreemap.org/styles/liberty`), `VITE_MAPLIBRE_STYLE_URL_DARK` (optional — dark map style, defaults to the same OpenFreeMap liberty URL until a dedicated dark style is configured), `VITE_APP_URL` (optional — base URL used when building share links in the store detail view, e.g. `https://your-app.example.com`; defaults to `window.location.origin`) — see `webapp/.env.example`
+- Frontend env vars (set in `webapp/.env.local`): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`, `VITE_API_URL`, `VITE_MAPLIBRE_STYLE_URL_LIGHT` (optional — light map style, defaults to OpenFreeMap liberty: `https://tiles.openfreemap.org/styles/liberty`), `VITE_MAPLIBRE_STYLE_URL_DARK` (optional — dark map style, defaults to the same OpenFreeMap liberty URL until a dedicated dark style is configured), `VITE_APP_URL` (optional — base URL used when building share links in the store detail view, e.g. `https://your-app.example.com`; defaults to `window.location.origin`), `VITE_SENTRY_DSN` (optional — Sentry DSN for frontend error tracking; omit to disable Sentry) — see `webapp/.env.example`
 - Protect backend routes by declaring `current_user: CurrentUser` in any handler (or `dependencies=[Depends(get_current_user)]` at router level); import `CurrentUser` from `curiosity.web.dependencies`; `UserContext` carries `uid`, `email`, and `is_admin` from the verified Firebase ID token
 - Admin-only routes use `AdminUser = Annotated[UserContext, Depends(require_admin)]`; `require_admin` raises 403 if the token's `role` custom claim is not `"admin"`
 - To grant admin access to a user, set the Firebase custom claim `role: "admin"` on their account (use Firebase Admin SDK or the Firebase console)
 - MinIO env vars (set in `backend/.env`): `MINIO_ENDPOINT` (default `localhost:9000`), `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET` (default `curiosity`), `MINIO_URL_BASE` (default `http://localhost:9000/curiosity`)
 - The `createbuckets` service in docker-compose creates the `curiosity` bucket automatically on first run. No manual step required.
-- Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification) — see `backend/.env.example`
+- Backend env vars (set in `backend/.env`): `FIREBASE_PROJECT_ID` (required for token verification), `SENTRY_DSN` (optional — Sentry DSN for backend error tracking; omit to disable Sentry) — see `backend/.env.example`
 
 ---
 
@@ -252,6 +254,8 @@ cd .. && npx wrangler deploy # deploys webapp/dist to Cloudflare Workers
 
 - Build command: `cd webapp && npm run build`
 - Deploy command: `npx wrangler deploy`
+
+**Sentry source maps** — set `SENTRY_ORG`, `SENTRY_PROJECT`, and `SENTRY_AUTH_TOKEN` as CI/CD secrets to enable automatic source map uploads on build. When `SENTRY_AUTH_TOKEN` is absent the Sentry Vite plugin is disabled and the build proceeds normally.
 
 ### Backend — deployment TBD
 

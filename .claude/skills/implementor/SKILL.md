@@ -15,13 +15,14 @@ Use TaskCreate immediately to track progress through the phases below (one task 
 
 ## Phase 1 — Gather Context
 
-1. **Read `.claude/PROJECT_VISION.md`** first — understand the product vision, active epic, two-tab architecture, user types, and any tech decisions that apply to this ticket. This prevents planning in a vacuum.
-2. Use the `get-jira-issue` skill to fetch the full Jira issue details for `$0`.
-3. Read the issue carefully: understand the acceptance criteria, scope, and any linked issues.
-4. If you are not sure what to do, ask for clarification — this is the only time you will ask the user; after that, make decisions independently.
-5. Use Glob and Grep to locate the files and modules most likely involved.
-6. Use the Read tool to read those files. Understand the existing patterns, naming conventions, and abstractions before forming any opinion on the solution.
-7. Write a one-paragraph summary of what needs to be built and which files are in scope. Include how this ticket fits into the broader product vision.
+1. **Read `.claude/memory/MEMORY.md`** first, then read every file linked in the index. This gives you the full project brain — state, architecture, gotchas — before you read the ticket.
+2. **Read `.claude/PROJECT_VISION.md`** — understand the product vision, active epic, two-tab architecture, user types, and any tech decisions that apply to this ticket. This prevents planning in a vacuum.
+3. Use the `get-jira-issue` skill to fetch the full Jira issue details for `$0`.
+4. Read the issue carefully: understand the acceptance criteria, scope, and any linked issues.
+5. If you are not sure what to do, ask for clarification — this is the only time you will ask the user; after that, make decisions independently.
+6. Use Glob and Grep to locate the files and modules most likely involved.
+7. Use the Read tool to read those files. Understand the existing patterns, naming conventions, and abstractions before forming any opinion on the solution.
+8. Write a one-paragraph summary of what needs to be built and which files are in scope. Include how this ticket fits into the broader product vision.
 
 ---
 
@@ -202,10 +203,10 @@ If the status transition name in the project workflow differs (e.g. "Resolved", 
 
 Before writing the session summary, update memory:
 
-1. Read `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/project_state.md`
+1. Read `.claude/memory/project_state.md`
 2. Update it: mark the ticket as complete, add what was implemented, add any implementation-level details future sessions should know (new patterns, gotchas, trade-offs made).
-3. If a new architectural pattern was introduced (new Redux slice, new service, new hook pattern, new backend layer), update the relevant architecture memory file (`architecture_frontend.md` or `architecture_backend.md`).
-4. Read `~/.claude/projects/-home-leo-Documents-projects-personal-curiosity-platform/memory/MEMORY.md` and update the index if new memory files were created.
+3. If a new architectural pattern was introduced (new Redux slice, new service, new hook pattern, new backend layer), update the relevant architecture memory file (`.claude/memory/architecture_frontend.md` or `.claude/memory/architecture_backend.md`).
+4. Read `.claude/memory/MEMORY.md` and update the index if new memory files were created.
 
 ---
 
