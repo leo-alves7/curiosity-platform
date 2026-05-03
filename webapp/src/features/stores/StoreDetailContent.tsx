@@ -46,7 +46,7 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
 
       <IonList>
         <IonItem lines="none">
-          <h2 style={{ margin: 0 }}>{store.name}</h2>
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{store.name}</h2>
         </IonItem>
 
         {categoryName !== undefined && (
@@ -72,7 +72,12 @@ function StoreDetailContent({ store, categoryName, onShare, onClose }: StoreDeta
         </IonItem>
 
         <IonItem lines="none">
-          <IonButton expand="block" onClick={onShare}>
+          <IonButton
+            expand="block"
+            onClick={onShare}
+            style={{ width: '100%' }}
+            aria-label={t('storeDetail.share')}
+          >
             <span slot="start" style={{ display: 'flex' }}>
               <Share2 size={18} />
             </span>

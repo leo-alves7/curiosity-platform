@@ -79,7 +79,7 @@ function StoreListPanel({
         overflow: 'hidden',
       }}
     >
-      <div style={{ padding: '12px 16px 0' }}>
+      <div style={{ padding: '16px 16px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <IonText>
             <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 600 }}>
