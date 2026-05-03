@@ -109,21 +109,26 @@ function MapView({
     let lastY = 0
     let hasDragged = false
     const DRAG_THRESHOLD = 4
+    const activeTouches = new Set<number>()
 
     const onPointerDown = (e: PointerEvent) => {
+      // Multi-touch: let MapLibre's touchZoomRotate handle 2+ fingers.
+      if (e.pointerType === 'touch') {
+        activeTouches.add(e.pointerId)
+        if (activeTouches.size > 1) {
+          activeButton = null
+          return
+        }
+      }
       activeButton = e.button
       lastX = e.clientX
       lastY = e.clientY
       hasDragged = false
-      // Any user-initiated pan (right-drag) cancels follow mode. dragPan is disabled
-      // so MapLibre's 'dragstart' event never fires — we handle it here instead.
-      if (e.button === 2) {
-        dispatch(setFollowingUser(false))
-      }
     }
 
     const onPointerMove = (e: PointerEvent) => {
       if (activeButton === null || !e.buttons) return
+      if (e.pointerType === 'touch' && activeTouches.size > 1) return
 
       const isLocked = document.pointerLockElement === container
       const dx = isLocked ? e.movementX : e.clientX - lastX
@@ -138,22 +143,25 @@ function MapView({
       if (!hasDragged) {
         if (Math.abs(dx) + Math.abs(dy) <= DRAG_THRESHOLD) return
         hasDragged = true
-        if (activeButton === 0 && !isAddingStoreRef.current) {
+        // Cancel follow mode on first intentional drag by any means.
+        dispatch(setFollowingUser(false))
+        if (activeButton === 2 && e.pointerType === 'mouse') {
           container.requestPointerLock?.()
         }
       }
 
       if (activeButton === 0 && !isAddingStoreRef.current) {
-        mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
+        mapInstance.panBy([-dx, -dy], { animate: false })
       } else if (activeButton === 1) {
         const newPitch = Math.max(0, Math.min(85, mapInstance.getPitch() - dy * 0.3))
         mapInstance.setPitch(newPitch)
-      } else if (activeButton === 2) {
-        mapInstance.panBy([-dx, -dy], { animate: false })
+      } else if (activeButton === 2 && !isAddingStoreRef.current) {
+        mapInstance.setBearing(mapInstance.getBearing() + dx * 0.3)
       }
     }
 
-    const releaseLock = () => {
+    const releaseLock = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') activeTouches.delete(e.pointerId)
       if (document.pointerLockElement === container) {
         document.exitPointerLock?.()
       }
@@ -164,12 +172,15 @@ function MapView({
       e.preventDefault()
     }
 
+    const onWheel = () => dispatch(setFollowingUser(false))
+
     const container = mapContainer.current
     container.addEventListener('pointerdown', onPointerDown)
     container.addEventListener('pointermove', onPointerMove)
     container.addEventListener('pointerup', releaseLock)
     container.addEventListener('pointercancel', releaseLock)
     container.addEventListener('contextmenu', onContextMenu)
+    container.addEventListener('wheel', onWheel, { passive: true })
 
     mapInstance.on('moveend', () => {
       const c = mapInstance.getCenter()
@@ -191,6 +202,7 @@ function MapView({
         document.exitPointerLock?.()
       }
       container.removeEventListener('contextmenu', onContextMenu)
+      container.removeEventListener('wheel', onWheel)
       mapInstance.remove()
     }
   }, [])
