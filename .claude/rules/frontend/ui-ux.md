@@ -25,16 +25,18 @@ paths:
 - Never instantiate a second `maplibregl.Map` — there is exactly one map instance per page.
 - Map controls (FABs, overlays) are rendered as React children overlaid on top of the map canvas, not as MapLibre controls.
 - Map pitch defaults to `45` and bearing to `0` — do not reset these unless explicitly required.
-- Left-drag = rotate (locked center); right-drag = pan. Do not override these bindings.
+- Left-drag (M1) = pan. Right-drag (M2) = rotate/orbit (pointer lock). Scroll wheel = zoom + cancels follow mode. Touch: 1-finger = pan, 2-finger = pinch-zoom/rotate (MapLibre native). Do not override these bindings.
 
 ### Pointer-lock and drag interaction (important for any feature that uses map clicks)
 
-`MapView` implements custom left-drag rotation using `requestPointerLock()`. Key rules:
+`MapView` implements custom pointer event handling for all map interactions. Key rules:
 
-- **Pointer lock is deferred to a drag threshold (4 px movement)** — it is NOT acquired on `pointerdown`. This means plain left-clicks (store markers, pin-drop, any overlay) land cleanly without rotating the map.
-- Rotation only starts in `onPointerMove` after `hasDragged` is set (threshold crossed). Gate: `if (activeButton === 0 && !isAddingStoreRef.current) container.requestPointerLock?.()`.
+- **Pointer lock is deferred to a drag threshold (4 px movement)** — it is NOT acquired on `pointerdown`. This means plain clicks (store markers, pin-drop, any overlay) land cleanly without affecting the map.
+- Rotation only starts in `onPointerMove` after `hasDragged` is set (threshold crossed). Gate: `if (activeButton === 2 && e.pointerType === 'mouse') container.requestPointerLock?.()`.
 - **Never call `requestPointerLock()` on `pointerdown`** — it causes the browser to freeze `clientX/Y` and any click that involves the slightest cursor jitter will rotate the map instead of registering as a click.
-- To suppress rotation for a mode (e.g. pin-drop): add a `useRef` in `MapView` tracking the relevant Redux state (`isAddingStoreRef`) and gate the lock + bearing change in `onPointerMove`. The ref is required because the handler lives in a `useEffect(() => {}, [])` closure.
+- To suppress pan/rotate for a mode (e.g. pin-drop): add a `useRef` in `MapView` tracking the relevant Redux state (`isAddingStoreRef`) and gate the pan + bearing change in `onPointerMove`. The ref is required because the handler lives in a `useEffect(() => {}, [])` closure.
+- **Follow mode** is cancelled in `onPointerMove` when `hasDragged` transitions to `true` (threshold crossed) for any button, and also on any `'wheel'` event. It is NOT cancelled on `pointerdown`.
+- **Touch**: single-finger touch is treated as button 0 (pan). Two-finger touch early-returns from the custom handler; MapLibre's `touchZoomRotate` handles pinch and twist natively.
 
 ### FAB stacking on the map canvas
 
