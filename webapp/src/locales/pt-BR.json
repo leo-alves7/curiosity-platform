@@ -134,7 +134,11 @@
     "deleteStore": "Excluir Loja",
     "deleteStoreConfirm": "Tem certeza que deseja excluir esta loja? Esta ação não pode ser desfeita.",
     "deleteConfirmButton": "Excluir",
-    "deleteCancelButton": "Cancelar"
+    "deleteCancelButton": "Cancelar",
+    "noStoresFound": "Nenhuma loja encontrada",
+    "noStoresFoundDescription": "Tente ajustar a busca ou adicione uma nova loja.",
+    "noCategoriesFound": "Nenhuma categoria ainda",
+    "noCategoriesFoundDescription": "Adicione uma categoria para começar."
   },
   "storeDetailPage": {
     "title": "Detalhes da Loja"
