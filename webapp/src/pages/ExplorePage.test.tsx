@@ -12,6 +12,7 @@ import mapReducer from '@/slices/mapSlice'
 import uiReducer from '@/slices/uiSlice'
 import ExplorePage from './ExplorePage'
 import type { StoreResponse } from '@/types/store'
+import * as useIsMobileModule from '@/components/AppTabs/useIsMobile'
 
 function makeStore(overrides: Partial<StoreResponse> = {}): StoreResponse {
   return {
@@ -57,6 +58,12 @@ function setup(opts: SetupOpts = {}) {
         pageSize: 20,
         hasMore: false,
       },
+      ui: {
+        isPanelOpen: true,
+        isAddingStore: false,
+        pinLocation: null,
+        isSidebarCollapsed: false,
+      },
     },
   })
   const result = render(
@@ -70,6 +77,7 @@ function setup(opts: SetupOpts = {}) {
 describe('ExplorePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(false)
   })
 
   afterEach(() => {
@@ -92,6 +100,7 @@ describe('ExplorePage', () => {
   })
 
   it('dispatches setSearchQuery on search input', async () => {
+    vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(true)
     const { store } = setup()
     const searchbar = screen.getByLabelText('Search stores') as HTMLElement
     const user = userEvent.setup()
@@ -110,5 +119,19 @@ describe('ExplorePage', () => {
   it('does not render a MapView', () => {
     const { container } = setup()
     expect(container.querySelector('canvas')).toBeNull()
+  })
+
+  describe('searchbar visibility by layout mode', () => {
+    it('hides searchbar in StoreListPanel on desktop', () => {
+      vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(false)
+      setup()
+      expect(screen.queryByLabelText('Search stores')).toBeNull()
+    })
+
+    it('shows searchbar in StoreListPanel on mobile', () => {
+      vi.spyOn(useIsMobileModule, 'useIsMobile').mockReturnValue(true)
+      setup()
+      expect(screen.getByLabelText('Search stores')).toBeDefined()
+    })
   })
 })

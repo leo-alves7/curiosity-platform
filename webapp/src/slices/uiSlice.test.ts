@@ -6,17 +6,27 @@ import uiReducer, {
   setIsAddingStore,
   setPinLocation,
   resetAddStore,
+  toggleSidebar,
+  setSidebarCollapsed,
   selectIsPanelOpen,
   selectIsAddingStore,
   selectPinLocation,
+  selectIsSidebarCollapsed,
 } from './uiSlice'
 
-function makeStore(isPanelOpen?: boolean) {
+function makeStore(isPanelOpen?: boolean, isSidebarCollapsed?: boolean) {
   return configureStore({
     reducer: { ui: uiReducer },
     preloadedState:
       isPanelOpen !== undefined
-        ? { ui: { isPanelOpen, isAddingStore: false, pinLocation: null } }
+        ? {
+            ui: {
+              isPanelOpen,
+              isAddingStore: false,
+              pinLocation: null,
+              isSidebarCollapsed: isSidebarCollapsed ?? false,
+            },
+          }
         : undefined,
   })
 }
@@ -133,5 +143,65 @@ describe('uiSlice', () => {
     expect(selectPinLocation(store.getState() as Parameters<typeof selectPinLocation>[0])).toBe(
       null,
     )
+  })
+
+  describe('isSidebarCollapsed', () => {
+    it('defaults isSidebarCollapsed to false when localStorage is empty', () => {
+      const store = makeStore()
+      expect(
+        selectIsSidebarCollapsed(store.getState() as Parameters<typeof selectIsSidebarCollapsed>[0]),
+      ).toBe(false)
+    })
+
+    it('toggleSidebar flips from false to true', () => {
+      const store = makeStore(true, false)
+      store.dispatch(toggleSidebar())
+      expect(
+        selectIsSidebarCollapsed(
+          store.getState() as Parameters<typeof selectIsSidebarCollapsed>[0],
+        ),
+      ).toBe(true)
+    })
+
+    it('toggleSidebar flips from true to false', () => {
+      const store = makeStore(true, true)
+      store.dispatch(toggleSidebar())
+      expect(
+        selectIsSidebarCollapsed(
+          store.getState() as Parameters<typeof selectIsSidebarCollapsed>[0],
+        ),
+      ).toBe(false)
+    })
+
+    it('setSidebarCollapsed sets to specified value', () => {
+      const store = makeStore(true, false)
+      store.dispatch(setSidebarCollapsed(true))
+      expect(
+        selectIsSidebarCollapsed(
+          store.getState() as Parameters<typeof selectIsSidebarCollapsed>[0],
+        ),
+      ).toBe(true)
+    })
+
+    it('toggleSidebar persists to localStorage', () => {
+      const store = makeStore(true, false)
+      store.dispatch(toggleSidebar())
+      expect(localStorage.getItem('ui.isSidebarCollapsed')).toBe('true')
+    })
+
+    it('setSidebarCollapsed persists to localStorage', () => {
+      const store = makeStore(true, false)
+      store.dispatch(setSidebarCollapsed(true))
+      expect(localStorage.getItem('ui.isSidebarCollapsed')).toBe('true')
+    })
+
+    it('selectIsSidebarCollapsed returns current sidebar collapsed state', () => {
+      const store = makeStore(true, true)
+      expect(
+        selectIsSidebarCollapsed(
+          store.getState() as Parameters<typeof selectIsSidebarCollapsed>[0],
+        ),
+      ).toBe(true)
+    })
   })
 })

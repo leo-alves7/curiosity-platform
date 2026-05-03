@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/store'
 
 const UI_PANEL_KEY = 'ui.isPanelOpen'
+const UI_SIDEBAR_KEY = 'ui.isSidebarCollapsed'
 
 export interface PinLocation {
   lat: number
@@ -12,6 +13,7 @@ interface UiState {
   isPanelOpen: boolean
   isAddingStore: boolean
   pinLocation: PinLocation | null
+  isSidebarCollapsed: boolean
 }
 
 function loadPanelState(): boolean {
@@ -24,10 +26,21 @@ function loadPanelState(): boolean {
   }
 }
 
+function loadSidebarState(): boolean {
+  try {
+    const stored = localStorage.getItem(UI_SIDEBAR_KEY)
+    if (stored === null) return false
+    return stored === 'true'
+  } catch {
+    return false
+  }
+}
+
 const initialState: UiState = {
   isPanelOpen: loadPanelState(),
   isAddingStore: false,
   pinLocation: null,
+  isSidebarCollapsed: loadSidebarState(),
 }
 
 const uiSlice = createSlice({
@@ -63,14 +76,34 @@ const uiSlice = createSlice({
       state.isAddingStore = false
       state.pinLocation = null
     },
+    toggleSidebar(state) {
+      state.isSidebarCollapsed = !state.isSidebarCollapsed
+      try {
+        localStorage.setItem(UI_SIDEBAR_KEY, String(state.isSidebarCollapsed))
+      } catch {}
+    },
+    setSidebarCollapsed(state, action: PayloadAction<boolean>) {
+      state.isSidebarCollapsed = action.payload
+      try {
+        localStorage.setItem(UI_SIDEBAR_KEY, String(state.isSidebarCollapsed))
+      } catch {}
+    },
   },
 })
 
-export const { togglePanel, setPanelOpen, setIsAddingStore, setPinLocation, resetAddStore } =
-  uiSlice.actions
+export const {
+  togglePanel,
+  setPanelOpen,
+  setIsAddingStore,
+  setPinLocation,
+  resetAddStore,
+  toggleSidebar,
+  setSidebarCollapsed,
+} = uiSlice.actions
 
 export const selectIsPanelOpen = (state: RootState) => state.ui.isPanelOpen
 export const selectIsAddingStore = (state: RootState) => state.ui.isAddingStore
 export const selectPinLocation = (state: RootState) => state.ui.pinLocation
+export const selectIsSidebarCollapsed = (state: RootState) => state.ui.isSidebarCollapsed
 
 export default uiSlice.reducer

@@ -33,6 +33,7 @@ vi.mock('maplibre-gl', () => ({
       panBy: vi.fn(),
       flyTo: vi.fn(),
       easeTo: vi.fn(),
+      resize: vi.fn(),
       setStyle: vi.fn(),
       dragPan: { enable: vi.fn(), disable: vi.fn() },
       dragRotate: { enable: vi.fn(), disable: vi.fn() },
@@ -94,6 +95,7 @@ interface SetupOpts {
   isPanelOpen?: boolean
   isAddingStore?: boolean
   pinLocation?: { lat: number; lng: number } | null
+  isSidebarCollapsed?: boolean
 }
 
 function setup(opts: SetupOpts = {}) {
@@ -131,6 +133,7 @@ function setup(opts: SetupOpts = {}) {
         isPanelOpen: opts.isPanelOpen ?? true,
         isAddingStore: opts.isAddingStore ?? false,
         pinLocation: opts.pinLocation ?? null,
+        isSidebarCollapsed: opts.isSidebarCollapsed ?? false,
       },
       settings: { theme: 'system' as const, language: null as null },
     },
@@ -185,6 +188,13 @@ describe('MapPage', () => {
     it('does not render the toggle FAB on desktop', () => {
       const { container } = setup()
       expect(container.querySelector('[aria-label="Toggle store list"]')).toBeNull()
+    })
+
+    it('collapses sidebar when isSidebarCollapsed is true', () => {
+      const { container } = setup({ isSidebarCollapsed: true })
+      const gridDiv = container.querySelector('div[style*="grid"]') as HTMLElement
+      expect(gridDiv).not.toBeNull()
+      expect(gridDiv.style.gridTemplateColumns).toContain('0fr')
     })
   })
 

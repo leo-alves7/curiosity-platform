@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { IonContent, IonFab, IonFabButton, IonModal, IonPage } from '@ionic/react'
 import { List } from 'lucide-react'
@@ -34,6 +34,8 @@ import {
   selectPinLocation,
   setPinLocation,
   resetAddStore,
+  selectIsSidebarCollapsed,
+  toggleSidebar,
 } from '@/slices/uiSlice'
 import { selectUserLocation, selectFollowingUser, setFollowingUser } from '@/slices/locationSlice'
 import { useIsMobile } from '@/components/AppTabs/useIsMobile'
@@ -48,6 +50,7 @@ function MapPage() {
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
   const isMobile = useIsMobile()
   const isPanelOpen = useSelector(selectIsPanelOpen)
+  const isSidebarCollapsed = useSelector(selectIsSidebarCollapsed)
   const userLocation = useSelector(selectUserLocation)
   const isFollowingUser = useSelector(selectFollowingUser)
   const isAddingStore = useSelector(selectIsAddingStore)
@@ -117,6 +120,18 @@ function MapPage() {
   const handleTogglePanel = useCallback(() => {
     dispatch(togglePanel())
   }, [dispatch])
+
+  const handleToggleSidebar = useCallback(() => {
+    dispatch(toggleSidebar())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (!mapInstance) return
+    const id = setTimeout(() => {
+      mapInstance.resize()
+    }, 250)
+    return () => clearTimeout(id)
+  }, [isSidebarCollapsed, mapInstance])
 
   const handlePanelDismiss = useCallback(() => {
     dispatch(setPanelOpen(false))
@@ -204,12 +219,19 @@ function MapPage() {
 
   return (
     <IonPage>
-      <AppHeader />
+      <AppHeader
+        showSidebarToggle={true}
+        isSidebarCollapsed={isSidebarCollapsed}
+        onToggleSidebar={handleToggleSidebar}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+      />
       <IonContent>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '35fr 65fr',
+            gridTemplateColumns: isSidebarCollapsed ? '0fr 1fr' : '35fr 65fr',
+            transition: 'grid-template-columns 250ms ease',
             width: '100%',
             height: '100%',
           }}

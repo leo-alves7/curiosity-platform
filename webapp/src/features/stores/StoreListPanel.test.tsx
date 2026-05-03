@@ -64,7 +64,12 @@ function setup(opts: SetupOpts = {}) {
   const testStore = configureStore({
     reducer: { ui: uiReducer },
     preloadedState: {
-      ui: { isPanelOpen: opts.isPanelOpen ?? true, isAddingStore: false, pinLocation: null },
+      ui: {
+        isPanelOpen: opts.isPanelOpen ?? true,
+        isAddingStore: false,
+        pinLocation: null,
+        isSidebarCollapsed: false,
+      },
     },
   })
   const onSearchChange = vi.fn()
@@ -110,12 +115,22 @@ describe('StoreListPanel', () => {
   })
 
   it('renders the search bar', () => {
-    setup()
+    setup({ isMobile: true })
     expect(screen.getByLabelText('Search stores')).toBeDefined()
   })
 
+  it('does not render searchbar when isMobile is false', () => {
+    setup({ isMobile: false })
+    expect(screen.queryByLabelText('Search stores')).toBeNull()
+  })
+
+  it('does not render searchbar when isMobile is undefined', () => {
+    setup()
+    expect(screen.queryByLabelText('Search stores')).toBeNull()
+  })
+
   it('debounces onSearchChange until delay elapses', () => {
-    const { onSearchChange } = setup({ searchQuery: '' })
+    const { onSearchChange } = setup({ searchQuery: '', isMobile: true })
     const searchbar = screen.getByLabelText('Search stores') as HTMLElement
 
     act(() => {
@@ -132,7 +147,7 @@ describe('StoreListPanel', () => {
   })
 
   it('cancels debounced call if value changes before delay', () => {
-    const { onSearchChange } = setup({ searchQuery: '' })
+    const { onSearchChange } = setup({ searchQuery: '', isMobile: true })
     const searchbar = screen.getByLabelText('Search stores') as HTMLElement
 
     act(() => {

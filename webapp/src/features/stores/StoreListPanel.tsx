@@ -11,7 +11,7 @@ import {
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import StoreList from './StoreList'
-import { useSearchDebounce } from './useSearchDebounce'
+import { useSearchDebounce } from '@/hooks/useSearchDebounce'
 import { togglePanel } from '@/slices/uiSlice'
 import type { AppDispatch } from '@/store'
 import type { CategoryResponse } from '@/types/category'
@@ -98,13 +98,15 @@ function StoreListPanel({
             </IonButton>
           )}
         </div>
-        <IonSearchbar
-          aria-label={t('storeList.search')}
-          value={localQuery}
-          placeholder={t('storeList.search')}
-          debounce={0}
-          onIonInput={(event) => setLocalQuery(event.detail.value ?? '')}
-        />
+        {isMobile && (
+          <IonSearchbar
+            aria-label={t('storeList.search')}
+            value={localQuery}
+            placeholder={t('storeList.search')}
+            debounce={0}
+            onIonInput={(event) => setLocalQuery(event.detail.value ?? '')}
+          />
+        )}
         {categories.length > 0 && (
           <IonSegment
             scrollable
