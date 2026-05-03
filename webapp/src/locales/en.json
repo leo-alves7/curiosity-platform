@@ -12,7 +12,16 @@
     "invalidCredentials": "Invalid email or password",
     "googleFailed": "Google sign-in failed",
     "appleFailed": "Apple sign-in failed",
-    "signedOut": "You have been signed out"
+    "signedOut": "You have been signed out",
+    "createAccount": "Create account",
+    "signInToggle": "Already have an account? Sign in",
+    "createAccountToggle": "Don't have an account? Create one",
+    "confirmPasswordLabel": "Confirm password",
+    "registerWithEmail": "Create account",
+    "passwordMismatch": "Passwords do not match",
+    "emailAlreadyInUse": "Email address is already in use",
+    "weakPassword": "Password is too weak (minimum 6 characters)",
+    "invalidEmail": "Invalid email address"
   },
   "nav": {
     "map": "Map",

@@ -12,7 +12,16 @@
     "invalidCredentials": "Email ou senha inválidos",
     "googleFailed": "Falha no login com Google",
     "appleFailed": "Falha no login com Apple",
-    "signedOut": "Você foi desconectado"
+    "signedOut": "Você foi desconectado",
+    "createAccount": "Criar conta",
+    "signInToggle": "Já tem uma conta? Entrar",
+    "createAccountToggle": "Não tem uma conta? Criar",
+    "confirmPasswordLabel": "Confirmar senha",
+    "registerWithEmail": "Criar conta",
+    "passwordMismatch": "As senhas não coincidem",
+    "emailAlreadyInUse": "Este endereço de email já está em uso",
+    "weakPassword": "Senha muito fraca (mínimo 6 caracteres)",
+    "invalidEmail": "Endereço de email inválido"
   },
   "nav": {
     "map": "Mapa",
