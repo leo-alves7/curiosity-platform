@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { fetchStores } from '@/api/stores'
+import { fetchAllStores } from '@/api/stores'
 import { fetchCategories } from '@/api/categories'
 import type { CategoryResponse } from '@/types/category'
 import type { StoreResponse } from '@/types/store'
@@ -35,12 +35,12 @@ const initialState: StoresState = {
 export const fetchStoresAndCategories = createAsyncThunk(
   'stores/fetchStoresAndCategories',
   async () => {
-    const [storesData, categories] = await Promise.all([fetchStores(), fetchCategories()])
+    const [allStores, categories] = await Promise.all([fetchAllStores(), fetchCategories()])
     const categoryMap = categories.reduce<Record<string, string>>((acc, cat) => {
       acc[cat.id] = cat.name
       return acc
     }, {})
-    return { items: storesData.items, categories, categoryMap }
+    return { items: allStores, categories, categoryMap }
   },
 )
 

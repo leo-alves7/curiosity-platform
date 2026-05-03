@@ -36,6 +36,13 @@ export async function uploadStoreImage(id: string, file: File): Promise<StoreRes
   return response.data
 }
 
+export async function fetchAllStores(): Promise<StoreResponse[]> {
+  const response = await client.get<PaginatedStores>('/api/v1/stores', {
+    params: { page: 1, page_size: 10000 },
+  })
+  return response.data.items
+}
+
 export async function fetchAdminStores(page = 1, pageSize = 200): Promise<PaginatedStores> {
   const response = await client.get<PaginatedStores>('/api/v1/admin/stores', {
     params: { page, page_size: pageSize },

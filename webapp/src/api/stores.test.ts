@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { fetchStores, fetchStore } from './stores'
+import { fetchStores, fetchStore, fetchAllStores } from './stores'
 
 vi.mock('../auth/firebase', () => ({
   auth: {
@@ -92,6 +92,31 @@ const mockStore = {
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
 }
+
+describe('fetchAllStores', () => {
+  it('requests page_size=10000', async () => {
+    const captured = { url: null as URL | null }
+    server.use(
+      http.get('http://localhost:8081/api/v1/stores', ({ request }) => {
+        captured.url = new URL(request.url)
+        return HttpResponse.json({ items: [], total: 0, page: 1, page_size: 10000 })
+      }),
+    )
+    const result = await fetchAllStores()
+    expect(captured.url?.searchParams.get('page_size')).toBe('10000')
+    expect(result).toEqual([])
+  })
+
+  it('returns only the items array', async () => {
+    server.use(
+      http.get('http://localhost:8081/api/v1/stores', () => {
+        return HttpResponse.json(mockPaginatedStores)
+      }),
+    )
+    const result = await fetchAllStores()
+    expect(result).toEqual(mockPaginatedStores.items)
+  })
+})
 
 describe('fetchStore', () => {
   it('returns a store by id on success', async () => {
