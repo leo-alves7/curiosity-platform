@@ -11,7 +11,7 @@ describe('UserAvatar', () => {
 
   it('renders default icon when photoURL is null', () => {
     const { container } = render(<UserAvatar photoURL={null} uid="uid-1" />)
-    expect(container.querySelector('ion-icon')).not.toBeNull()
+    expect(container.querySelector('svg')).not.toBeNull()
     expect(screen.queryByRole('img')).toBeNull()
   })
 
@@ -21,7 +21,7 @@ describe('UserAvatar', () => {
     )
     const img = screen.getByRole('img') as HTMLImageElement
     fireEvent.error(img)
-    expect(container.querySelector('ion-icon')).not.toBeNull()
+    expect(container.querySelector('svg')).not.toBeNull()
     expect(screen.queryByRole('img')).toBeNull()
   })
 

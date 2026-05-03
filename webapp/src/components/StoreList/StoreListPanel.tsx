@@ -2,15 +2,14 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   IonButton,
-  IonIcon,
   IonLabel,
   IonSearchbar,
   IonSegment,
   IonSegmentButton,
   IonText,
 } from '@ionic/react'
+import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { closeOutline } from 'ionicons/icons'
 import StoreList from './StoreList'
 import { useSearchDebounce } from './useSearchDebounce'
 import { togglePanel } from '@/slices/uiSlice'
@@ -95,7 +94,7 @@ function StoreListPanel({
               aria-label={t('storeList.closePanel')}
               onClick={() => dispatch(togglePanel())}
             >
-              <IonIcon slot="icon-only" icon={closeOutline} />
+              <X size={18} />
             </IonButton>
           )}
         </div>

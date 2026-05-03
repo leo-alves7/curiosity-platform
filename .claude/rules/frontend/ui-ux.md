@@ -57,6 +57,14 @@ All bottom-right FABs on the map share `right: 16px`. Stacking order (bottom →
 
 When adding a new FAB: update both mobile and desktop stacks in this table and in `MapPage`.
 
+## Icons
+
+- Use `lucide-react` for **all** icons. Import named icons: `import { Map, Search, X } from 'lucide-react'`
+- **Never use `IonIcon`** — it is banned. Never import from `ionicons/icons`.
+- Ionic components (`IonButton`, `IonFab`, `IonCard`, `IonModal`, etc.) are kept and used normally — this rule applies only to icon rendering.
+- Sizing: tab bar icons `size={22}`, FAB icons `size={20}`, inline button icons `size={18}`, standalone/avatar icons `size={32}`.
+- Do not set `color` prop — let CSS cascade via `currentColor` (lucide default).
+
 ## Ionic React
 
 - Use Ionic components for all UI: `IonCard`, `IonButton`, `IonFab`, `IonModal`, `IonSheet`, `IonToast`, `IonSearchbar`, etc.

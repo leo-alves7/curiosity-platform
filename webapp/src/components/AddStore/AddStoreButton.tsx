@@ -1,5 +1,5 @@
-import { IonFab, IonFabButton, IonIcon } from '@ionic/react'
-import { add, close } from 'ionicons/icons'
+import { IonFab, IonFabButton } from '@ionic/react'
+import { Plus, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { resetAddStore, selectIsAddingStore, setIsAddingStore } from '@/slices/uiSlice'
@@ -30,7 +30,7 @@ function AddStoreButton({ bottomOffset = 0 }: AddStoreButtonProps) {
         aria-label={isAddingStore ? t('addStore.cancelAdding') : t('addStore.addStore')}
         onClick={handleClick}
       >
-        <IonIcon icon={isAddingStore ? close : add} />
+        {isAddingStore ? <X size={20} /> : <Plus size={20} />}
       </IonFabButton>
     </IonFab>
   )

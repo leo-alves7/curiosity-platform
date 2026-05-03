@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { IonContent, IonFab, IonFabButton, IonIcon, IonModal, IonPage } from '@ionic/react'
-import { listOutline } from 'ionicons/icons'
+import { IonContent, IonFab, IonFabButton, IonModal, IonPage } from '@ionic/react'
+import { List } from 'lucide-react'
 import maplibregl from 'maplibre-gl'
 import AppHeader from '@/components/Layout/AppHeader'
 import MapView from '@/components/MapView'
@@ -187,7 +187,7 @@ function MapPage() {
           }}
         >
           <IonFabButton onClick={handleTogglePanel} aria-label="Toggle store list">
-            <IonIcon icon={listOutline} />
+            <List size={20} />
           </IonFabButton>
         </IonFab>
         <AddStoreButton bottomOffset={TAB_BAR_HEIGHT + 56 + 8 + 56 + 8} />
