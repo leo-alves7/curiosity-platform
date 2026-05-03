@@ -7,6 +7,8 @@ import {
 } from '@ionic/react'
 import { useTranslation } from 'react-i18next'
 import StoreCard from './StoreCard'
+import EmptyState from '@/components/EmptyState/EmptyState'
+import noResultsAnimation from '@/assets/animations/no-results.json'
 import type { StoreResponse } from '@/types/store'
 
 interface StoreListProps {
@@ -57,9 +59,11 @@ function StoreList({
 
   if (stores.length === 0) {
     return (
-      <IonText color="medium">
-        <p style={{ padding: 16, textAlign: 'center' }}>{t('storeList.noStores')}</p>
-      </IonText>
+      <EmptyState
+        title={t('storeList.emptyTitle')}
+        description={t('storeList.emptyDescription')}
+        animationData={noResultsAnimation}
+      />
     )
   }
 

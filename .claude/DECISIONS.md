@@ -121,3 +121,33 @@ This file is a permanent log of architectural decisions made in Curiosity Platfo
 **Reasoning:** Evaluated 2026-05-02. Claude Code's `/schedule` skill creates agents that run in Anthropic's cloud environment. These agents have no access to the local filesystem or local git repositories. The proposed sync requires `git log --since=7days` and reading/writing local files — impossible for a remote agent.
 
 **Alternative:** Run the sync manually at session end via `/memory-update`, which already covers `project_state.md`. For fully automated sync, set up a local cron job: `0 9 * * 1 cd /path/to/project && claude --print "Read .claude/PROJECT_VISION.md and git log --since=7days --oneline. Update the feature table for any CSTY tickets that have been merged."`. Revisit if Claude Code adds local-aware cron scheduling.
+
+---
+
+## ADR-012 — @capacitor/assets for icon & splash generation
+
+**Status:** Active
+
+**Decision:** Use `@capacitor/assets` to generate all required app icon and splash screen sizes for iOS, Android, and PWA from two source files: `webapp/resources/icon.png` (1024×1024) and `webapp/resources/splash.png` (2732×2732).
+
+**Reasoning:** Manually maintaining 30+ platform-specific icon sizes is error-prone. `@capacitor/assets` automates the entire pipeline from a single high-resolution source. The current source files are placeholders (deep indigo background with "C" letter / solid indigo). Replace them with final branded assets from Figma before the first App Store / Play Store submission.
+
+**Run:** `cd webapp && npm run generate:assets`
+
+**Design guideline:** Source files live in `webapp/resources/`. Final assets will be designed in Figma. Map markers use category-specific SVGs in `webapp/src/assets/markers/` — replace placeholder SVGs with branded designs before production release. Integrating category markers into the MapLibre `unclustered-point` layer is a separate ticket.
+
+---
+
+## ADR-013 — lottie-react for empty/loading/success animations
+
+**Status:** Active
+
+**Decision:** Use `lottie-react` for polished animations in moment states: empty states, success confirmations, and onboarding.
+
+**Reasoning:** Lottie animations (JSON) are resolution-independent, small, and designer-friendly. They give the app a polished feel without custom CSS keyframe work. The first use case is the "no results" empty state in `StoreList`.
+
+**Guidelines:**
+- Use animations sparingly — only for moment states (empty, success, error, onboarding). Not for navigation or routine interactions.
+- Source only MIT-licensed animations from lottiefiles.com or hand-craft them.
+- Store animation JSON in `webapp/src/assets/animations/`.
+- The `EmptyState` component (`src/components/EmptyState/`) accepts an optional `animationData` prop — falls back to a lucide icon when no animation is provided.

@@ -158,6 +158,29 @@ Backend API available at [http://localhost:8081](http://localhost:8081).
 
 ---
 
+## App Icon & Splash Screen
+
+Icon and splash screen sizes for iOS, Android, and PWA are generated automatically from two source files using [`@capacitor/assets`](https://github.com/ionic-team/capacitor-assets).
+
+**Source files** (place in `webapp/resources/`):
+
+| File | Size | Purpose |
+| --- | --- | --- |
+| `icon.png` | 1024×1024 px | App icon (all platforms) |
+| `splash.png` | 2732×2732 px | Splash screen |
+
+To generate all platform-specific sizes:
+
+```bash
+cd webapp && npm run generate:assets
+```
+
+Output goes to `ios/` and `android/` via Capacitor. Re-run this command any time the source files change.
+
+> **Design note:** The current source files are placeholders. Replace them with the final branded assets from Figma before the first production release. See `DECISIONS.md` (ADR-012) for design guidelines.
+
+---
+
 ## API Design
 
 RESTful endpoints following the modular router pattern:

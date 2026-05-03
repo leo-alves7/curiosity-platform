@@ -42,6 +42,8 @@
     "loading": "Loading stores",
     "failedToLoad": "Failed to load stores{{error}}",
     "noStores": "No stores found. Try adjusting your filters.",
+    "emptyTitle": "No stores found",
+    "emptyDescription": "Try adjusting your search or category filters.",
     "loadingMore": "Loading more stores...",
     "heading": "Stores",
     "closePanel": "Close panel",
