@@ -42,6 +42,8 @@
     "loading": "Carregando lojas",
     "failedToLoad": "Erro ao carregar lojas{{error}}",
     "noStores": "Nenhuma loja encontrada. Ajuste os filtros.",
+    "emptyTitle": "Nenhuma loja encontrada",
+    "emptyDescription": "Tente ajustar sua busca ou filtros de categoria.",
     "loadingMore": "Carregando mais lojas...",
     "heading": "Lojas",
     "closePanel": "Fechar painel",

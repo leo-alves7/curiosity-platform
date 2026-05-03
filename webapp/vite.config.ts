@@ -17,5 +17,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
+    alias: {
+      'lottie-react': resolve(__dirname, './src/__mocks__/lottie-react.tsx'),
+    },
   },
 })
