@@ -13,6 +13,7 @@ webapp/node_modules
 
 # misc
 .DS_Store
+.mcp.json
 .env.local
 .env.development.local
 .env.test.local
