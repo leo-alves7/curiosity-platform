@@ -1,6 +1,9 @@
 import type { StoreResponse } from '@/types/store'
 
-export function storesToFeatureCollection(stores: StoreResponse[]): GeoJSON.FeatureCollection {
+export function storesToFeatureCollection(
+  stores: StoreResponse[],
+  categorySlugMap: Record<string, string> = {},
+): GeoJSON.FeatureCollection {
   const features: GeoJSON.Feature[] = stores
     .filter((s) => s.lat != null && s.lng != null)
     .map((s) => ({
@@ -13,6 +16,7 @@ export function storesToFeatureCollection(stores: StoreResponse[]): GeoJSON.Feat
         id: s.id,
         name: s.name,
         category_id: s.category_id,
+        category_slug: s.category_id ? (categorySlugMap[s.category_id] ?? 'default') : 'default',
         image_url: s.image_url,
         lat: s.lat,
         lng: s.lng,
