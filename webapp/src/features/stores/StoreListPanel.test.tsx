@@ -6,6 +6,9 @@ import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import uiReducer from '@/slices/uiSlice'
 import StoreListPanel from './StoreListPanel'
+
+vi.mock('@/auth/firebase', () => ({ auth: {}, analytics: null }))
+vi.mock('firebase/analytics', () => ({ getAnalytics: () => null, logEvent: vi.fn() }))
 import type { CategoryResponse } from '@/types/category'
 import type { StoreResponse } from '@/types/store'
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   IonButton,
@@ -12,6 +12,7 @@ import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import StoreList from './StoreList'
 import { useSearchDebounce } from '@/hooks/useSearchDebounce'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { togglePanel } from '@/slices/uiSlice'
 import type { AppDispatch } from '@/store'
 import type { CategoryResponse } from '@/types/category'
@@ -52,13 +53,22 @@ function StoreListPanel({
 }: StoreListPanelProps) {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
+  const { trackSearchPerformed } = useAnalytics()
   const [localQuery, setLocalQuery] = useState(searchQuery)
 
   useEffect(() => {
     setLocalQuery(searchQuery)
   }, [searchQuery])
 
-  useSearchDebounce(localQuery, 300, onSearchChange)
+  const handleSearchChange = useCallback(
+    (q: string) => {
+      onSearchChange(q)
+      if (q.length > 0) trackSearchPerformed(q.length)
+    },
+    [onSearchChange, trackSearchPerformed],
+  )
+
+  useSearchDebounce(localQuery, 300, handleSearchChange)
 
   const handleSegmentChange = (value: string | number | undefined) => {
     if (value === ALL_CATEGORIES_VALUE || value === undefined) {

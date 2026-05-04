@@ -9,6 +9,9 @@ import authReducer from '@/slices/authSlice'
 import AppHeader from './AppHeader'
 import type { AppHeaderProps } from './AppHeader'
 
+vi.mock('@/auth/firebase', () => ({ auth: {}, analytics: null }))
+vi.mock('firebase/analytics', () => ({ getAnalytics: () => null, logEvent: vi.fn() }))
+
 vi.mock('@capacitor-firebase/authentication', () => ({
   FirebaseAuthentication: {
     signOut: vi.fn().mockResolvedValue(undefined),
