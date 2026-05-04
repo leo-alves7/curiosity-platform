@@ -212,19 +212,16 @@ Before writing the session summary, update memory:
 
 ## Phase 10 — Session Summary
 
-This is the final output you return to the user in the main session. Write it as a senior engineer handing off to a colleague. Output the following — each section in its own markdown block so the user can copy-paste.
+This is the final output you return to the user in the main session. Write it as a senior engineer handing off to a colleague. Two blocks only — Implementation Summary and Next Steps. Output each in its own markdown block so the user can copy-paste.
 
-### Block 1 — PR Description
-A ready-to-paste PR description matching the structure from Phase 8.
-
-### Block 2 — Implementation Summary
+### Block 1 — Implementation Summary
 What was actually built and with what approach. Cover:
 - Key architectural decisions made and why
 - How the code is structured (which files do what)
 - Any non-obvious patterns or trade-offs applied
 - What the decomposition looked like (how files were split and why)
 
-### Block 3 — Next Steps & Possible Side Tickets
+### Block 2 — Next Steps & Possible Side Tickets
 Think as a senior engineer reviewing the PR. Cover:
 - Immediate follow-up work needed before this feature is production-ready (hardening, edge cases, missing pieces)
 - Suggested new tickets with a one-line scope for each (use the CSTY prefix)
@@ -237,7 +234,7 @@ Think as a senior engineer reviewing the PR. Cover:
 
 **This step is mandatory and must not be skipped. Run it after Phase 10, before the session ends.**
 
-Save Block 3 verbatim to the epic seeds memory file so the `/epic-seeds` skill can use it to plan future epics.
+Save Block 2 verbatim to the epic seeds memory file so the `/epic-seeds` skill can use it to plan future epics.
 
 1. Read `.claude/memory/MEMORY.md` to check whether `epic_seeds.md` is already indexed.
 
