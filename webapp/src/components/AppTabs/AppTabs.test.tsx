@@ -5,6 +5,9 @@ import { MemoryRouter } from 'react-router-dom'
 import AppTabs from './AppTabs'
 import * as useIsMobileModule from './useIsMobile'
 
+vi.mock('@/auth/firebase', () => ({ auth: {}, analytics: null }))
+vi.mock('firebase/analytics', () => ({ getAnalytics: () => null, logEvent: vi.fn() }))
+
 function setup(path = '/map') {
   return render(
     <MemoryRouter initialEntries={[path]}>

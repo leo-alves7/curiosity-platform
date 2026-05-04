@@ -3,6 +3,7 @@ import { Map, Search } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useIsMobile } from './useIsMobile'
+import { useAnalytics } from '../../hooks/useAnalytics'
 
 const TAB_BAR_HEIGHT = 56
 const TAB_ROUTES = ['/', '/map', '/explore']
@@ -12,6 +13,7 @@ function AppTabs() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
+  const { trackTabSwitched } = useAnalytics()
 
   const isTabRoute = TAB_ROUTES.includes(location.pathname)
   if (!isMobile || !isTabRoute) return null
@@ -29,14 +31,24 @@ function AppTabs() {
         zIndex: '10',
       }}
     >
-      <IonTabButton tab="map" selected={activeTab === 'map'} onClick={() => navigate('/map')}>
+      <IonTabButton
+        tab="map"
+        selected={activeTab === 'map'}
+        onClick={() => {
+          navigate('/map')
+          trackTabSwitched('map')
+        }}
+      >
         <Map size={22} />
         <IonLabel>{t('nav.map')}</IonLabel>
       </IonTabButton>
       <IonTabButton
         tab="explore"
         selected={activeTab === 'explore'}
-        onClick={() => navigate('/explore')}
+        onClick={() => {
+          navigate('/explore')
+          trackTabSwitched('explore')
+        }}
       >
         <Search size={22} />
         <IonLabel>{t('nav.explore')}</IonLabel>
