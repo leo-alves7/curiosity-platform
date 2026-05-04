@@ -163,6 +163,18 @@ Three tooling improvements added (all in `.claude/` — not product features):
 - **Scheduled sync** — Evaluated and deferred. Remote agents can't access local git. See ADR-011 in DECISIONS.md.
 - **get-jira-issue skill** — Updated to prefer `mcp__jira__jira_get_issue` with `acli` fallback.
 
+## Epic 8 — Legal & Privacy Compliance (CSTY-46, created 2026-05-03)
+
+Stories defined, not yet implemented. **P0: active LGPD violation in production.**
+
+- **CSTY-47** — LGPD consent gate: first-launch Ionic bottom sheet; `setAnalyticsCollectionEnabled(false)` by default in `firebase.ts:14`; `privacySlice` with `analyticsConsented`/`locationConsented`; persisted to `localStorage`; withdrawal from settings. **P0 — must fix before public launch.**
+- **CSTY-50** — Consent record logging: `consent_records` table (append-only, no soft-delete base), `POST /api/v1/users/me/consent` endpoint. **P1.**
+- **CSTY-48** — User data deletion: `DELETE /api/v1/users/me/data` (soft-delete all user-owned rows) + admin variant. **P1.**
+- **CSTY-49** — Privacy Policy page: in-app `/privacy` route (Ionic, unauthenticated) + Cloudflare Workers static page; `pt-BR` primary, `en` secondary. **P2.**
+
+**Why:** Firebase Analytics fires `app_open` on first launch without consent — LGPD Article 8 violation. ANPD is actively enforcing in 2026–2027. This must be resolved before public launch.
+**How to apply:** Implement CSTY-47 first (fixes the active violation), then CSTY-50, then CSTY-48, then CSTY-49.
+
 ## Jira Auth
 
 `acli` is authenticated to `curiosity-platform.atlassian.net`. Run `acli jira auth switch --site curiosity-platform.atlassian.net` if it reverts.
