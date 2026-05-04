@@ -80,7 +80,7 @@ async def handle_upload_store_image(
     store_id: uuid.UUID,
     file: UploadFile,
     session: DbSession,
-    _current_user: CurrentUser,
+    _admin: AdminUser,
 ) -> StoreResponse:
     store = await store_manager.get_store(session, store_id)
     if store is None:
