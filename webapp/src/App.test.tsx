@@ -13,6 +13,7 @@ vi.mock('maplibre-gl', () => ({
 
 vi.mock('./auth/firebase', () => ({
   auth: { currentUser: null },
+  analytics: null,
 }))
 
 vi.mock('firebase/auth', () => ({
