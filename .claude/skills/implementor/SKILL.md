@@ -232,3 +232,42 @@ Think as a senior engineer reviewing the PR. Cover:
 - Dependencies or blockers for downstream tickets
 
 ---
+
+## Phase 10.5 — Save Epic Seeds
+
+**This step is mandatory and must not be skipped. Run it after Phase 10, before the session ends.**
+
+Save Block 3 verbatim to the epic seeds memory file so the `/epic-seeds` skill can use it to plan future epics.
+
+1. Read `.claude/memory/MEMORY.md` to check whether `epic_seeds.md` is already indexed.
+
+2. **If `epic_seeds.md` does NOT exist yet** — create `.claude/memory/epic_seeds.md` with this exact header, then your entry:
+
+```markdown
+---
+name: Epic Seeds — Recommended Next Steps by Session
+description: Collected "next steps and possible side tickets" from completed ticket sessions. Fed into /epic-seeds for future epic planning.
+type: project
+---
+```
+
+   Then add one line to `.claude/memory/MEMORY.md`:
+   ```
+   - [Epic Seeds — Next Steps by Session](epic_seeds.md) — Block 3 from each completed ticket; reviewed by /epic-seeds to seed future epics
+   ```
+
+3. **If `epic_seeds.md` already exists** — open it and append to the end (after the last `---` separator).
+
+4. In both cases, append this entry to `epic_seeds.md`:
+
+```markdown
+## $0 — <ticket title> (completed <today's date>, Epic: <epic name and CSTY epic key>)
+
+<copy Block 3 verbatim here>
+
+---
+```
+
+Do not modify existing entries. Never summarize or paraphrase Block 3 — copy it exactly as written. Each session is a permanent record.
+
+---
