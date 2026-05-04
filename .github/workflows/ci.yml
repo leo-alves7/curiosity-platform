@@ -51,4 +51,9 @@ jobs:
         run: npm ci
       - name: Run tests
         working-directory: webapp
+        env:
+          VITE_FIREBASE_API_KEY: ci-placeholder-key
+          VITE_FIREBASE_AUTH_DOMAIN: ci-test.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ci-test-project
+          VITE_FIREBASE_APP_ID: 1:000000000000:web:0000000000000000
         run: npm run test:run
