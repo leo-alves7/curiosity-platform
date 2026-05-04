@@ -17,6 +17,7 @@ vi.mock('../auth/firebase', () => ({
       getIdToken: vi.fn().mockResolvedValue('test-token'),
     },
   },
+  analytics: null,
 }))
 
 vi.mock('firebase/auth', () => ({

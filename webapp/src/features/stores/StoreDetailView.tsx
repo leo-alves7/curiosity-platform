@@ -4,6 +4,7 @@ import { Share } from '@capacitor/share'
 import { useTranslation } from 'react-i18next'
 import { fetchStore } from '@/api/stores'
 import type { StoreResponse } from '@/types/store'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import StoreDetailContent from './StoreDetailContent'
 
 interface StoreDetailViewProps {
@@ -14,6 +15,7 @@ interface StoreDetailViewProps {
 
 function StoreDetailView({ storeId, categoryMap, onClose }: StoreDetailViewProps) {
   const { t } = useTranslation()
+  const { trackStoreViewed } = useAnalytics()
   const [store, setStore] = useState<StoreResponse | null>(null)
   const [status, setStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -27,6 +29,7 @@ function StoreDetailView({ storeId, categoryMap, onClose }: StoreDetailViewProps
       .then((data) => {
         setStore(data)
         setStatus('succeeded')
+        trackStoreViewed(storeId)
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : 'Failed to load store')
