@@ -12,6 +12,7 @@ import {
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import AddStoreForm, { type AddStoreFormData } from './AddStoreForm'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { fetchCategories } from '@/api/categories'
 import { createStore, uploadStoreImage } from '@/api/stores'
 import { fetchStoresAndCategories } from '@/slices/storesSlice'
@@ -30,6 +31,7 @@ interface AddStoreModalProps {
 function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStoreModalProps) {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
+  const { trackStoreAdded } = useAnalytics()
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -75,6 +77,7 @@ function AddStoreModal({ isOpen, pinLocation, onClose, onStoreCreated }: AddStor
         store = await uploadStoreImage(store.id, data.photo)
       }
       setSuccessToast(true)
+      trackStoreAdded()
       await dispatch(fetchStoresAndCategories())
       onStoreCreated?.(store)
       dispatch(resetAddStore())
