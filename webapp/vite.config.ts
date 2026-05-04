@@ -31,6 +31,7 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts',
     alias: {
       'lottie-react': resolve(__dirname, './src/__mocks__/lottie-react.tsx'),
+      'firebase/analytics': resolve(__dirname, './src/__mocks__/firebase-analytics.ts'),
     },
   },
 })
