@@ -1,6 +1,6 @@
 import React from 'react'
 import { IonApp, IonContent, IonText } from '@ionic/react'
-import * as Sentry from '@sentry/react'
+import * as Sentry from '@sentry/capacitor'
 
 interface Props {
   children: React.ReactNode

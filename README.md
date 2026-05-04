@@ -71,7 +71,7 @@ curiosity-platform/
 | Routing               | React Router v6                                    |
 | Auth                  | Firebase Auth + @capacitor-firebase/authentication |
 | i18n                  | react-i18next (EN default, PT-BR supported)        |
-| Error Tracking        | Sentry (`@sentry/react`)                           |
+| Error Tracking        | Sentry (`@sentry/capacitor` wrapping `@sentry/react` — covers web JS errors and native Capacitor crashes/OOM) |
 | Analytics             | Firebase Analytics (`firebase/analytics`)          |
 | Testing               | Vitest + React Testing Library                     |
 
@@ -258,6 +258,8 @@ cd .. && npx wrangler deploy # deploys webapp/dist to Cloudflare Workers
 - Deploy command: `npx wrangler deploy`
 
 **Sentry source maps** — set `SENTRY_ORG`, `SENTRY_PROJECT`, and `SENTRY_AUTH_TOKEN` as CI/CD secrets to enable automatic source map uploads on build. When `SENTRY_AUTH_TOKEN` is absent the Sentry Vite plugin is disabled and the build proceeds normally.
+
+**Sentry native crash reporting** — `@sentry/capacitor` wraps `@sentry/react` and adds native crash capture on the iOS/Android Capacitor layer (OOM events, WebView crashes). The web JS path is unchanged. `@sentry/react` is passed as the second argument to `Sentry.init()` in `webapp/src/sentry.ts`. Both packages must stay pinned to the same minor version — see the peer-dep check run by `@sentry/capacitor`'s postinstall script.
 
 ### Backend — deployment TBD
 
