@@ -2,7 +2,7 @@
 
 - [Frontend UI library — Ionic React (not MUI)](project_ionic_decision.md) — MUI was replaced with Ionic React; never use MUI in this project
 - [Project Vision — Curiosity App](project_vision_summary.md) — Two-tab gamified/technical app, two user types (normal + enterprise), monetization via Stripe subscriptions + sponsored stores
-- [Project State — Epics & Implementation](project_state.md) — CSTY-2, CSTY-12, CSTY-24, CSTY-27, CSTY-28, CSTY-29, CSTY-30 complete; UI polish + 16:9 cards + admin empty states done; PostGIS is the critical infrastructure gap
+- [Project State — Epics & Implementation](project_state.md) — CSTY-2, CSTY-12, CSTY-24, CSTY-27, CSTY-28, CSTY-29, CSTY-30, CSTY-32, CSTY-33 complete; Epics 1-4 done (Observability & Analytics); PostGIS is the critical infrastructure gap for Epic 5
 - [MinIO bucket must be public read](infra_minio_public_bucket.md) — 'curiosity' bucket needs anonymous download policy; createbuckets service in docker-compose handles it automatically
 - [Frontend Architecture — Redux, Components, Patterns](architecture_frontend.md) — 7 Redux slices, component org rules, lucide-react only, pointer-lock pattern, FAB stacking formula
 - [Backend Architecture — Layer Responsibilities](architecture_backend.md) — routers/managers/schemas/services/dependencies, new endpoint checklist, key patterns
