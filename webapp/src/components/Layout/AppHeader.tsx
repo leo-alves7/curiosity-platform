@@ -1,5 +1,13 @@
-import { useEffect, useState } from 'react'
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonSearchbar, IonToast } from '@ionic/react'
+import { useCallback, useEffect, useState } from 'react'
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonSearchbar,
+  IonToast,
+} from '@ionic/react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication'
@@ -8,6 +16,7 @@ import UserAvatar from './UserAvatar'
 import ProfileMenu from './ProfileMenu'
 import { clearAuth } from '@/slices/authSlice'
 import { useSearchDebounce } from '@/hooks/useSearchDebounce'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import type { RootState } from '@/store'
 import type { AppDispatch } from '@/store'
 
@@ -29,6 +38,7 @@ function AppHeader({
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation()
   const { uid, email, displayName, photoURL } = useSelector((state: RootState) => state.auth)
+  const { trackSearchPerformed } = useAnalytics()
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuEvent, setMenuEvent] = useState<Event | undefined>(undefined)
   const [showLogoutToast, setShowLogoutToast] = useState(false)
@@ -38,7 +48,16 @@ function AppHeader({
     setLocalQuery(searchQuery ?? '')
   }, [searchQuery])
 
-  useSearchDebounce(localQuery, 300, onSearchChange ?? (() => {}))
+  const handleSearchChange = useCallback(
+    (q: string) => {
+      const cb = onSearchChange ?? (() => {})
+      cb(q)
+      if (q.length > 0) trackSearchPerformed(q.length)
+    },
+    [onSearchChange, trackSearchPerformed],
+  )
+
+  useSearchDebounce(localQuery, 300, handleSearchChange)
 
   const handleAvatarClick = (e: React.MouseEvent) => {
     setMenuEvent(e.nativeEvent)
@@ -60,7 +79,9 @@ function AppHeader({
             <IonButtons slot="start">
               <IonButton
                 fill="clear"
-                aria-label={isSidebarCollapsed ? t('storeList.expandSidebar') : t('storeList.collapseSidebar')}
+                aria-label={
+                  isSidebarCollapsed ? t('storeList.expandSidebar') : t('storeList.collapseSidebar')
+                }
                 onClick={onToggleSidebar}
               >
                 {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}

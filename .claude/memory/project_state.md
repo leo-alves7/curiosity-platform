@@ -88,12 +88,12 @@ Three map bugs fixed:
 
 ## Epic 4 — Observability & Analytics (CSTY-31, created 2026-05-03)
 
-Stories defined, not yet implemented:
-- **CSTY-32** — Sentry integration: `@sentry/react` + `@sentry/vite-plugin` in webapp; `sentry-sdk` in FastAPI; DSN via env vars; no PII in payloads
-- **CSTY-33** — Firebase Analytics: initialize `firebase/analytics` in `firebase.ts`; 7 core events; centralized `useAnalytics()` hook; disabled in dev mode; no PII in event params
+Stories complete (merged 2026-05-03):
+- **CSTY-32** — Sentry integration: `@sentry/react` + `@sentry/vite-plugin` in webapp; `sentry-sdk` in FastAPI; DSN via env vars; no PII in payloads (PR #39 merged)
+- **CSTY-33** — Firebase Analytics: 7 core events (`app_open`, `login_completed`, `registration_completed`, `store_added`, `store_viewed`, `search_performed`, `tab_switched`); centralized `useAnalytics()` hook; disabled in dev mode; no PII in event params (PR #40 draft)
 
 **Why:** Cannot safely invite real users without crash reporting and usage visibility.
-**How to apply:** When starting CSTY-32 or CSTY-33, check sentry.io project exists and Firebase Analytics is enabled in the Firebase console before coding.
+**Implementation notes:** Firebase Analytics is initialized from app config (requires Firebase project with Analytics enabled). Analytics disabled in development (`MODE !== 'development'`). Test environment mocks Firebase analytics module. useAnalytics hook provides single interface for all event tracking — guards with `if (!analytics) return` before each logEvent call.
 
 ## Epic 5 — PostGIS & Proximity Queries (CSTY-34, created 2026-05-03)
 

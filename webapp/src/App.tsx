@@ -15,9 +15,11 @@ import AdminPage from './pages/AdminPage'
 import AppTabs from './components/AppTabs/AppTabs'
 import { useAuth } from './auth/useAuth'
 import { useTheme } from './hooks/useTheme'
+import { useAnalytics } from './hooks/useAnalytics'
 import { selectLanguage } from './slices/settingsSlice'
 import i18n from './i18n/index'
 import { detectLanguage } from './i18n/detectLanguage'
+import type { RootState } from './store'
 
 setupIonicReact()
 
@@ -26,6 +28,8 @@ function App() {
   const { isLoading } = useAuth()
   const { t } = useTranslation()
   const language = useSelector(selectLanguage)
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  const { trackAppOpen } = useAnalytics()
   const [showAutoSwitchToast, setShowAutoSwitchToast] = useState(false)
 
   useEffect(() => {
@@ -41,6 +45,12 @@ function App() {
       i18n.changeLanguage('en')
     }
   }, [language])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      trackAppOpen()
+    }
+  }, [isAuthenticated]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
     return (

@@ -15,6 +15,7 @@ import AddStoreModal from './AddStoreModal'
 
 vi.mock('../../auth/firebase', () => ({
   auth: { currentUser: { getIdToken: vi.fn().mockResolvedValue('token') } },
+  analytics: null,
 }))
 vi.mock('firebase/auth', () => ({ signOut: vi.fn() }))
 

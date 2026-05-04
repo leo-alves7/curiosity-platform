@@ -10,6 +10,7 @@ import LoginForm from './LoginForm'
 
 vi.mock('../../auth/firebase', () => ({
   auth: {},
+  analytics: null,
 }))
 vi.mock('firebase/auth', () => ({
   onAuthStateChanged: vi.fn(() => vi.fn()),

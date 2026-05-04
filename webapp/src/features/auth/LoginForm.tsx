@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Mail, KeyRound, UserPlus } from 'lucide-react'
 import { useAuth } from '../../auth/useAuth'
+import { useAnalytics } from '../../hooks/useAnalytics'
 
 interface LoginFormProps {
   onModeChange: (mode: 'signIn' | 'register') => void
@@ -24,6 +25,7 @@ function LoginForm({ onModeChange }: LoginFormProps) {
     signInWithGoogle,
     signInWithApple,
   } = useAuth()
+  const { trackLoginCompleted, trackRegistrationCompleted } = useAnalytics()
   const [mode, setMode] = useState<'signIn' | 'register'>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -36,6 +38,7 @@ function LoginForm({ onModeChange }: LoginFormProps) {
     setLoading(true)
     try {
       await signInWithEmailAndPassword(email, password)
+      trackLoginCompleted('email')
     } catch {
       setError(t('auth.invalidCredentials'))
     } finally {
@@ -52,6 +55,7 @@ function LoginForm({ onModeChange }: LoginFormProps) {
     setLoading(true)
     try {
       await createUserWithEmailAndPassword(email, password)
+      trackRegistrationCompleted()
     } catch (err) {
       const code = (err as { code?: string }).code
       if (code === 'auth/email-already-in-use') {
@@ -132,7 +136,10 @@ function LoginForm({ onModeChange }: LoginFormProps) {
         <IonButton
           expand="block"
           fill="outline"
-          onClick={() => signInWithGoogle()}
+          onClick={async () => {
+            await signInWithGoogle()
+            trackLoginCompleted('google')
+          }}
           disabled={loading}
         >
           <KeyRound size={18} />
@@ -141,7 +148,10 @@ function LoginForm({ onModeChange }: LoginFormProps) {
         <IonButton
           expand="block"
           fill="outline"
-          onClick={() => signInWithApple()}
+          onClick={async () => {
+            await signInWithApple()
+            trackLoginCompleted('apple')
+          }}
           disabled={loading}
         >
           <UserPlus size={18} />
