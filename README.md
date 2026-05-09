@@ -133,11 +133,20 @@ This starts PostgreSQL, Redis, MinIO, and Maildev.
 
 ```bash
 cd backend
-cp .env.example .env   # edit values as needed
+cp .env.example .env   # then edit FIREBASE_PROJECT_ID and FIREBASE_CREDENTIALS_PATH (see below)
 uv sync                # creates .venv and installs all dependencies
 uv run alembic upgrade head
 uv run uvicorn curiosity.web.main:app --reload --port 8081
 ```
+
+Before running uvicorn, place your Firebase Admin SDK service-account JSON at `backend/service-account.json` (get it from 1Password or your team) and set in `backend/.env`:
+
+```
+FIREBASE_PROJECT_ID=<your firebase project id>
+FIREBASE_CREDENTIALS_PATH=./service-account.json
+```
+
+Leave `FIREBASE_CREDENTIALS_PATH` empty only if you have Application Default Credentials configured locally.
 
 ### 3. Frontend setup
 
